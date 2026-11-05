@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Light Sails</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 034 colour code: pink = laser light and photon pressure, ice = the sail and spacecraft, violet = distance and time. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/9}
+@media (max-width:640px){#vp1,#vp2{aspect-ratio:4/4.6}#vp3{aspect-ratio:4/4.2}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 034 · Breakthrough technology · 8 of 8</div>
+    <a class="navlink" href="033.html">← Φ 033</a>
+    <a class="navlink" href="035.html">Φ 035 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 034 · Breakthrough technology · 8 of 8</p>
+    <h1>light <span class="eig">sails</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · interstellar travel — <em>riding a laser beam to another star, by pushing with light itself</em></p>
+    <p class="thesis">Light has no mass, but it carries momentum: every photon that bounces off a mirror gives it a tiny push. Make the mirror light enough and the light strong enough, and the push becomes enormous. Breakthrough Starshot’s plan: a ground-based laser array pushes gram-scale probes to a fifth of the speed of light in minutes, reaching Alpha Centauri in about twenty years.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Optics, spacecraft propulsion, relativity</dd></div>
+    <div><dt>Models</dt><dd>Photon pressure, the ten-minute laser sprint, the long cruise</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 8 of 8. Connects to Φ 004 (warp drives) and Φ 023 (exoplanets).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>laser light</span><span class="key"><i style="background:var(--ice)"></i>sail</span><span class="key"><i style="background:var(--violet)"></i>distance · time</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="push">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Pushing with light</span><h2>Photon pressure</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Photons striking a thin sail and bouncing back, each delivering a small push. Sliders set the light's power and the sail's mass; the force and acceleration are shown, from gentle sunlight to a gigawatt laser."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Light source">
+            <button class="btn" type="button" data-ls="sun">Sunlight on 200 m²</button>
+            <button class="btn" type="button" data-ls="laser" aria-pressed="true">Laser array</button>
+          </div>
+          <label class="scrub" for="P1">Laser power <input type="range" id="P1" min="0" max="1000" step="1" value="1000"><output id="P1o">—</output></label>
+          <label class="scrub" for="m1">Craft mass <input type="range" id="m1" min="0" max="1000" step="1" value="0"><output id="m1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Push (force)</b><span id="r1f" class="eg">—</span></div>
+          <div class="ro"><b>Acceleration</b><span id="r1a">—</span></div>
+          <div class="ro"><b>For comparison</b><span id="r1c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A photon of energy <var>E</var> carries momentum <var>E</var>/<var>c</var>. When it reflects off a mirror it reverses, handing the mirror twice its momentum. Sunlight near Earth pushes on a perfect mirror with about <strong>9 micronewtons per square metre</strong>, roughly the weight of a few grains of sand on a whole square metre.</p>
+        <p>That is enough to sail through the solar system slowly. Japan’s <span class="i">IKAROS</span> (2010) was the first craft driven by sunlight, and the Planetary Society’s <span class="i">LightSail 2</span> (2019) raised its orbit around Earth with a 32 m² sail.</p>
+        <p>To reach another star within a human lifetime you need far more. Point a 100-gigawatt laser at a sail plus probe weighing about one gram and the push is <strong>hundreds of newtons</strong>, an acceleration of tens of thousands of <var>g</var>. No rocket can come close, because the craft carries no fuel at all: the engine stays on the ground.</p>
+        <div class="task"><b>Try this</b>Compare sunlight on a solar sail with the laser array. Then make the craft heavier and watch the acceleration fall.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>F</var> = 2<var>P</var>/<var>c</var>&nbsp; (perfect reflector),&nbsp; <var>a</var> = <var>F</var>/<var>m</var></div>
+          <p>For a perfect mirror facing the light. Sunlight delivers about 1,360 W/m² near Earth. 1 <var>g</var> = 9.81 m/s². Real sails reflect around 90% and absorb a little, which also heats them; at 100 GW, absorbing even a millionth of the light deposits 100 kW into a gram of material, so sail materials must be almost perfectly reflective.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="sprint">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The sprint</span><h2>Ten minutes on the beam</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A laser beam from a ground array widening with distance while the sail races away. The beam spot grows until most of the light misses the sail; graphs show the speed rising and levelling off as the beam spreads."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="P2">Laser power <input type="range" id="P2" min="10" max="200" step="1" value="100"><output id="P2o">—</output></label>
+          <label class="scrub" for="D2">Laser array width <input type="range" id="D2" min="100" max="5000" step="50" value="1000"><output id="D2o">—</output></label>
+          <label class="scrub" for="M2">Craft mass <input type="range" id="M2" min="5" max="100" step="1" value="10"><output id="M2o">—</output></label>
+          <button class="btn solo" type="button" id="go2">Launch</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Final speed</b><span id="r2v" class="eg">—</span></div>
+          <div class="ro"><b>90% of final speed after</b><span id="r2t">—</span></div>
+          <div class="ro"><b>By then it is</b><span id="r2x">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The catch is that a laser beam spreads. Even a perfect beam diverges by an angle of about the wavelength divided by the width of the emitter. As the sail races away, the spot of light grows until it is larger than the sail and most of the light misses. The sail can only be pushed while it is close.</p>
+        <p>So the plan uses a phased array of laser emitters spread over about a <strong>kilometre</strong>, firing in step as one huge mirror. With 100 GW pushing a 4-metre sail, the craft would reach about a fifth of the speed of light within <strong>minutes</strong> (published estimates range from a few to about ten), by which time it is millions of kilometres away, several times farther than the Moon, and the beam has spread too wide to help.</p>
+        <p>A wider array keeps the beam tight for longer; a lighter craft accelerates faster. Every gram matters: the probe itself, a “StarChip”, would be a wafer-scale computer with camera, sensors and a laser transmitter, all in about a gram.</p>
+        <div class="task"><b>Try this</b>Launch with the reference design. Then double the array width, or halve the mass, and see which helps more.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>D</var><sub>spot</sub> ≈ 2.44 λ<var>L</var> / <var>D</var><sub>array</sub>,&nbsp; <var>F</var> = (2<var>P</var><sub>hit</sub>/<var>c</var>) (1 − β)/(1 + β),&nbsp; <var>m</var>γ³ d<var>v</var>/d<var>t</var> = <var>F</var></div>
+          <p>Integrated step by step: λ = 1.06 µm, a 4 m sail, and the share of power hitting the sail falling as (<var>D</var><sub>sail</sub>/<var>D</var><sub>spot</sub>)² once the spot outgrows it. The (1 − β)/(1 + β) factor is the relativistic Doppler effect: at high speed, reflected photons are redshifted and deliver less push. Real beams are fuzzier than this sharp cut-off, and atmospheric turbulence must be corrected.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="cruise">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The long cruise</span><h2>Twenty years to another star</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="The journey from the Sun to Alpha Centauri at the chosen speed, compared with the fastest probes we have launched, with the travel time and how long the first pictures would take to come home."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="b3">Cruise speed <input type="range" id="b3" min="1" max="30" step="1" value="20"><output id="b3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Travel time</b><span id="r3t" class="eg">—</span></div>
+          <div class="ro"><b>First pictures home after</b><span id="r3p">—</span></div>
+          <div class="ro"><b>A dust grain hits with the energy of</b><span id="r3d">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Alpha Centauri is 4.37 light-years away. <span class="i">Voyager 1</span>, our fastest probe leaving the solar system, would take about <strong>77,000 years</strong> to cover that. At a fifth of the speed of light a sail would do it in about <strong>22 years</strong>, and a picture of the planet Proxima b (Φ 023) would take another 4.2 years to reach us.</p>
+        <p>The cruise is perilous. At 60,000 km/s, a speck of interstellar dust a hundredth of a millimetre across strikes with the energy of a rifle bullet. The probes would fly edge-on to present the smallest target, and many would be launched, since each costs little once the laser is built.</p>
+        <p>Phoning home is just as hard: a gram-scale probe must aim a laser signal of a watt or so across four light-years at a telescope on Earth. Starshot was announced in 2016 by Yuri Milner and Stephen Hawking as a research programme, and its studies continue; the laser array alone would be among the largest engineering projects ever attempted.</p>
+        <div class="task"><b>Try this</b>Slide from Voyager’s pace to 30% of light speed. When does the trip fit inside a human career?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>t</var> = <var>d</var>/<var>v</var>,&nbsp; τ = <var>t</var>/γ,&nbsp; <var>E</var><sub>impact</sub> = (γ − 1)<var>mc</var>²</div>
+          <p>Distances: Alpha Centauri A and B 4.37 light-years, Proxima 4.24. Voyager 1 travels at about 17 km/s, Parker Solar Probe peaks near 190 km/s close to the Sun. The dust grain is 10 µm across with density 2 g/cm³ (about 10⁻¹² kg); grains that large are rare, but smaller ones still erode the probe. At 0.2<var>c</var> the onboard clock runs only 2% slow, so time dilation barely helps.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Sailing so far</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1610 · 1924</div><h3>The idea</h3><p>Kepler, watching comet tails stream away from the Sun, imagined ships with sails for the heavenly breeze. In the 1920s Friedrich Zander and Konstantin Tsiolkovsky proposed sails pushed by sunlight.</p></div>
+      <div class="g"><div class="where">2010</div><h3>IKAROS</h3><p>The Japanese space agency’s 20-metre sail, thinner than a human hair, was the first spacecraft propelled by sunlight, on its way to Venus.</p></div>
+      <div class="g"><div class="where">2019</div><h3>LightSail 2</h3><p>A crowd-funded CubeSat that raised its own orbit using only sunlight on a 32 m² sail, for over three years.</p></div>
+      <div class="g"><div class="where">2016–</div><h3>Breakthrough Starshot</h3><p>A research programme exploring gram-scale laser-driven probes to Alpha Centauri. Laboratory work on ultrathin, highly reflective sail materials and beam stability continues.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Light pushes as it reflects; a giant laser and a <span class="a">gram-scale sail</span> could reach a fifth of light speed within minutes and another star in about twenty years.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><span class="chip here">034 · Light sails</span><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 034 · Riding the beam · end of the breakthrough technology series · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const C = 2.998e8, G0 = 9.81, AU = 1.496e11, LY = 9.461e15;
+const fmtN = F => F >= 1 ? `${F.toFixed(F < 10 ? 1 : 0)} N` : F >= 1e-3 ? `${(F * 1e3).toFixed(1)} mN` : `${(F * 1e6).toFixed(1)} µN`;
+
+/* ---------- BAY 01: photon pressure ---------- */
+(function () {
+  const cv = $('#c1'), PS = $('#P1'), PO = $('#P1o'), mS = $('#m1'), mO = $('#m1o');
+  const rF = $('#r1f'), rA = $('#r1a'), rC = $('#r1c');
+  const st = { src: 'laser', ph: [], acc: 0, x: 0 };
+  $$('[data-ls]').forEach(b => b.addEventListener('click', () => { st.src = b.dataset.ls; $$('[data-ls]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame(dt) {
+    const sun = st.src === 'sun';
+    const P = sun ? 1361 * 200 : Math.pow(10, 6 + 5 * +PS.value / 1000), m = sun ? 10 : Math.pow(10, -3 + 4 * +mS.value / 1000);
+    PO.value = sun ? 'sunlight' : P >= 1e9 ? `${(P / 1e9).toFixed(P < 1e10 ? 1 : 0)} GW` : `${(P / 1e6).toFixed(0)} MW`;
+    mO.value = sun ? '10 kg' : m < 1 ? `${(m * 1000).toFixed(m < 0.01 ? 1 : 0)} g` : `${m.toFixed(1)} kg`;
+    const F = 2 * P / C, a = F / m;
+    setText(rF, fmtN(F)); setText(rA, a / G0 >= 1 ? `${Math.round(a / G0).toLocaleString('en-US')} g` : `${(a * 1000).toFixed(2)} mm/s²`);
+    setText(rC, sun ? `this 10 kg sailcraft gains about ${Math.round(a * 86400 * 3.6)} km/h per day` : a / G0 > 1000 ? 'far beyond any rocket (a few g)' : a / G0 > 3 ? 'more than a rocket launch' : 'gentler than a rocket');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sx = w * 0.72, rate = sun ? 30 : 30 + 140 * +PS.value / 1000;
+    if (!REDUCE) { st.acc += dt * rate; while (st.acc > 1) { st.acc--; st.ph.push({ x: 0, y: h * 0.2 + Math.random() * h * 0.6, back: false }); } }
+    st.ph.forEach(p => { if (!REDUCE) { p.x += (p.back ? -1 : 1) * dt * w * 0.7; if (!p.back && p.x >= sx) { p.back = true; p.flash = 0.15; } } p.flash = Math.max(0, (p.flash || 0) - dt); });
+    st.ph = st.ph.filter(p => p.x > -10 && st.ph.length < 900);
+    st.ph.forEach(p => { ctx.fillStyle = p.flash > 0 ? '#d2d1d5' : rgba(sun ? '#f3a6d5' : COL.eigen, p.back ? 0.45 : 0.9); ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill(); });
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx, h * 0.15); ctx.quadraticCurveTo(sx + 14, h / 2, sx, h * 0.85); ctx.stroke(); ctx.lineWidth = 1;
+    const al = Math.min(1, Math.log10(1 + a / G0) / 5); ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx + 20, h / 2); ctx.lineTo(sx + 20 + 20 + al * (w - sx - 60), h / 2); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.ice; ctx.fillText('push', sx + 26, h / 2 - 8);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(sun ? 'SUNLIGHT · 1,361 W/m² · 200 m² SAIL' : 'LASER LIGHT · EACH DOT A BUNDLE OF PHOTONS', 14, 18); ctx.fillText('photons arrive → bounce back ←', 14, h - 12);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the laser sprint ---------- */
+(function () {
+  const cv = $('#c2'), PS = $('#P2'), PO = $('#P2o'), DS = $('#D2'), DO = $('#D2o'), MS = $('#M2'), MO = $('#M2o'), goB = $('#go2');
+  const rV = $('#r2v'), rT = $('#r2t'), rX = $('#r2x');
+  const LAM = 1.064e-6, DSAIL = 4;
+  const st = { hist: [], play: 0 };
+  function simulate() {
+    const P = +PS.value * 1e9, Da = +DS.value, m = +MS.value / 10000;
+    let v = 0, x = 1, t = 0; const H = []; let tEnd = 0, xEnd = 0;
+    for (let i = 0; i < 400000; i++) {
+      const b = v / C, g = 1 / Math.sqrt(1 - b * b), spot = 2.44 * LAM * x / Da, f = spot < DSAIL ? 1 : (DSAIL / spot) ** 2;
+      const F = 2 * P * f / C * (1 - b) / (1 + b), a = F / (m * g ** 3), dt = Math.max(0.01, Math.min(2, 0.002 * (v + 1) / (a + 1e-9)));
+      v += a * dt; x += v * dt; t += dt;
+      if (i % 8 === 0) H.push([t, v / C, x, f]);
+      if (f > 0.5) { tEnd = t; xEnd = x; }
+      if (f < 2e-4) break;
+    }
+    const q = H.find(r => r[1] >= 0.9 * v / C) || H[H.length - 1];
+    return { H, beta: v / C, tEnd: q[0], xEnd: q[2] };
+  }
+  let R = simulate();
+  [PS, DS, MS].forEach(s => s.addEventListener('input', () => { R = simulate(); st.play = 1e9; }));
+  goB.addEventListener('click', () => { st.play = 0; });
+  st.play = REDUCE ? 1e9 : 0;
+  function frame(dt) {
+    PO.value = `${PS.value} GW`; DO.value = +DS.value >= 1000 ? `${(+DS.value / 1000).toFixed(1)} km` : `${DS.value} m`; MO.value = `${(+MS.value / 10).toFixed(1)} g`;
+    setText(rV, `${(R.beta * 100).toFixed(1)}% of light speed`);
+    const tFull = Math.min(R.H[R.H.length - 1][0], R.tEnd * 2.5); setText(rT, `${(R.tEnd / 60).toFixed(1)} minutes`);
+    setText(rX, `${(R.xEnd / AU).toFixed(3)} AU (${Math.round(R.xEnd / 3.844e8).toLocaleString('en-US')}× the Moon’s distance)`);
+    if (!REDUCE) st.play += dt * tFull / 8;
+    const tNow = Math.min(st.play, tFull), k = Math.max(0, R.H.findIndex(q => q[0] >= tNow)), cur = R.H[k < 0 ? R.H.length - 1 : k] || R.H[R.H.length - 1];
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // beam picture: log distance
+    const xMax = (R.H.find(q => q[0] >= tFull) || R.H[R.H.length - 1])[2], bh = h * 0.42, gx = 30, gw = w - 60, X = x => gx + Math.log10(Math.max(1e3, x) / 1e3) / Math.log10(xMax / 1e3) * gw;
+    const cy = bh / 2 + 10;
+    ctx.fillStyle = COL.ice; ctx.fillRect(gx - 8, cy - 14, 6, 28); ctx.fillStyle = COL['ink-3']; ctx.fillText('laser array', gx - 8, cy + 28);
+    const sx = X(cur[2]), spotPx = Math.min(bh * 0.45, 4 + (1 - Math.sqrt(cur[3])) * bh * 0.45);
+    ctx.fillStyle = rgba(COL.eigen, 0.25); ctx.beginPath(); ctx.moveTo(gx, cy - 12); ctx.lineTo(sx, cy - spotPx); ctx.lineTo(sx, cy + spotPx); ctx.lineTo(gx, cy + 12); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx, cy - 5); ctx.lineTo(sx, cy + 5); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.ink; ctx.fillText(`${(cur[2] / 1e3).toLocaleString('en-US', { maximumFractionDigits: 0 })} km · ${Math.round(cur[3] * 100)}% of beam hits`, Math.min(sx + 10, w - 220), cy - spotPx - 6 < 16 ? 30 : cy - spotPx - 6);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('DISTANCE · LOG SCALE · BEAM SPOT GROWS WITH DISTANCE', gx, 16);
+    // speed vs time
+    const py = bh + 30, ph = h - py - 30, pw = gw, T1 = tFull, VX = t => gx + Math.min(t, T1) / T1 * pw, VY = b => py + ph - b / Math.max(0.05, R.beta * 1.15) * ph;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, py + 0.5, pw, ph);
+    ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); R.H.forEach(([t, b], i) => { if (t > tNow || t > T1) return; i ? ctx.lineTo(VX(t), VY(b)) : ctx.moveTo(VX(t), VY(b)); }); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SPEED (FRACTION OF c)', gx + 6, py + 14); ctx.textAlign = 'right'; ctx.fillText(`${(R.beta * 100).toFixed(0)}%`, gx - 4, VY(R.beta) + 4); ctx.fillText('0', gx - 4, py + ph); ctx.textAlign = 'left';
+    ctx.textAlign = 'center'; ctx.fillText(`${(T1 / 60).toFixed(0)} min`, gx + pw - 14, py + ph + 14); ctx.fillText('TIME →', gx + pw / 2, py + ph + 14); ctx.textAlign = 'left';
+    ctx.strokeStyle = rgba(COL.ink, 0.3); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(VX(R.tEnd), py); ctx.lineTo(VX(R.tEnd), py + ph); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL['ink-3']; ctx.fillText('90% of final speed', Math.min(VX(R.tEnd) + 4, w - 140), py + ph - 8);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the cruise ---------- */
+(function () {
+  const cv = $('#c3'), bS = $('#b3'), bO = $('#b3o');
+  const rT = $('#r3t'), rP = $('#r3p'), rD = $('#r3d');
+  const D = 4.37, ref = [['Voyager 1', 17e3 / C], ['Parker Solar Probe (peak)', 191e3 / C]];
+  const st = { t: 0 };
+  function frame(dt) {
+    const b = +bS.value / 100, g = 1 / Math.sqrt(1 - b * b), T = D / b; bO.value = `${(b * 100).toFixed(0)}% of c · ${Math.round(b * C / 1000).toLocaleString('en-US')} km/s`;
+    setText(rT, `${T.toFixed(0)} years (${(T / g).toFixed(0)} on board)`); setText(rP, `${(T + 4.24).toFixed(0)} years after launch`);
+    const E = (g - 1) * 1e-12 * C * C; setText(rD, `${Math.round(E).toLocaleString('en-US')} J · ${E > 1200 ? 'a rifle bullet' : E > 300 ? 'a pistol bullet' : E > 60 ? 'a fast baseball' : 'a dropped brick'}`);
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const x0 = 40, x1 = w - 40, cy = h * 0.32;
+    ctx.fillStyle = '#f3a6d5'; ctx.beginPath(); ctx.arc(x0, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL['ink-2']; ctx.fillText('Sun', x0 - 10, cy + 22);
+    ctx.fillStyle = '#f3a6d5'; ctx.beginPath(); ctx.arc(x1, cy, 6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#f3a6d5'; ctx.beginPath(); ctx.arc(x1 - 6, cy + 12, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'right'; ctx.fillText('Alpha Centauri · 4.37 ly', x1 + 10, cy + 30); ctx.textAlign = 'left';
+    ctx.strokeStyle = rgba(COL.violet, 0.4); ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.moveTo(x0, cy); ctx.lineTo(x1, cy); ctx.stroke(); ctx.setLineDash([]);
+    const loop = 6, f = (st.t % loop) / loop, px = x0 + (x1 - x0) * f; ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.moveTo(px + 6, cy); ctx.lineTo(px - 4, cy - 5); ctx.lineTo(px - 4, cy + 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`YEAR ${Math.floor(f * T)} OF ${T.toFixed(0)}`, 14, 18);
+    // travel time bars, log scale
+    const nar = w < 560, by = h * 0.52, rowH = (h - by - 24) / 3, bx = nar ? 110 : 170, bw = w - bx - 90, L = t => Math.log10(t) / 5 * bw;
+    const rows = ref.map(([n, bb]) => [nar ? n.replace(' Solar Probe', '') : n, D / bb]).concat([[nar ? `Sail ${(b * 100).toFixed(0)}% c` : `Light sail at ${(b * 100).toFixed(0)}% c`, T]]);
+    rows.forEach(([n, t], i) => { const y = by + i * rowH; ctx.fillStyle = i === 2 ? COL.eigen : rgba(COL.ice, 0.55); ctx.fillRect(bx, y + 4, Math.max(2, L(t)), rowH - 10); ctx.fillStyle = COL.ink; ctx.textAlign = 'right'; ctx.fillText(n, bx - 8, y + rowH / 2 + 3); ctx.textAlign = 'left'; ctx.fillStyle = COL['ink-2']; ctx.fillText(`${Math.round(t).toLocaleString('en-US')} yr`, bx + L(t) + 6, y + rowH / 2 + 3); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(nar ? 'YEARS TO GET THERE · LOG' : 'YEARS TO ALPHA CENTAURI · LOG SCALE', bx, by - 6);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

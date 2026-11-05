@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Warp Drives</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 004 colour code: pink = the ship and its light, ice = space shrinking, violet = space growing and exotic energy. */
+#vp1{aspect-ratio:16/12}
+#v2{aspect-ratio:4/3}
+#vp3{aspect-ratio:16/13}
+#v2 canvas{touch-action:pan-y;cursor:grab}
+h1 .eig{transform:none;letter-spacing:.04em}
+h1 .streak{display:inline-block;width:.9em;height:.05em;vertical-align:.32em;margin-right:.08em;background:linear-gradient(90deg,transparent,var(--violet) 40%,var(--eigen))}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 004 · Cosmology → Spacetime engineering</div>
+    <a class="navlink" href="003.html">← Φ 003</a>
+    <a class="navlink" href="005.html">Φ 005 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 004 · Big ideas, seen moving</p>
+    <h1><span class="streak" aria-hidden="true"></span><span class="eig">warp</span> drive</h1>
+    <p class="gloss">SPACETIME ENGINEERING · warp — <em>moving a patch of space, instead of moving a ship through space</em></p>
+    <p class="thesis">Nothing can travel through space faster than light. But space itself has no speed limit: the universe is stretching faster than light right now. A warp drive is the idea of riding that loophole. The maths allows it. The price is a kind of energy that may not exist in the amounts needed.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Cosmology → general relativity → exotic matter</dd></div>
+    <div><dt>Models</dt><dd>3 live simulations built on the actual equations</dd></div>
+    <div><dt>Builds on</dt><dd><a href="003.html">Φ 003 · Curved spacetime</a></dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>ship and light</span><span class="key"><i style="background:var(--ice)"></i>space shrinking</span><span class="key"><i style="background:var(--violet)"></i>space growing</span></dd></div>
+  </dl>
+</section>
+
+<!-- BAY 01 -->
+<section class="bay" id="expansion">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The loophole</span><h2>Space can outrun light</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1">
+          <canvas id="c1" aria-label="Galaxies receding from us on a stretching line, with a light pulse travelling toward us from a chosen galaxy, and a chart of its distance over time."></canvas>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="d1">Source distance <input type="range" id="d1" min="2" max="30" step="0.5" value="10"><output id="d1o">10 Gly</output></label>
+          <label class="scrub" for="h1">Light-speed line <input type="range" id="h1" min="8" max="24" step="0.1" value="14.4"><output id="h1o">14.4 Gly</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Presets">
+            <button class="btn" type="button" data-d="10">Inside the line</button>
+            <button class="btn" type="button" data-d="14">Just inside</button>
+            <button class="btn" type="button" data-d="20">Beyond the line</button>
+          </div>
+          <button class="btn solo" type="button" id="fire1">Send light again</button>
+          <button class="btn solo" type="button" id="play1">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Source recedes at</b><span id="r1v">—</span></div>
+          <div class="ro"><b>Light is now</b><span id="r1d" class="eg">—</span></div>
+          <div class="ro"><b>Cosmic time</b><span id="r1t">—</span></div>
+          <div class="ro"><b>Outcome</b><span id="r1o">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The universe is expanding. Every distance between far-apart galaxies grows, and the farther away a galaxy is, the faster its distance from us grows.</p>
+        <p>Go far enough, about 14 billion light-years, and the gap grows faster than light. Past that <strong>light-speed line</strong>, galaxies are receding from us faster than light right now. No law is broken. Nothing is moving <em>through</em> space faster than light. The space in between is getting longer.</p>
+        <p>Watch a pulse of <span class="a">light</span> sent toward us from a distant galaxy. It always moves at light speed through the space around it. But that space is being carried away from us. If it starts beyond the line, the light at first loses ground, like a swimmer in a current that is too fast for them.</p>
+        <p>That is the loophole. Light speed limits motion through space, but nothing limits how fast space itself can stretch or shrink. A warp drive asks: could we make space do that on purpose, in one small bubble?</p>
+        <div class="task"><b>Try this</b>Send light from just inside the line and watch how long it struggles before it gains ground. Then move the source beyond the line. In this universe that light never arrives.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>v</var> = <var>H D</var>,&nbsp; <span class="frac"><span>d<var>D</var><sub>light</sub></span><span>d<var>t</var></span></span> = <var>H D</var><sub>light</sub> − <var>c</var></div>
+          <p>Hubble’s law: recession speed grows in proportion to distance. The light-speed line (the Hubble radius) sits at <var>c</var>/<var>H</var> ≈ 14.4 billion light-years for <var>H</var> ≈ 68 km/s per megaparsec. A light pulse gains ground only where <var>HD</var> &lt; <var>c</var>.</p>
+          <p>This model keeps <var>H</var> constant, a pure exponential expansion, which is roughly where our dark-energy-dominated universe is heading. Then light from beyond <var>c</var>/<var>H</var> never arrives, and the arrival time from inside is <var>t</var> = (<var>c</var>/<var>H</var>) ln[1/(1 − <var>HD</var>₀/<var>c</var>)]. In the real universe the rate has varied over time, so some light emitted from beyond the line does reach us. The true horizon for light sent today is about 16 billion light-years away.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 02 -->
+<section class="bay" id="bubble">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The bubble</span><h2>Shrink space ahead, stretch it behind</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="v2">
+          <div class="fallback" hidden>The 3D model needs WebGL and couldn’t start in this browser.</div>
+          <div class="hint">Height = how fast space is shrinking or stretching<br>Drag to orbit</div>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="v2s">Bubble speed <input type="range" id="v2s" min="0" max="1000" step="1" value="500"><output id="v2o">—</output></label>
+          <label class="scrub" for="s2">Wall sharpness <input type="range" id="s2" min="1" max="8" step="0.1" value="3"><output id="s2o">3.0</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Destinations">
+            <button class="btn" type="button" data-dest="proxima" aria-pressed="true">Proxima Centauri</button>
+            <button class="btn" type="button" data-dest="trappist" aria-pressed="false">TRAPPIST-1</button>
+            <button class="btn" type="button" data-dest="core" aria-pressed="false">Galactic centre</button>
+          </div>
+          <button class="btn solo" type="button" id="play2">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Bubble speed</b><span id="r2v" class="eg">—</span></div>
+          <div class="ro"><b>Trip time</b><span id="r2t">—</span></div>
+          <div class="ro"><b>Crew’s clock</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Crew feels</b><span id="r2f">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1994 the physicist Miguel Alcubierre wrote down a shape of spacetime that does it. Picture a bubble around a ship. Ahead of the bubble, space <span class="i">shrinks</span>. Behind it, space <span class="v">stretches</span>. Inside, space is flat and calm.</p>
+        <p>The bubble slides forward like a wave carrying a surfer. The ship never moves through the space around it, so it never breaks the light-speed limit locally. The space around it does the moving, and that can be as fast as you like.</p>
+        <p>The surface shows the rate at which space is shrinking (<span class="i">ice, the dip ahead</span>) or stretching (<span class="v">violet, the bump behind</span>). It is the famous figure from Alcubierre’s paper, live. The grid lines are fixed marks in space sliding past the ship.</p>
+        <p>Strangest of all is life on board. The crew is in free fall: no acceleration, no crushing g-forces. Their clocks run at exactly the same rate as clocks back home. Unlike the twin paradox of near-light-speed rockets, nobody comes back younger.</p>
+        <div class="task"><b>Try this</b>Raise the speed past light and check the trip time to Proxima Centauri. Then sharpen the wall and watch the shrink and stretch squeeze into a thin shell. Bay 03 shows why thinner walls cost more.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>ds</var>² = −<var>c</var>²<var>dt</var>² + (<var>dx</var> − <var>v</var><sub>s</sub> <var>f</var>(<var>r</var><sub>s</sub>) <var>dt</var>)² + <var>dy</var>² + <var>dz</var>²</div>
+          <p>The Alcubierre metric. <var>v</var><sub>s</sub> is the bubble’s speed and <var>f</var> is a smooth step, 1 inside the bubble and 0 far outside:</p>
+          <div class="eq"><var>f</var>(<var>r</var>) = <span class="frac"><span>tanh(<var>σ</var>(<var>r</var> + <var>R</var>)) − tanh(<var>σ</var>(<var>r</var> − <var>R</var>))</span><span>2 tanh(<var>σR</var>)</span></span></div>
+          <p>The surface plots the expansion of space, <var>θ</var> = <var>v</var><sub>s</sub> (<var>x</var><sub>s</sub>/<var>r</var><sub>s</sub>) d<var>f</var>/d<var>r</var><sub>s</sub>. It is negative ahead of the ship and positive behind. Inside the bubble <var>f</var> = 1, so a ship at rest there follows a geodesic with proper time equal to coordinate time: no time dilation, no felt acceleration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 03 -->
+<section class="bay" id="price">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The price</span><h2>Paid in negative energy</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3">
+          <canvas id="c3" aria-label="Top: a map of the energy the warp bubble requires, negative everywhere, concentrated in a ring around the ship. Bottom: two Casimir plates with only a few allowed waves between them."></canvas>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="v3s">Bubble speed <input type="range" id="v3s" min="0.5" max="10" step="0.1" value="2"><output id="v3o">2.0 c</output></label>
+          <label class="scrub" for="s3">Wall sharpness <input type="range" id="s3" min="1" max="8" step="0.1" value="3"><output id="s3o">3.0</output></label>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="g3">Casimir gap <input type="range" id="g3" min="0" max="1000" step="1" value="333"><output id="g3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Energy required</b><span id="r3s" class="vi">negative everywhere</span></div>
+          <div class="ro"><b>Total, vs start</b><span id="r3e">—</span></div>
+          <div class="ro"><b>Casimir pull</b><span id="r3p">—</span></div>
+          <div class="ro"><b>Casimir energy</b><span id="r3u" class="vi">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Einstein’s equations work both ways. Choose a shape of spacetime and they tell you what matter and energy must be there to make it. For the warp bubble the answer is unsettling: the energy density must be <span class="v">negative</span>, less than empty space. In the map, the brighter the violet, the more negative.</p>
+        <p>The negative energy sits in a doughnut-shaped ring around the ship’s waist. Push the speed up and it grows with the square of the speed. Sharpen the wall and it piles into a thinner, more intense ring.</p>
+        <p>Does negative energy exist? Surprisingly, yes, in tiny amounts. Put two metal plates very close together. Only waves that fit the gap can live between them, so the vacuum inside holds slightly less energy than the vacuum outside, and the plates are pushed together. This is the <strong>Casimir effect</strong>, measured precisely since 1997.</p>
+        <p>The trouble is scale. In 1997 Pfenning and Ford applied quantum rules that limit how negative energy can be concentrated. For a bubble 100 metres across, they found it would need roughly ten billion times the mass-energy of the entire visible universe. Later designs have cut that estimate dramatically, but none has removed the need for exotic energy at faster-than-light speeds.</p>
+        <div class="task"><b>Try this</b>Close the Casimir gap to 10 nanometres and read the pull: about one atmosphere. Then compare it with the map. Even this, the best negative energy we can make, is spread thin over a tiny gap.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>T</var><sup>00</sup> = −<span class="frac"><span><var>c</var>⁴</span><span>8π<var>G</var></span></span> <span class="frac"><span><var>v</var><sub>s</sub>² <var>ρ</var>²</span><span>4 <var>r</var><sub>s</sub>²</span></span> <span style="font-size:.8em">(</span><span class="frac"><span>d<var>f</var></span><span>d<var>r</var><sub>s</sub></span></span><span style="font-size:.8em">)</span>²</div>
+          <p>The energy density seen by observers floating at rest outside the ship, where <var>ρ</var> is the distance from the line of travel. Every factor is squared, so it can never be positive, and it vanishes on the axis and inside the bubble.</p>
+          <div class="eq"><var>u</var> = −<span class="frac"><span>π² <var>ħc</var></span><span>720 <var>a</var>⁴</span></span>,&nbsp; <var>P</var> = −<span class="frac"><span>π² <var>ħc</var></span><span>240 <var>a</var>⁴</span></span></div>
+          <p>The Casimir energy density and pressure between ideal parallel plates a distance <var>a</var> apart. The 1/<var>a</var>⁴ dependence is why it only matters at nanometre gaps.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>The open problems</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Happening now</div><h3>Galaxies beyond the line</h3><p>The most distant galaxies seen by the James Webb Space Telescope are now more than 30 billion light-years away and receding faster than light. We see them by light they sent long ago, when they were much closer.</p></div>
+      <div class="g"><div class="where">Steering</div><h3>Who flies the bubble?</h3><p>In a faster-than-light bubble, the crew cannot send any signal to the front edge of the bubble, because that would mean outrunning light locally. So they could not steer it, start it or stop it from inside. The bubble would have to be set up in advance along the route.</p></div>
+      <div class="g"><div class="where">Arrival</div><h3>A blast at the destination</h3><p>A 2012 study found that a warp bubble would sweep up particles along its path and release them when it stops. The arrival could hit the destination with a burst of high-energy radiation.</p></div>
+      <div class="g"><div class="where">2021–2024</div><h3>Warp fields with normal energy</h3><p>Several recent papers built warp-like solutions that use only ordinary positive energy. They work only below light speed, but they suggest warp geometry is not all fantasy, and they turn it into an engineering question about mass and energy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Light speed limits how fast you move <span class="a">through</span> space. Nothing limits how fast space itself can move.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><span class="chip here" style="border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)">004 · Warp drives</span><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 004 · Spacetime engineering · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: expanding space vs light ---------- */
+(function () {
+  const cv = $('#c1'), dS = $('#d1'), hS = $('#h1'), dO = $('#d1o'), hO = $('#h1o'), playBtn = $('#play1');
+  const rV = $('#r1v'), rD = $('#r1d'), rT = $('#r1t'), rO = $('#r1o');
+  const DMAX = 50, TMAX = 60, G0 = [3, 6, 9, 12, 15, 18, 21, 24, 28, 32, 36, 41, 46];
+  const st = { D0: 10, RH: 14.4, t: 0, D: 10, playing: !REDUCE, arrived: null, hist: [], wait: 0 };
+  function fire() {
+    st.D0 = +dS.value; st.RH = +hS.value; dO.value = `${st.D0} Gly`; hO.value = `${st.RH.toFixed(1)} Gly`;
+    st.t = 0; st.D = st.D0; st.arrived = null; st.hist = [[0, st.D0]]; st.wait = 0;
+    $$('[data-d]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.d === st.D0)));
+  }
+  dS.addEventListener('input', fire); hS.addEventListener('input', fire);
+  $$('[data-d]').forEach(b => b.addEventListener('click', () => { dS.value = b.dataset.d; fire(); }));
+  $('#fire1').addEventListener('click', () => { fire(); if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  fire();
+  function advance(dt) {
+    const H = 1 / st.RH, n = 20, h = dt / n;
+    for (let i = 0; i < n; i++) {
+      if (st.arrived != null) break;
+      st.D += (H * st.D - 1) * h; st.t += h;
+      if (st.D <= 0) { st.D = 0; st.arrived = st.t; }
+    }
+    st.hist.push([st.t, st.D]);
+  }
+  if (REDUCE) { for (let i = 0; i < 80; i++) advance(0.25); }
+
+  function frame(dt) {
+    if (st.playing) {
+      if (st.arrived == null && st.t < TMAX && st.D < 80) advance(dt * 4);
+      else { st.wait += dt; if (st.wait > 2.2) fire(); }
+    }
+    const H = 1 / st.RH;
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `10.5px ${MONO}`;
+    const pl = 46, pr = 18, top = 30, lineY = h * 0.25;
+    const X = D => pl + D / DMAX * (w - pl - pr);
+    // the line of space
+    ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pl, lineY); ctx.lineTo(w - pr, lineY); ctx.stroke();
+    const gs = Math.exp(H * st.t);
+    for (let k = 1; k * 5 <= DMAX; k++) { ctx.fillStyle = COL['ink-3']; ctx.fillRect(X(k * 5), lineY - 3, 1, 6); }
+    // light-speed line
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = COL.eigen; ctx.globalAlpha = 0.7;
+    ctx.beginPath(); ctx.moveTo(X(st.RH), top - 8); ctx.lineTo(X(st.RH), lineY + 54); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.fillStyle = COL.eigen; ctx.textAlign = 'center'; ctx.fillText('recedes at light speed', X(st.RH), top - 12 + 4);
+    ctx.textAlign = 'left';
+    // galaxies
+    G0.forEach(g => {
+      const D = g * gs; if (D > DMAX) return;
+      const v = H * D, x = X(D), fast = v > 1;
+      ctx.fillStyle = fast ? COL.violet : COL.ice;
+      ctx.beginPath(); ctx.arc(x, lineY, 3.5, 0, Math.PI * 2); ctx.fill();
+      const L = Math.min(60, v * 22);
+      ctx.strokeStyle = fast ? COL.violet : COL.ice; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(x, lineY - 12); ctx.lineTo(x + L, lineY - 12); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + L, lineY - 12); ctx.lineTo(x + L - 4, lineY - 15); ctx.lineTo(x + L - 4, lineY - 9); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText(`${v.toFixed(1)}c`, x, lineY + 18); ctx.textAlign = 'left';
+    });
+    // source galaxy and light
+    const Ds = st.D0 * gs;
+    if (Ds <= DMAX) { ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(X(Ds), lineY, 8, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = COL.eigen; ctx.textAlign = 'center'; ctx.fillText('source', X(Ds), lineY + 34); ctx.textAlign = 'left'; }
+    if (st.D <= DMAX) {
+      ctx.fillStyle = COL.eigen; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(X(st.D), lineY, 5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(X(st.D) - 4, lineY + 9); ctx.lineTo(X(st.D) - 16, lineY + 9); ctx.stroke();
+    }
+    // us
+    ctx.fillStyle = COL.ink; ctx.beginPath(); ctx.arc(pl, lineY, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('US', 12, lineY + 4);
+
+    // chart: distance of the light pulse over time
+    const cT = h * 0.5, cB = h - 26;
+    const TX = t => pl + t / TMAX * (w - pl - pr), DY = D => cB - clamp(D, 0, 40) / 40 * (cB - cT);
+    ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(0, cT - 22); ctx.lineTo(w, cT - 22); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('LIGHT’S DISTANCE FROM US · BILLION LIGHT-YEARS', 14, cT - 8);
+    ctx.textAlign = 'right';
+    for (let D = 0; D <= 40; D += 10) { const y = DY(D); ctx.strokeStyle = rgba(COL['rule-hi'], 0.6); ctx.beginPath(); ctx.moveTo(pl, y); ctx.lineTo(w - pr, y); ctx.stroke(); ctx.fillStyle = COL['ink-3']; ctx.fillText(String(D), pl - 6, y + 4); }
+    ctx.textAlign = 'center';
+    for (let t = 0; t <= TMAX; t += 10) ctx.fillText(t ? `${t}` : '0', TX(t), h - 8);
+    ctx.textAlign = 'right'; ctx.fillText('billion years', w - pr, h - 8 - 12); ctx.textAlign = 'left';
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = rgba(COL.eigen, 0.6);
+    ctx.beginPath(); ctx.moveTo(pl, DY(st.RH)); ctx.lineTo(w - pr, DY(st.RH)); ctx.stroke(); ctx.setLineDash([]);
+    // source curve
+    ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.lineWidth = 1.2; ctx.beginPath();
+    for (let j = 0; j <= 200; j++) { const t = TMAX * j / 200, D = st.D0 * Math.exp(H * t); if (D > 40) { ctx.lineTo(TX(st.RH * Math.log(40 / st.D0)), DY(40)); break; } j ? ctx.lineTo(TX(t), DY(D)) : ctx.moveTo(TX(t), DY(D)); }
+    ctx.stroke();
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.2; ctx.beginPath();
+    st.hist.forEach(([t, D], j) => { if (t > TMAX) return; j ? ctx.lineTo(TX(t), DY(D)) : ctx.moveTo(TX(t), DY(D)); });
+    ctx.stroke();
+    // readouts
+    setText(rV, `${(st.D0 / st.RH).toFixed(2)} × light speed`);
+    rV.className = st.D0 > st.RH ? 'vi' : '';
+    setText(rD, st.arrived != null ? 'here' : `${st.D.toFixed(1)} Gly away`);
+    setText(rT, `${st.t.toFixed(1)} billion years`);
+    let out;
+    if (st.arrived != null) out = `arrived after ${st.arrived.toFixed(1)} Gyr`;
+    else if (st.D0 >= st.RH) out = 'never arrives';
+    else out = `arrives after ${(st.RH * Math.log(st.RH / (st.RH - st.D0))).toFixed(1)} Gyr`;
+    setText(rO, out); rO.className = st.D0 >= st.RH ? 'vi' : 'eg';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared Alcubierre maths ---------- */
+const BR = 1.5;                                        // bubble radius
+function dfdr(r, sg) {
+  const a = Math.cosh(sg * (r + BR)), b = Math.cosh(sg * (r - BR));
+  return sg * (1 / (a * a) - 1 / (b * b)) / (2 * Math.tanh(sg * BR));
+}
+const speedOf = t => Math.pow(10, -1 + 3 * t / 1000);  // slider 0..1000 → 0.1c .. 100c
+
+/* ---------- BAY 02: the warp bubble ---------- */
+(function () {
+  const host = $('#v2'), vS = $('#v2s'), sS = $('#s2'), vO = $('#v2o'), sO = $('#s2o'), playBtn = $('#play2');
+  const rV = $('#r2v'), rT = $('#r2t'), rC = $('#r2c'), rF = $('#r2f');
+  const DEST = { proxima: { name: 'Proxima Centauri', ly: 4.24 }, trappist: { name: 'TRAPPIST-1', ly: 40.7 }, core: { name: 'the galactic centre', ly: 26000 } };
+  const st = { v: speedOf(500), sg: 3, dest: 'proxima', playing: !REDUCE, off: 0, az: -0.9, el: 0.62, drag: null };
+  function fmtTime(y) {
+    if (y < 1 / 365.25) return `${(y * 8766).toFixed(1)} hours`;
+    if (y < 1) return `${(y * 365.25).toFixed(0)} days`;
+    if (y < 100) return `${y.toFixed(1)} years`;
+    return `${Math.round(y).toLocaleString('en-US')} years`;
+  }
+  function readouts() {
+    const v = st.v, d = DEST[st.dest];
+    vO.value = v < 1 ? `${v.toFixed(2)} c` : v < 10 ? `${v.toFixed(1)} c` : `${Math.round(v)} c`;
+    sO.value = st.sg.toFixed(1);
+    setText(rV, v < 1 ? `${(v * 100).toFixed(0)}% of light` : `${vO.value} · faster than light`);
+    setText(rT, `${fmtTime(d.ly / v)} to ${d.name}`);
+    setText(rC, 'same rate as Earth');
+    setText(rF, 'nothing · free fall');
+  }
+  vS.addEventListener('input', () => { st.v = speedOf(+vS.value); readouts(); });
+  $$('[data-dest]').forEach(b => b.addEventListener('click', () => { st.dest = b.dataset.dest; $$('[data-dest]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); readouts(); }));
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  readouts();
+  const renderer = makeRenderer(host);
+  if (!renderer) { sS.addEventListener('input', () => { st.sg = +sS.value; readouts(); }); return; }
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(new THREE.Color(COL.bay), 8, 15);
+  const cam = new THREE.PerspectiveCamera(36, 4 / 3, 0.05, 80);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.75); dl.position.set(-3, 6, 4); scene.add(dl);
+  const cI = new THREE.Color(COL.ice), cV = new THREE.Color(COL.violet), cE = new THREE.Color(COL.eigen), cB = new THREE.Color(COL['bay-2']);
+  const XL = 6, YL = 4, NX = 160, NY = 110, AMP = 1.15;
+  const pos = new Float32Array((NX + 1) * (NY + 1) * 3), col = new Float32Array((NX + 1) * (NY + 1) * 3), idx = [];
+  for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const a = j * (NX + 1) + i, b = a + 1, c = a + NX + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setIndex(idx);
+  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.7, metalness: 0.05 })));
+  let tmax = 1;
+  const theta = (x, y) => { const r = Math.hypot(x, y); return r < 1e-6 ? 0 : (x / r) * dfdr(r, st.sg); };   // per unit speed
+  const tmp = new THREE.Color();
+  function build() {
+    tmax = 1e-9;
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) { const x = -XL + 2 * XL * i / NX, y = -YL + 2 * YL * j / NY; tmax = Math.max(tmax, Math.abs(theta(x, y))); }
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) {
+      const k = j * (NX + 1) + i, x = -XL + 2 * XL * i / NX, y = -YL + 2 * YL * j / NY, t = theta(x, y) / tmax;
+      pos[3 * k] = x; pos[3 * k + 1] = AMP * t; pos[3 * k + 2] = y;
+      tmp.copy(cB).lerp(t < 0 ? cI : cV, Math.min(1, 0.12 + 0.95 * Math.abs(t)));
+      col[3 * k] = tmp.r; col[3 * k + 1] = tmp.g; col[3 * k + 2] = tmp.b;
+    }
+    geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true; geo.computeVertexNormals();
+  }
+  // grid: lines along the direction of travel (fixed) and across it (sliding past)
+  const NA = 13, NC = 25, CS = 2 * XL / NC;
+  const along = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: cI, transparent: true, opacity: 0.25 }));
+  const across = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: new THREE.Color(COL.ink), transparent: true, opacity: 0.32 }));
+  const aPos = new Float32Array(NA * NX * 6), cPos = new Float32Array(NC * NY * 6);
+  along.geometry.setAttribute('position', new THREE.BufferAttribute(aPos, 3)); across.geometry.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+  along.frustumCulled = false; across.frustumCulled = false;
+  scene.add(along); scene.add(across);
+  const hAt = (x, y) => AMP * theta(x, y) / tmax + 0.008;
+  function buildAlong() {
+    let o = 0;
+    for (let l = 0; l < NA; l++) { const y = -YL + 2 * YL * l / (NA - 1); for (let i = 0; i < NX; i++) { const x1 = -XL + 2 * XL * i / NX, x2 = -XL + 2 * XL * (i + 1) / NX; aPos.set([x1, hAt(x1, y), y, x2, hAt(x2, y), y], o); o += 6; } }
+    along.geometry.attributes.position.needsUpdate = true;
+  }
+  function buildAcross() {
+    let o = 0;
+    for (let l = 0; l < NC; l++) {
+      let x = ((l * CS - st.off) % (2 * XL) + 2 * XL) % (2 * XL) - XL;
+      for (let j = 0; j < NY; j++) { const y1 = -YL + 2 * YL * j / NY, y2 = -YL + 2 * YL * (j + 1) / NY; cPos.set([x, hAt(x, y1), y1, x, hAt(x, y2), y2], o); o += 6; }
+    }
+    across.geometry.attributes.position.needsUpdate = true;
+  }
+  // ship
+  const ship = new THREE.Group();
+  const hull = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.62, 24), new THREE.MeshStandardMaterial({ color: cE, emissive: cE, emissiveIntensity: 0.35, roughness: 0.4 }));
+  hull.rotation.z = -Math.PI / 2; ship.add(hull);
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 16), new THREE.MeshBasicMaterial({ color: cE, transparent: true, opacity: 0.08, depthWrite: false }));
+  ship.add(halo); ship.position.y = 0.22; scene.add(ship);
+  // stars
+  const sp = []; for (let i = 0; i < 260; i++) { const a = Math.random() * Math.PI * 2, b = Math.random() * 0.9 + 0.1, R = 18 + Math.random() * 10; sp.push(R * Math.cos(a) * Math.cos(b), R * Math.sin(b), R * Math.sin(a) * Math.cos(b)); }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+  scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: new THREE.Color(COL['ink-2']), size: 0.06, fog: false })));
+
+  sS.addEventListener('input', () => { st.sg = +sS.value; build(); buildAlong(); readouts(); });
+  orbitCam(renderer.domElement, st);
+  sizer(host, renderer, cam);
+  build(); buildAlong(); buildAcross();
+
+  function frame(dt) {
+    if (st.playing) {
+      st.off += dt * clamp(0.35 + 0.55 * Math.log10(1 + st.v * 3), 0.2, 2.2);
+      if (!st.drag) st.az += dt * 0.04;
+      hull.position.y = Math.sin(performance.now() / 700) * 0.02;
+    }
+    buildAcross();
+    const R = 9;
+    cam.position.set(R * Math.cos(st.el) * Math.sin(st.az), R * Math.sin(st.el), R * Math.cos(st.el) * Math.cos(st.az));
+    cam.lookAt(0, 0, 0);
+    renderer.render(scene, cam);
+  }
+  const S = { frame }; watch(host, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: negative energy and the Casimir effect ---------- */
+(function () {
+  const cv = $('#c3'), vS = $('#v3s'), sS = $('#s3'), gS = $('#g3'), vO = $('#v3o'), sO = $('#s3o'), gO = $('#g3o');
+  const rE = $('#r3e'), rP = $('#r3p'), rU = $('#r3u');
+  const HBARC = 1.054571817e-34 * 2.99792458e8;
+  const st = { v: 2, sg: 3, gap: 0, tau: 0 };
+  const V0 = 2, SG0 = 3;
+  const gapOf = t => Math.pow(10, -8.3 + 3 * t / 1000);   // 5 nm .. 5 µm
+  const NXg = 220, NYg = 110, img = new Float32Array(NXg * NYg);
+  let peak = 1, buf = null;
+  function fmtLen(m) { return m < 1e-6 ? `${(m * 1e9).toFixed(m < 1e-8 ? 1 : 0)} nm` : `${(m * 1e6).toFixed(2)} µm`; }
+  function fmtP(p) {
+    const a = Math.abs(p);
+    if (a >= 1e4) return `${(a / 101325).toFixed(a >= 101325 * 10 ? 0 : 2)} atm`;
+    if (a >= 1) return `${a.toFixed(a >= 100 ? 0 : 1)} Pa`;
+    if (a >= 1e-3) return `${(a * 1e3).toFixed(1)} mPa`;
+    return `${(a * 1e6).toFixed(1)} µPa`;
+  }
+  function compute() {
+    st.v = +vS.value; st.sg = +sS.value; st.gap = gapOf(+gS.value);
+    vO.value = `${st.v.toFixed(1)} c`; sO.value = st.sg.toFixed(1); gO.value = fmtLen(st.gap);
+    peak = 1e-12;
+    for (let j = 0; j < NYg; j++) for (let i = 0; i < NXg; i++) {
+      const x = -6 + 12 * (i + 0.5) / NXg, y = -3 + 6 * (j + 0.5) / NYg, r = Math.hypot(x, y);
+      const d = dfdr(r, st.sg), e = r < 1e-6 ? 0 : st.v * st.v * (y * y) / (4 * r * r) * d * d;
+      img[j * NXg + i] = e; peak = Math.max(peak, e);
+    }
+    buf = null;
+    const rel = Math.pow(st.v / V0, 2) * (st.sg / SG0);
+    setText(rE, rel >= 0.995 && rel <= 1.005 ? '×1 (start)' : `×${rel < 10 ? rel.toFixed(2) : Math.round(rel)}`);
+    const P = Math.PI * Math.PI * HBARC / (240 * Math.pow(st.gap, 4)), u = Math.PI * Math.PI * HBARC / (720 * Math.pow(st.gap, 4));
+    setText(rP, `${fmtP(P)} inward`);
+    const e = Math.floor(Math.log10(u)), m = u / Math.pow(10, e);
+    setText(rU, `−${m.toFixed(1)}×10${sup(e)} J/m³`);
+  }
+  [vS, sS, gS].forEach(el => el.addEventListener('input', compute));
+  compute();
+  const cIce = rgb(COL.ice), cVi = rgb(COL.violet), cBay = rgb(COL.bay);
+  const peakRef = (() => { let p = 0; for (let j = 0; j < NYg; j++) for (let i = 0; i < NXg; i++) { const x = -6 + 12 * (i + 0.5) / NXg, y = -3 + 6 * (j + 0.5) / NYg, r = Math.hypot(x, y), d = dfdr(r, 8); p = Math.max(p, r < 1e-6 ? 0 : 100 * y * y / (4 * r * r) * d * d); } return p; })();
+
+  function frame(dt) {
+    if (!REDUCE) st.tau += dt;
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `10.5px ${MONO}`;
+    const mT = 30, mB = h * 0.58, mL = 14, mR = 14;
+    // energy map: brightness on a log scale against the most extreme setting, so the controls change it visibly
+    if (!buf) {
+      buf = ctx.createImageData(NXg, NYg);
+      const lo = Math.log10(peakRef) - 6;
+      for (let k = 0; k < NXg * NYg; k++) {
+        const e = img[k], s = e <= 0 ? 0 : clamp((Math.log10(e) - lo) / 6, 0, 1), s2 = s * s;
+        buf.data[4 * k] = cBay[0] + (cVi[0] - cBay[0]) * s2 + (255 - cVi[0]) * Math.max(0, s - 0.85) * 2;
+        buf.data[4 * k + 1] = cBay[1] + (cVi[1] - cBay[1]) * s2 + (255 - cVi[1]) * Math.max(0, s - 0.85) * 2;
+        buf.data[4 * k + 2] = cBay[2] + (cVi[2] - cBay[2]) * s2 + (255 - cVi[2]) * Math.max(0, s - 0.85) * 2;
+        buf.data[4 * k + 3] = 255;
+      }
+    }
+    const off = document.createElement('canvas'); off.width = NXg; off.height = NYg; off.getContext('2d').putImageData(buf, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, mL, mT, w - mL - mR, mB - mT);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(mL + 0.5, mT + 0.5, w - mL - mR - 1, mB - mT - 1);
+    const MX = x => mL + (x + 6) / 12 * (w - mL - mR), MY = y => mT + (y + 3) / 6 * (mB - mT);
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.eigen, 0.5);
+    ctx.beginPath(); ctx.ellipse(MX(0), MY(0), (MX(BR) - MX(0)), (MY(BR) - MY(0)), 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.moveTo(MX(0.35), MY(0)); ctx.lineTo(MX(-0.25), MY(-0.13)); ctx.lineTo(MX(-0.25), MY(0.13)); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('NEGATIVE ENERGY NEEDED · SLICE THROUGH THE BUBBLE · DIRECTION OF TRAVEL →', mL, mT - 10);
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('ship', MX(0) - 12, MY(0) + 24);
+
+    // Casimir plates
+    const cT = mB + 34, cB = h - 18, cx = w / 2;
+    ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(0, mB + 14); ctx.lineTo(w, mB + 14); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`CASIMIR PLATES · GAP ${fmtLen(st.gap)}`, mL, mB + 28);
+    const gpx = 30 + 140 * (Math.log10(st.gap) + 8.3) / 3, pw = 10;
+    const xL = cx - gpx / 2 - pw, xR = cx + gpx / 2;
+    // waves outside: many, dense, random
+    ctx.lineWidth = 1;
+    for (let k = 0; k < 9; k++) {
+      ctx.strokeStyle = rgba(COL.ice, 0.22); ctx.beginPath();
+      const y0 = cT + 8 + (cB - cT - 16) * k / 8, lam = 6 + (k * 7) % 17, ph = st.tau * (2 + k % 3);
+      for (const [a, b] of [[mL, xL - 4], [xR + pw + 4, w - mR]]) {
+        for (let x = a; x <= b; x += 2) { const y = y0 + 4 * Math.sin(x / lam * Math.PI + ph); x === a ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      }
+      ctx.stroke();
+    }
+    // waves inside: only whole half-wavelengths fit
+    const modes = Math.max(1, Math.min(6, Math.round(gpx / 40)));
+    for (let n = 1; n <= modes; n++) {
+      ctx.strokeStyle = rgba(COL.eigen, 0.75 - n * 0.08); ctx.beginPath();
+      const y0 = cT + (cB - cT) * n / (modes + 1), amp = Math.min(8, (cB - cT) / (modes + 1) / 2.4) * Math.cos(st.tau * 3 * n);
+      for (let x = xL + pw; x <= xR; x += 1) { const y = y0 + amp * Math.sin(n * Math.PI * (x - xL - pw) / gpx); x === xL + pw ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    ctx.fillStyle = COL['ink-2']; ctx.fillRect(xL, cT, pw, cB - cT); ctx.fillRect(xR, cT, pw, cB - cT);
+    ctx.fillStyle = COL.violet; ctx.textAlign = 'center';
+    ctx.fillText('→', xL - 14, (cT + cB) / 2 + 4); ctx.fillText('←', xR + pw + 14, (cT + cB) / 2 + 4);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('every wave outside', mL, cB + 0);
+    ctx.textAlign = 'right'; ctx.fillStyle = COL.eigen; ctx.fillText('only waves that fit, inside', w - mR, cB + 0); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

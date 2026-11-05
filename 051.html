@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Telepathy</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 051 colour code: pink = hits and the claimed effect, ice = chance, violet = ordinary explanations. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 051 · Fringe science · 11 of 20</div>
+    <a class="navlink" href="050.html">← Φ 050</a>
+    <a class="navlink" href="052.html">Φ 052 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 051 · Fringe science · 11 of 20</p>
+    <h1><span class="eig">telepathy</span></h1>
+    <p class="gloss">FRINGE SCIENCE · mind-to-mind communication — <em>the claim that thoughts, images or feelings can pass between people without any known sense</em></p>
+    <p class="thesis">The word was coined in 1882 by Frederic Myers of the Society for Psychical Research, and in the 1930s J. B. Rhine brought telepathy into the laboratory at Duke University. Ninety years on, it is one of the most tested claims in psychology, and its supporters point to a stubborn pattern: scores above chance with the sender in another building, results that don’t fade with distance, and pooled evidence that keeps adding up. Here you can rerun the classic distance test, separate sender and receiver, and see how a small effect hides inside many “failed” studies.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Parapsychology, experimental psychology, statistics</dd></div>
+    <div><dt>Models</dt><dd>The Pearce–Pratt distance series, separation and distance, pooling small studies</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 11 of 20: the first of ten on mind and consciousness. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 049 (fair comparisons).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>hits, claimed effect</span><span class="key"><i style="background:var(--ice)"></i>chance</span><span class="key"><i style="background:var(--violet)"></i>ordinary explanation</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="zener">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Pearce–Pratt, 1933–34</span><h2>Hits across a campus</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A sender in one university building turns Zener cards while a receiver in another building, about a hundred metres away, writes guesses. A chart tracks the running total of hits against the band that pure chance would allow."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="p1">Receiver’s hit rate <input type="range" id="p1" min="20" max="36" step="1" value="30"><output id="p1o">—</output></label>
+          <button class="btn solo" type="button" id="go1">Run 1,850 guesses</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Hits so far</b><span id="r1h" class="eg">—</span></div>
+          <div class="ro"><b>Expected by chance</b><span id="r1e">—</span></div>
+          <div class="ro"><b>Odds of this by luck</b><span id="r1p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Rhine’s team used <span class="i">Zener cards</span>: five symbols, five of each in a pack, so blind guessing scores one hit in five. In 1933–34 his assistant J. Gaither Pratt sat in the Social Science Building at Duke and turned the cards one by one at agreed times, while the divinity student Hubert Pearce sat in the library about a hundred metres away and wrote down his guesses.</p>
+        <p>Both records were sealed and handed to Rhine separately before anyone compared them. Over 1,850 guesses Pearce scored 558 hits where luck predicts 370: about 30% instead of 20%.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>With sender and receiver in different buildings, ordinary sensory cues were ruled out, and the records were sealed before checking. Odds against chance were reported at around 10<sup>22</sup> to one. Rhine and Pratt published a full review in 1954, and Pearce’s scores fell only when he was distracted or unwell, a decline that proponents see as the signature of a human ability rather than a trick.</div>
+          <div class="con"><b>The case against</b>C. E. M. Hansel argued in 1961 that Pearce was not supervised during the sessions and could, in principle, have seen the cards. No evidence that he did so was ever found.</div>
+        </div>
+        <div class="task"><b>Try this</b>Leave the hit rate at Pearce’s 30% and run the series; watch the line leave the chance band within a few hundred guesses. Then lower it to 22% and see how much longer a modest talent takes to show.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>z</var> = (<var>hits</var> − <var>Np</var>) / √(<var>Np</var>(1 − <var>p</var>)),&nbsp; <var>p</var> = 1/5</div>
+          <p>For Pearce, <var>z</var> = (558 − 370) / √(1,850 × 0.2 × 0.8) ≈ 10.9. The odds are a one-sided probability from the normal approximation to the binomial distribution. Each run here draws guesses at the hit rate you set.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="leak">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Separation</span><h2>Does the effect survive the wall?</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A sender and receiver shown at a table, behind a screen, in separate rooms and in separate cities. A stacked bar shows the hit rate made of chance, ordinary cues and the claimed telepathic effect. Cues vanish as the two are separated; the claimed effect does not."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="k2">Claimed effect <input type="range" id="k2" min="0" max="20" step="1" value="8"><output id="k2o">—</output></label>
+          <div class="seg" role="group" aria-label="Separation">
+            <button class="btn" type="button" data-sp="tab" aria-pressed="true">Same table</button>
+            <button class="btn" type="button" data-sp="scr">Screen between</button>
+            <button class="btn" type="button" data-sp="room">Separate buildings</button>
+            <button class="btn" type="button" data-sp="far">Different cities</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Hit rate over 500 trials</b><span id="r2h" class="eg">—</span></div>
+          <div class="ro"><b>Chance</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Hits owed to ordinary cues</b><span id="r2t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The first objection to any telepathy result is leakage: a glance, a reflection, a pause, the sound of a pencil. The psychologist Oskar Pfungst showed in 1907 that the horse Clever Hans “counted” by reading his questioner’s posture, so the answer is to separate the people completely.</p>
+        <p>Parapsychologists did exactly that, moving receivers to other rooms, other buildings and eventually other cities. What proponents find telling is what happened next: in the best-known series the hits did not drop to chance, and they did not weaken with distance either, which is not how any ordinary signal behaves.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Rhine’s distance series, the Pearce–Pratt tests and later long-distance studies all report above-chance scoring with every sensory route closed. In 2003 Rupert Sheldrake reported that people guessed which of four familiar callers was phoning about 45% of the time against 25% expected, including in sessions filmed from start to finish. Proponents argue that if cues were the explanation, scores should collapse once cues are impossible; in these studies they did not.</div>
+          <div class="con"><b>The case against</b>Sceptics reply that across the whole literature the largest effects came from the loosest early studies, and that many tightly controlled replications scored close to chance.</div>
+        </div>
+        <div class="task"><b>Try this</b>Start at the same table and move the receiver further and further away. Watch the violet cue share disappear while the pink claimed effect stays the same. Then set the claimed effect to zero to see what sceptics expect instead.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">hit rate = ⅕ + ⅘ × (share of trials with a usable cue) + claimed effect</div>
+          <p>The cue share falls from 12% of trials at a table to 4% behind a screen and zero once the pair are in separate buildings. The claimed effect is set as extra hits per 100 trials beyond chance and, as proponents report, does not depend on distance. Each setting runs 500 simulated trials.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="stop">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Pooling the evidence</span><h2>A small effect hides in small studies</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Two hundred simulated studies, each testing a receiver with a small real effect over a fixed number of trials. Most individual studies fail to reach significance, but the combined result climbs far beyond chance."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e3">Real effect <input type="range" id="e3" min="0" max="6" step="0.5" value="2.5"><output id="e3o">—</output></label>
+          <label class="scrub" for="n3">Trials per study <input type="range" id="n3" min="50" max="1000" step="50" value="200"><output id="n3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Run 200 new studies</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Studies reaching “significant”</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>All 200 combined</b><span id="r3e">—</span></div>
+          <div class="ro"><b>Odds of the combined result by luck</b><span id="r3r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A result is usually called significant if luck alone would produce it less than 5% of the time. If an effect is real but small, a single study of a few hundred trials will often miss it, so a literature full of “failed replications” is exactly what a small, genuine effect predicts.</p>
+        <p>The way to see such an effect is to fix the method in advance and pool many studies. That is what modern parapsychology does: experiments are pre-registered, their size and analysis set before any data come in, so nobody can stop while ahead.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Since 2012 the Koestler Parapsychology Unit at Edinburgh has run a public registry for parapsychology studies, and pre-registered experiments continue to report small positive effects. In 2018 the psychologist Etzel Cardeña reviewed the field in <i>American Psychologist</i>, the flagship journal of the American Psychological Association, and concluded that the cumulative evidence for psi is comparable to that for many accepted findings in psychology.</div>
+          <div class="con"><b>The case against</b>Critics say a field can pool its way to significance through small biases in many studies, and that the largest pre-registered replications in psychology have often found results consistent with chance.</div>
+        </div>
+        <div class="task"><b>Try this</b>Keep a small effect of 2.5 extra hits per 100 and count how many single studies “fail”. Then look at the combined result. Raise the trials per study and watch individual studies start to succeed.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">combined <var>z</var> = Σ<var>z<sub>i</sub></var> / √<var>k</var>,&nbsp; single study significant if <var>z<sub>i</sub></var> &gt; 1.645</div>
+          <p>Each simulated study tests one receiver over a fixed number of trials with chance at one in five plus the effect you set. Studies are combined with Stouffer’s method; the bars show each study’s <var>z</var>-score.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1882</div><h3>A new word</h3><p>Frederic Myers coined “telepathy” as the Society for Psychical Research was founded in London to investigate such claims scientifically.</p></div>
+      <div class="g"><div class="where">1934</div><h3>Rhine’s ESP</h3><p>J. B. Rhine published <i>Extra-Sensory Perception</i>, describing card tests at Duke University and popularising the term ESP.</p></div>
+      <div class="g"><div class="where">2003</div><h3>Who’s calling?</h3><p>Rupert Sheldrake reported that people guessed which of four callers was phoning about 45% of the time, against 25% expected, including in filmed sessions.</p></div>
+      <div class="g"><div class="where">2018</div><h3>A mainstream review</h3><p>Etzel Cardeña’s review of psi research in <i>American Psychologist</i> argued that the evidence deserves serious attention from mainstream science.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Telepathy has scored <span class="a">beyond chance with every sense blocked</span> for ninety years; its supporters say the question is no longer whether there is an effect, but what it is.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><span class="chip here">051 · Telepathy</span><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 051 · Telepathy · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+const SYM = ['○', '+', '≈', '□', '☆'];
+/* ---------- BAY 01: Pearce–Pratt ---------- */
+(function () {
+  const cv = $('#c1'), PS = $('#p1'), PO = $('#p1o'), GB = $('#go1'), rH = $('#r1h'), rE = $('#r1e'), rP = $('#r1p');
+  const N = 1850, st = { seed: 11, seq: [], k: 0 };
+  function gen() { const r = mk(st.seed + +PS.value * 97), p = +PS.value / 100; st.seq = []; for (let i = 0; i < N; i++) { const c = Math.floor(r() * 5), hit = r() < p; st.seq.push({ c, g: hit ? c : (c + 1 + Math.floor(r() * 4)) % 5, hit }); } st.k = 0; }
+  PS.addEventListener('input', gen); GB.addEventListener('click', () => { st.seed += 13; gen(); }); gen();
+  function frame(dt) {
+    st.k = REDUCE ? N : Math.min(N, st.k + dt * 520);
+    const k = Math.floor(st.k); PO.value = `${PS.value}%`;
+    let H = 0; const pts = []; for (let i = 0; i < k; i++) { if (st.seq[i].hit) H++; if (i % 10 === 9 || i === k - 1) pts.push([i + 1, H - (i + 1) / 5]); }
+    const mu = k / 5, sd = Math.sqrt(k * 0.16), z = k ? (H - mu - 0.5) / sd : 0;
+    setText(rH, k ? `${H} of ${k} (${Math.round(H / k * 100)}%)` : '—'); setText(rE, k ? `${Math.round(mu)} (20%)` : '20%'); setText(rP, k > 30 ? odds(z) : '—');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // campus strip
+    const sy = 30, sh = Math.min(92, h * 0.24), bw = Math.min(150, w * 0.3);
+    const bld = (x, nm, sym, c) => { ctx.fillStyle = rgba(COL.ink, 0.06); ctx.fillRect(x, sy, bw, sh); frame0(ctx, x, sy, bw, sh); tag(ctx, nm, x + 8, sy + 14); const cw = Math.min(34, sh * 0.42); ctx.fillStyle = rgba(c, 0.15); ctx.fillRect(x + bw - cw - 12, sy + sh - cw * 1.4 - 8, cw, cw * 1.4); ctx.strokeStyle = c; ctx.strokeRect(x + bw - cw - 12 + 0.5, sy + sh - cw * 1.4 - 8 + 0.5, cw, cw * 1.4); ctx.font = `${Math.round(cw * 0.6)}px ${MONO}`; tag(ctx, sym, x + bw - cw / 2 - 12, sy + sh - cw * 0.5 - 8, c, 'center'); ctx.font = `10.5px ${MONO}`; };
+    const cur = k ? st.seq[k - 1] : null;
+    bld(14, 'SENDER · SCIENCE BLDG', cur ? SYM[cur.c] : '?', COL.ice);
+    bld(w - bw - 14, 'RECEIVER · LIBRARY', cur ? SYM[cur.g] : '?', cur && cur.hit ? COL.eigen : COL['ink-3']);
+    dash(ctx, 14 + bw + 8, sy + sh / 2, w - bw - 22, sy + sh / 2, rgba(COL.ink, 0.3)); tag(ctx, w < 560 ? '≈ 100 m' : '≈ 100 m · no line of sight', w / 2, w < 560 ? sy + sh + 14 : sy + sh / 2 - 8, COL['ink-3'], 'center');
+    if (cur && cur.hit && !REDUCE) { ctx.fillStyle = COL.eigen; tag(ctx, 'HIT', w - bw / 2 - 14, sy + sh + 14, COL.eigen, 'center'); }
+    // running excess
+    const gx = 44, gy = sy + sh + 28, gw = w - gx - 16, gh = h - gy - 26, top = Math.max(60, N * 0.12), X = n => gx + n / N * gw, Y = d => gy + gh * 0.72 - d / top * gh * 0.7;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.ice, 0.16); ctx.beginPath(); for (let i = 0; i <= 60; i++) { const n = i / 60 * N; ctx.lineTo(X(n), Y(1.96 * Math.sqrt(n * 0.16))); } for (let i = 60; i >= 0; i--) { const n = i / 60 * N; ctx.lineTo(X(n), Y(-1.96 * Math.sqrt(n * 0.16))); } ctx.fill();
+    dash(ctx, gx, Y(0), gx + gw, Y(0), COL.ice); tag(ctx, 'chance', gx + gw - 6, Y(0) + 13, COL.ice, 'right');
+    dash(ctx, X(0), Y(0), X(N), Y(188), rgba(COL.violet, 0.8)); tag(ctx, 'Pearce: +188', X(N) - 4, Y(188) - 6, COL.violet, 'right');
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); pts.forEach(([n, d], i) => i ? ctx.lineTo(X(n), Y(d)) : ctx.moveTo(X(n), Y(d))); ctx.stroke(); ctx.lineWidth = 1;
+    tag(ctx, '0', gx, gy + gh + 14); tag(ctx, '1,850 guesses', gx + gw, gy + gh + 14, COL['ink-3'], 'right');
+    tag(ctx, 'HITS ABOVE CHANCE SO FAR · BAND: 95% OF PURE-LUCK RUNS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: separation ---------- */
+(function () {
+  const cv = $('#c2'), KS = $('#k2'), KO = $('#k2o'), rH = $('#r2h'), rC = $('#r2c'), rT = $('#r2t');
+  const MODES = [['tab', 'same table', 0.12], ['scr', 'screen', 0.04], ['room', 'other building', 0], ['far', 'other city', 0]];
+  const st = { sp: 'tab', t: 0 };
+  segs('[data-sp]', b => st.sp = b.dataset.sp);
+  const sim = (cue, e, m) => { const r = mk(31 + m * 7 + Math.round(e * 1000)); let hits = 0, cueH = 0; for (let i = 0; i < 500; i++) { if (r() < cue) { hits++; cueH++; } else if (r() < 0.2 + e / (1 - cue)) hits++; } return { hits, cueH }; };
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const e = +KS.value / 100; KO.value = `+${KS.value} per 100`;
+    const mi = MODES.findIndex(m => m[0] === st.sp), [, , cue] = MODES[mi], R = sim(cue, e, mi);
+    setText(rH, `${(R.hits / 5).toFixed(1)}%`); setText(rC, '20%'); setText(rT, cue ? `${R.cueH} of 500` : 'none: no route for cues');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // scene
+    const sh = h * 0.42, gap = [0.14, 0.2, 0.3, 0.4][mi], sx = w * (0.5 - gap), rx = w * (0.5 + gap), py = 34 + sh * 0.62;
+    const person = (x, nm) => { ctx.fillStyle = rgba(COL.ink, 0.55); ctx.beginPath(); ctx.arc(x, py - 34, 13, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(x - 15, py - 18, 30, 38); tag(ctx, nm, x, py + 34, COL['ink-2'], 'center'); };
+    if (mi === 0) { ctx.fillStyle = rgba(COL.ink, 0.2); ctx.fillRect(sx - 30, py + 18, rx - sx + 60, 6); }
+    if (mi === 1) { ctx.fillStyle = rgba(COL.ink, 0.35); ctx.fillRect(w / 2 - 3, py - 60, 6, 84); tag(ctx, 'screen', w / 2 + 8, py - 50); }
+    if (mi >= 2) { [sx, rx].forEach(x => { ctx.strokeStyle = rgba(COL.ink, 0.35); ctx.strokeRect(x - 40.5, py - 62.5, 80, 104); }); tag(ctx, mi === 2 ? '≈ 100 m' : '≈ 300 km', w / 2, py - 14, COL['ink-3'], 'center'); dash(ctx, sx + 46, py - 6, rx - 46, py - 6, rgba(COL.ink, 0.25)); }
+    person(sx, 'sender'); person(rx, 'receiver');
+    ctx.fillStyle = COL.eigen; ctx.fillRect(sx + 18, py - 8, 16, 22);
+    if (cue > 0) { const n = Math.round(cue * 120); for (let i = 0; i < n; i++) { const f = (st.t * 0.5 + i / n) % 1, x = sx + 30 + f * (rx - sx - 60), y = py - 26 - Math.sin(f * Math.PI) * 18 + (i % 4) * 3; ctx.fillStyle = rgba(COL.violet, 0.8); ctx.fillRect(x, y, 3, 3); } }
+    if (e > 0) { const n = 7; for (let i = 0; i < n; i++) { const f = (st.t * 0.35 + i / n) % 1; ctx.strokeStyle = rgba(COL.eigen, 0.6 * (1 - f)); ctx.beginPath(); ctx.arc(sx, py - 34, 14 + f * (rx - sx), -0.25, 0.25); ctx.stroke(); } }
+    // bars for all four separations
+    const by = 34 + sh + 26, bh = h - by - 34, bw = (w - 60) / 4, Yb = v => by + bh - v / 0.5 * bh;
+    dash(ctx, 30, Yb(0.2), w - 20, Yb(0.2), COL.ice); tag(ctx, 'chance 20%', w - 22, Yb(0.2) - 5, COL.ice, 'right');
+    MODES.forEach(([id, nm, c], i) => { const x = 36 + i * bw + bw * 0.2, ww = bw * 0.6, on = i === mi; ctx.globalAlpha = on ? 1 : 0.45;
+      const parts = [[0.2, rgba(COL.ice, 0.55)], [c * 0.8, COL.violet], [e, COL.eigen]]; let base = 0; parts.forEach(([v, col]) => { if (v <= 0) return; ctx.fillStyle = col; ctx.fillRect(x, Yb(base + v), ww, Yb(base) - Yb(base + v)); base += v; });
+      tag(ctx, w < 560 ? ['table', 'screen', 'bldg', 'city'][i] : nm, x + ww / 2, by + bh + 14, on ? COL.ink : COL['ink-3'], 'center'); tag(ctx, `${Math.round(base * 100)}%`, x + ww / 2, Yb(base) - 5, on ? COL.ink : COL['ink-3'], 'center'); ctx.globalAlpha = 1; });
+    tag(ctx, 'HIT RATE · BLUE: CHANCE · VIOLET: CUES · PINK: CLAIMED EFFECT', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: pooling ---------- */
+(function () {
+  const cv = $('#c3'), ES = $('#e3'), EO = $('#e3o'), NS = $('#n3'), NO = $('#n3o'), GB = $('#go3'), rS = $('#r3s'), rE = $('#r3e'), rR = $('#r3r');
+  const st = { seed: 77, zs: [], grow: 0 };
+  function gen() { const r = mk(st.seed), e = +ES.value / 100, n = +NS.value, mu = e * Math.sqrt(n) / 0.4; st.zs = []; for (let i = 0; i < 200; i++) st.zs.push(mu + gs(r)); st.grow = 0; }
+  [ES, NS].forEach(s => s.addEventListener('input', gen)); GB.addEventListener('click', () => { st.seed += 17; gen(); }); gen();
+  function frame(dt) {
+    st.grow = REDUCE ? 1 : Math.min(1, st.grow + dt * 0.8);
+    EO.value = `+${ES.value} per 100`; NO.value = NS.value;
+    const k = Math.max(1, Math.round(200 * st.grow)), Z = st.zs.slice(0, k), sig = Z.filter(z => z > 1.645).length, comb = Z.reduce((a, z) => a + z, 0) / Math.sqrt(k);
+    setText(rS, `${sig} of ${k} (${Math.round(sig / k * 100)}%)`); setText(rE, `z = ${comb.toFixed(1)}`); setText(rR, odds(comb));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 40, gy = 70, gw = w - gx - 16, gh = h - gy - 34, X = z => gx + (z + 4) / 10 * gw, bins = 40, bwid = 10 / bins, cnt = Array(bins).fill(0);
+    Z.forEach(z => { const b = Math.floor((clamp(z, -3.99, 5.99) + 4) / bwid); cnt[b]++; });
+    const peak = Math.max(...cnt, k * bwid * 0.4) * 1.12, Yc = c => gy + gh - c / peak * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.eigen, 0.07); ctx.fillRect(X(1.645), gy, gx + gw - X(1.645), gh); dash(ctx, X(1.645), gy, X(1.645), gy + gh, COL.eigen); tag(ctx, '“significant”', X(1.645) + 5, gy + 14, COL.eigen);
+    cnt.forEach((c, i) => { const z0 = -4 + i * bwid; ctx.fillStyle = z0 >= 1.645 - 1e-9 ? COL.eigen : rgba(COL.ice, 0.6); ctx.fillRect(X(z0) + 1, Yc(c), gw / bins - 2, gy + gh - Yc(c)); });
+    ctx.strokeStyle = COL.ice; ctx.setLineDash([3, 3]); ctx.beginPath(); for (let i = 0; i <= 100; i++) { const z = -4 + i / 10; const d = k * bwid * Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI); i ? ctx.lineTo(X(z), Yc(d)) : ctx.moveTo(X(z), Yc(d)); } ctx.stroke(); ctx.setLineDash([]);
+    tag(ctx, 'no effect', X(-1.6), Yc(k * bwid * 0.32), COL.ice, 'right');
+    [-2, 0, 2, 4].forEach(z => tag(ctx, `z ${z}`, X(z), gy + gh + 14, COL['ink-3'], 'center'));
+    // combined meter
+    const my = 44, mx = gx, mw = gw, M = v => mx + clamp(v, 0, 30) / 30 * mw;
+    ctx.fillStyle = rgba(COL.ice, 0.18); ctx.fillRect(mx, my - 6, M(1.645) - mx, 12);
+    ctx.fillStyle = COL.violet; ctx.fillRect(mx, my - 3, M(comb) - mx, 6); ctx.beginPath(); ctx.arc(M(comb), my, 6, 0, Math.PI * 2); ctx.fill();
+    tag(ctx, `combined z = ${comb.toFixed(1)}${comb > 30 ? ' →' : ''}`, clamp(M(comb) + 10, mx, mx + mw - 120), my - 10, COL.violet);
+    tag(ctx, 'EACH BAR: STUDIES WITH THAT RESULT · TOP: ALL STUDIES POOLED', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

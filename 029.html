@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Next-Gen Solar</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 029 colour code: pink = electricity you can use, violet = energy lost as heat, grey = light that passes straight through, ice = the material's band gap. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/9.5}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1{aspect-ratio:4/4.8}#vp2{aspect-ratio:4/3.6}#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 029 · Breakthrough technology · 3 of 8</div>
+    <a class="navlink" href="028.html">← Φ 028</a>
+    <a class="navlink" href="030.html">Φ 030 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 029 · Breakthrough technology · 3 of 8</p>
+    <h1>next-gen <span class="eig">solar</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · energy — <em>why a solar cell can never catch all the sunlight, and how stacking two materials breaks the ceiling</em></p>
+    <p class="thesis">Solar panels have become the cheapest electricity ever generated, yet a typical one turns only about a fifth of the sunlight hitting it into power. Some of that loss is unavoidable physics: a single material can never pass about one third. A new crystal, the perovskite, layered on top of silicon is now beating that ceiling in the lab.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Semiconductor physics, photovoltaics</dd></div>
+    <div><dt>Models</dt><dd>Where sunlight goes, the Shockley–Queisser limit, two-layer tandem cells</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 3 of 8. Uses photons and energy levels from the quantum series.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>electricity</span><span class="key"><i style="background:var(--violet)"></i>heat</span><span class="key"><i style="background:#c9c6d6"></i>passes through</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="gap">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The band gap</span><h2>Where the sunlight goes</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The spectrum of sunlight split three ways by a material's band gap: low-energy light that passes straight through, the part turned into electricity, and the excess energy of high-energy photons lost as heat. Beside it, an energy diagram shows photons lifting electrons across the gap."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="g1">Band gap <input type="range" id="g1" min="50" max="300" step="1" value="112"><output id="g1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Passes straight through</b><span id="r1t">—</span></div>
+          <div class="ro"><b>Lost as heat</b><span id="r1h">—</span></div>
+          <div class="ro"><b>Left for electricity (at most)</b><span id="r1u" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In a semiconductor, electrons can only absorb light that gives them enough energy to jump a <span class="i">band gap</span>, from being stuck to an atom to moving freely. Each photon lifts at most one electron.</p>
+        <p>That creates two unavoidable losses. Photons with less energy than the gap pass <strong>straight through</strong>, wasted. Photons with more energy do lift an electron, but the excess is shaken off as <strong>heat</strong> within a trillionth of a second, and the electron is left at the bottom of the band. A blue photon carries nearly twice the energy of a red one, but it makes the same one electron.</p>
+        <p>A small gap catches most photons but keeps little from each; a large gap keeps more from each but misses many. Silicon’s 1.12 eV gap sits near the sweet spot.</p>
+        <div class="task"><b>Try this</b>Slide the band gap from infrared to blue. Find where the pink share is largest.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">useful ≤ <var>E</var><sub>g</sub> · ∫<sub><var>E</var><sub>g</sub></sub><sup>∞</sup> Φ(<var>E</var>) d<var>E</var> / ∫<sub>0</sub><sup>∞</sup> <var>E</var> Φ(<var>E</var>) d<var>E</var></div>
+          <p>Φ(<var>E</var>) is the number of photons arriving per unit energy, here from the Sun treated as a 5,778 K blackbody. This “ultimate efficiency” peaks at about 44% near 1.1 eV. It ignores the further losses in Bay 02. Photon energy 1.24 eV ↔ 1,000 nm wavelength.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="sq">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The ceiling</span><h2>The Shockley–Queisser limit</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="The maximum possible efficiency of a single-material solar cell against its band gap, peaking near 31 percent, with real materials marked along the curve."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="g2">Band gap <input type="range" id="g2" min="60" max="250" step="1" value="112"><output id="g2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Theoretical limit</b><span id="r2l" class="eg">—</span></div>
+          <div class="ro"><b>Nearest real material</b><span id="r2m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1961 William Shockley and Hans Queisser added one more unavoidable loss. A solar cell is warm, and anything that can absorb light can also emit it. Some freed electrons fall back and give their energy away as light before they reach the wires. Balancing light in against light out sets a hard ceiling.</p>
+        <p>For a single material under ordinary sunlight, the best possible efficiency is about <strong>one third</strong>, for a band gap near 1.3 eV. Silicon cells in the lab now reach about 27.8%, very close to their practical limit, after 70 years of refinement.</p>
+        <p><span class="i">Perovskites</span> are a family of crystals, often lead-halide salts, that can be printed from solution at low temperature. In 15 years their efficiency rose from 3.8% to about 27%, a pace silicon took decades to match. Their band gap can be tuned by swapping atoms. Their weakness is durability: moisture, heat and light can break them down.</p>
+        <div class="task"><b>Try this</b>Find the peak of the curve, then compare silicon, gallium arsenide and perovskite.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>J</var>(<var>V</var>) = <var>J</var><sub>sc</sub> − <var>J</var><sub>0</sub>(<var>e</var><sup><var>qV</var>/<var>kT</var></sup> − 1),&nbsp; η = max<sub><var>V</var></sub> <var>JV</var> / <var>P</var><sub>sun</sub></div>
+          <p>Detailed balance with the cell at 300 K and the Sun as a 5,778 K blackbody: the limit here peaks near 31%; with the real spectrum filtered through the atmosphere (AM1.5) it is 33.7% at 1.34 eV. Records are approximate, as of 2025: silicon about 27.8%, gallium arsenide 29.1%, single-junction perovskite about 27%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="tandem">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Breaking the ceiling</span><h2>Stack two materials</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A map of the maximum efficiency of a two-layer solar cell for every combination of top and bottom band gaps, with a marker for your choice, and the sunlight spectrum split between the two layers."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="t3">Top layer gap <input type="range" id="t3" min="110" max="250" step="1" value="168"><output id="t3o">—</output></label>
+          <label class="scrub" for="b3">Bottom layer gap <input type="range" id="b3" min="60" max="180" step="1" value="112"><output id="b3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Tandem limit</b><span id="r3l" class="eg">—</span></div>
+          <div class="ro"><b>vs best single layer</b><span id="r3g">—</span></div>
+          <div class="ro"><b>Currents matched?</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The way around the ceiling is to give each colour its own material. A <strong>tandem</strong> cell puts a wide-gap layer on top to catch the high-energy blue and green light efficiently. It is transparent to red and infrared, which pass through to a narrow-gap layer below.</p>
+        <p>The two layers are wired in series, so the same current must flow through both. The gaps must be chosen so each layer makes about the same number of electrons, or the weaker one holds back the other.</p>
+        <p>Silicon makes a near-ideal bottom layer, and a perovskite tuned to about 1.7 eV makes a near-ideal top. Perovskite-on-silicon cells passed silicon’s practical limit in 2020 and reached about <span class="a">34.9%</span> in 2025. The first commercial modules are now shipping, but they must prove they can last 25 years on a roof.</p>
+        <div class="task"><b>Try this</b>Keep silicon at the bottom and tune the top layer for the best match. Then free both and find the overall peak on the map.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>J</var><sub>top</sub> = <var>J</var><sub>bottom</sub> = <var>J</var>,&nbsp; <var>V</var> = <var>V</var><sub>top</sub>(<var>J</var>) + <var>V</var><sub>bottom</sub>(<var>J</var>)</div>
+          <p>Each layer obeys the detailed-balance equation from Bay 02, absorbing only the photons in its own energy range; the map is computed live for every pair of gaps. In this model the best top layer for silicon is about 1.77 eV (about 1.73 eV under real sunlight), and the efficiency falls quickly if the currents are not matched. With the blackbody Sun used here the two-layer limit is about 42% (about 45% under real sunlight). Infinitely many layers under concentrated sunlight could, in principle, reach 86%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Solar milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1954</div><h3>The first silicon cell</h3><p>Bell Labs demonstrated a 6% efficient silicon solar cell. Four years later, Vanguard 1 became the first solar-powered satellite.</p></div>
+      <div class="g"><div class="where">2009</div><h3>The first perovskite cell</h3><p>Tsutomu Miyasaka’s group in Japan reported a 3.8% perovskite cell. Interest exploded after 2012, when solid-state versions passed 10%.</p></div>
+      <div class="g"><div class="where">Space</div><h3>Multi-junction cells</h3><p>Satellites and Mars rovers use stacks of three or more III–V semiconductor layers, passing 30% in space. Under concentrated light, six-junction cells have exceeded 47%.</p></div>
+      <div class="g"><div class="where">Price</div><h3>The learning curve</h3><p>Solar module prices have fallen by more than 99% since 1976, roughly 20% for every doubling of production. In much of the world it is now the cheapest new electricity.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">One material can turn at most about <span class="a">a third of sunlight</span> into electricity; stacking a perovskite on silicon splits the light by colour and breaks that ceiling.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><span class="chip here">029 · Next-gen solar</span><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 029 · Catching the Sun · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---- detailed-balance solar model: Sun as a 5,778 K blackbody, cell at 300 K ---- */
+const PV = (() => {
+  const kT = 0.025852, kTs = 5778 * 8.617e-5, N = 1600, E0 = 0.2, E1 = 4.6, dE = (E1 - E0) / N, FS = 2.16e-5;
+  const Es = new Float64Array(N), Phi = new Float64Array(N);
+  for (let i = 0; i < N; i++) { const E = E0 + (i + 0.5) * dE; Es[i] = E; Phi[i] = E * E / (Math.exp(E / kTs) - 1); }
+  let Ptot = 0; for (let i = 0; i < N; i++) Ptot += Es[i] * Phi[i] * dE;
+  const cum = new Float64Array(N + 1), cumP = new Float64Array(N + 1);
+  for (let i = N - 1; i >= 0; i--) { cum[i] = cum[i + 1] + Phi[i] * dE; cumP[i] = cumP[i + 1] + Es[i] * Phi[i] * dE; }
+  const idx = E => Math.max(0, Math.min(N, Math.round((E - E0) / dE)));
+  const Jsc = E => cum[idx(E)] * FS, J0 = E => kT * Math.exp(-E / kT) * (E * E + 2 * E * kT + 2 * kT * kT);
+  const P = Ptot * FS;
+  function single(Eg) { const js = Jsc(Eg), j0 = J0(Eg); let best = 0; for (let k = 1; k < 300; k++) { const V = Eg * k / 300, J = js - j0 * (Math.exp(V / kT) - 1); if (J <= 0) break; best = Math.max(best, J * V); } return best / P; }
+  function tandem(e1, e2) { if (e2 >= e1 - 0.02) return { eff: 0 }; const a = Jsc(e1), b = Jsc(e2) - Jsc(e1), j1 = J0(e1), j2 = J0(e2), jm = Math.min(a, b); let best = 0; for (let k = 1; k < 160; k++) { const J = jm * k / 160, V = kT * Math.log((a - J) / j1 + 1) + kT * Math.log((b - J) / j2 + 1); best = Math.max(best, J * V); } return { eff: best / P, a, b }; }
+  // where the sunlight goes for a single gap
+  function split(Eg) { const i = idx(Eg); const below = (Ptot - cumP[i]) / Ptot, useful = Eg * cum[i] / Ptot; return { below, useful, heat: 1 - below - useful }; }
+  return { Es, Phi, dE, single, tandem, split };
+})();
+const SQ = []; for (let g = 0.5; g <= 2.6; g += 0.01) SQ.push([g, PV.single(g)]);
+const pct = v => `${(v * 100).toFixed(1)}%`;
+const nmOf = E => Math.round(1239.84 / E);
+function specColor(E) { const nm = 1239.84 / E; if (nm > 750) return 'rgba(140,40,40,0.9)'; if (nm < 380) return 'rgba(110,60,170,0.9)'; return `hsl(${Math.round((750 - nm) / 370 * 270)},85%,55%)`; }
+
+/* ---------- BAY 01: where the sunlight goes ---------- */
+(function () {
+  const cv = $('#c1'), gS = $('#g1'), gO = $('#g1o');
+  const rT = $('#r1t'), rH = $('#r1h'), rU = $('#r1u');
+  const st = { t: 0 };
+  function frame(dt) {
+    const Eg = +gS.value / 100; gO.value = `${Eg.toFixed(2)} eV · ${nmOf(Eg)} nm`;
+    const s = PV.split(Eg); setText(rT, pct(s.below)); setText(rH, pct(s.heat)); setText(rU, pct(s.useful));
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, gx = 40, gy = 26, gw = (narrow ? w : w * 0.66) - gx - 12, gh = (narrow ? h * 0.58 : h) - gy - 40;
+    const EM = 4, X = E => gx + E / EM * gw;
+    let pm = 0; for (let i = 0; i < PV.Es.length; i++) pm = Math.max(pm, PV.Es[i] * PV.Phi[i]);
+    const Y = v => gy + gh - v / pm * (gh - 6);
+    for (let i = 0; i < PV.Es.length; i += 2) { const E = PV.Es[i]; if (E > EM) break; const x = X(E), wdt = Math.max(1, X(E + PV.dE * 2) - x), p = E * PV.Phi[i];
+      if (E < Eg) { ctx.fillStyle = 'rgba(58,66,88,0.9)'; ctx.fillRect(x, Y(p), wdt, gy + gh - Y(p)); }
+      else { const u = Eg * PV.Phi[i]; ctx.fillStyle = rgba(COL.eigen, 0.85); ctx.fillRect(x, Y(u), wdt, gy + gh - Y(u)); ctx.fillStyle = rgba(COL.violet, 0.55); ctx.fillRect(x, Y(p), wdt, Y(u) - Y(p)); } }
+    for (let i = 0; i < gw; i++) { const E = i / gw * EM; ctx.fillStyle = specColor(Math.max(0.05, E)); ctx.fillRect(gx + i, gy + gh + 2, 1, 5); }
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(Eg), gy); ctx.lineTo(X(Eg), gy + gh); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.ice; ctx.fillText('band gap', X(Eg) + 5, gy + 12);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0, 1, 2, 3, 4].forEach(E => ctx.fillText(`${E} eV`, X(E) + (E === 0 ? 12 : 0), gy + gh + 20)); ctx.fillText('PHOTON ENERGY →', gx + gw / 2, gy + gh + 34); ctx.textAlign = 'left';
+    ctx.fillText('SUNLIGHT POWER BY PHOTON ENERGY', gx, gy - 10);
+    // band diagram with three example photons
+    const bx = narrow ? 30 : w * 0.66 + 30, bw = narrow ? w - 60 : w * 0.34 - 50, by = narrow ? h * 0.58 + 30 : 60, bh = narrow ? h * 0.42 - 50 : h - 140;
+    const gapPx = Math.min(bh * 0.7, Eg / 3 * bh), cbY = by + (bh - gapPx) / 2, vbY = cbY + gapPx;
+    ctx.fillStyle = rgba(COL.ice, 0.2); ctx.fillRect(bx, by, bw, cbY - by); ctx.fillStyle = rgba(COL['ink-3'], 0.35); ctx.fillRect(bx, vbY, bw, by + bh - vbY);
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('free (conduction band)', bx + 4, by + 12); ctx.fillText('bound (valence band)', bx + 4, by + bh - 6);
+    ctx.fillStyle = COL.ice; ctx.fillText(`gap ${Eg.toFixed(2)} eV`, bx + bw - 86, (cbY + vbY) / 2 + 4);
+    [[0.9, 0.18], [Eg + 0.05, 0.5], [3.0, 0.82]].forEach(([E, fx], k) => {
+      const ph = ((st.t * 0.5 + k / 3) % 1), x = bx + fx * bw, len = E / 3 * bh;
+      ctx.strokeStyle = specColor(E); ctx.lineWidth = 2; ctx.beginPath();
+      if (E < Eg) { ctx.setLineDash([3, 3]); ctx.moveTo(x, vbY); ctx.lineTo(x, vbY - Math.min(len, gapPx * 0.9)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL['ink-3']; ctx.fillText('too weak', x - 22, vbY + 14); }
+      else { const top = vbY - Math.min(len, vbY - by - 6); ctx.moveTo(x, vbY); ctx.lineTo(x, top); ctx.stroke(); const ey = ph < 0.5 ? top : top + (cbY - top) * Math.min(1, (ph - 0.5) * 3); ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(x, ey, 4, 0, Math.PI * 2); ctx.fill(); if (top < cbY - 4) { ctx.fillStyle = COL.violet; ctx.fillText('heat', x + 7, (top + cbY) / 2); } }
+      ctx.lineWidth = 1;
+    });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY LEVELS', bx, by - 10);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the Shockley–Queisser curve ---------- */
+(function () {
+  const cv = $('#c2'), gS = $('#g2'), gO = $('#g2o');
+  const rL = $('#r2l'), rM = $('#r2m');
+  const MATS = [['Germanium', 0.67, '', 14], ['Silicon', 1.12, '27.8% record', 16], ['GaAs', 1.42, '29.1% record', 16], ['CdTe', 1.45, '23% record', 30], ['Perovskite', 1.55, '≈27% record', 44], ['GaInP', 1.85, 'top cell in space', 16]];
+  const best = SQ.reduce((a, b) => b[1] > a[1] ? b : a);
+  function frame() {
+    const Eg = +gS.value / 100, eff = PV.single(Eg); gO.value = `${Eg.toFixed(2)} eV`;
+    setText(rL, pct(eff) + (Math.abs(Eg - best[0]) < 0.04 ? ' · the peak' : ''));
+    const near = MATS.reduce((a, b) => Math.abs(b[1] - Eg) < Math.abs(a[1] - Eg) ? b : a);
+    setText(rM, `${near[0]} (${near[1]} eV)${near[2] ? ' · ' + near[2] : ''}`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 46, gy = 22, gw = w - gx - 16, gh = h - gy - 40, G0 = 0.5, G1 = 2.6, Y1 = 0.36;
+    const X = g => gx + (g - G0) / (G1 - G0) * gw, Y = v => gy + gh - v / Y1 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [0, 0.1, 0.2, 0.3].forEach(v => ctx.fillText(`${v * 100}%`, gx - 6, Y(v) + 4)); ctx.textAlign = 'center';
+    [0.5, 1, 1.5, 2, 2.5].forEach(g => ctx.fillText(`${g}`, X(g), gy + gh + 14)); ctx.fillText('BAND GAP (eV)', gx + gw / 2, gy + gh + 30); ctx.textAlign = 'left';
+    ctx.fillText('MAXIMUM EFFICIENCY, ONE MATERIAL', gx + 6, gy + 14);
+    ctx.beginPath(); SQ.forEach(([g, v], i) => i ? ctx.lineTo(X(g), Y(v)) : ctx.moveTo(X(g), Y(v))); ctx.lineTo(X(SQ[SQ.length - 1][0]), Y(0)); ctx.lineTo(X(SQ[0][0]), Y(0)); ctx.closePath(); ctx.fillStyle = rgba(COL.eigen, 0.12); ctx.fill();
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.2; ctx.beginPath(); SQ.forEach(([g, v], i) => i ? ctx.lineTo(X(g), Y(v)) : ctx.moveTo(X(g), Y(v))); ctx.stroke(); ctx.lineWidth = 1;
+    MATS.forEach(([n, g, , off]) => { const v = PV.single(g); ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(g), Y(v), 3, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = rgba(COL.ice, 0.3); ctx.beginPath(); ctx.moveTo(X(g), Y(v) + 4); ctx.lineTo(X(g), Y(v) + off - 9); ctx.stroke(); ctx.save(); ctx.translate(X(g), Y(v) + off); ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(n, 0, 0); ctx.restore(); });
+    ctx.strokeStyle = rgba(COL.ink, 0.4); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(Eg), gy); ctx.lineTo(X(Eg), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(Eg), Y(eff), 5, 0, Math.PI * 2); ctx.fill();
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: tandem cells ---------- */
+(function () {
+  const cv = $('#c3'), tS = $('#t3'), tO = $('#t3o'), bS = $('#b3'), bO = $('#b3o');
+  const rL = $('#r3l'), rG = $('#r3g'), rC = $('#r3c');
+  const T0 = 1.1, T1 = 2.5, B0 = 0.6, B1 = 1.8, NT = 70, NB = 60;
+  const grid = new Float32Array(NT * NB); let gmax = 0, gbest = [0, 0];
+  for (let i = 0; i < NT; i++) for (let j = 0; j < NB; j++) { const t = T0 + (T1 - T0) * (i + 0.5) / NT, b = B0 + (B1 - B0) * (j + 0.5) / NB, e = PV.tandem(t, b).eff; grid[j * NT + i] = e; if (e > gmax) { gmax = e; gbest = [t, b]; } }
+  const img = document.createElement('canvas'); img.width = NT; img.height = NB; { const c = img.getContext('2d'), d = c.createImageData(NT, NB); for (let j = 0; j < NB; j++) for (let i = 0; i < NT; i++) { const v = grid[j * NT + i] / gmax, o = ((NB - 1 - j) * NT + i) * 4; if (v <= 0) { d.data[o] = 12; d.data[o + 1] = 16; d.data[o + 2] = 28; } else { const q = Math.pow(v, 3); d.data[o] = 20 + 235 * q; d.data[o + 1] = 25 + 154 * q; d.data[o + 2] = 60 + 32 * q * (1 - q) * 4; } d.data[o + 3] = 255; } c.putImageData(d, 0, 0); }
+  const bestSingle = SQ.reduce((a, b) => b[1] > a[1] ? b : a)[1];
+  function frame() {
+    const et = +tS.value / 100, eb = +bS.value / 100; tO.value = `${et.toFixed(2)} eV`; bO.value = `${eb.toFixed(2)} eV${Math.abs(eb - 1.12) < 0.015 ? ' · silicon' : ''}`;
+    const r = PV.tandem(et, eb);
+    setText(rL, r.eff > 0 ? pct(r.eff) : 'top gap must be larger');
+    setText(rG, r.eff > 0 ? `${r.eff > bestSingle ? '+' : ''}${((r.eff - bestSingle) * 100).toFixed(1)} points` : '—');
+    setText(rC, r.eff > 0 ? (Math.abs(r.a - r.b) / Math.max(r.a, r.b) < 0.08 ? 'yes, well matched' : r.a < r.b ? 'no: the top layer limits the current' : 'no: the bottom layer limits the current') : '—');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, mx = 50, my = 24, mw = (narrow ? w : w * 0.6) - mx - 12, mh = (narrow ? h * 0.6 : h) - my - 40;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(img, mx, my, mw, mh);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(mx + 0.5, my + 0.5, mw, mh);
+    const X = t => mx + (t - T0) / (T1 - T0) * mw, Y = b => my + mh - (b - B0) / (B1 - B0) * mh;
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [1.2, 1.6, 2.0, 2.4].forEach(t => ctx.fillText(t.toFixed(1), X(t), my + mh + 14)); ctx.fillText('TOP LAYER GAP (eV)', mx + mw / 2, my + mh + 30);
+    ctx.textAlign = 'right'; [0.8, 1.2, 1.6].forEach(b => ctx.fillText(b.toFixed(1), mx - 6, Y(b) + 4)); ctx.textAlign = 'left';
+    ctx.save(); ctx.translate(12, my + mh / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('BOTTOM GAP', 0, 0); ctx.restore();
+    ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(mx, Y(1.12)); ctx.lineTo(mx + mw, Y(1.12)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL.ice; ctx.fillText('silicon', mx + 4, Y(1.12) - 4);
+    ctx.strokeStyle = rgba(COL.ink, 0.7); ctx.beginPath(); ctx.arc(X(gbest[0]), Y(gbest[1]), 6, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = COL.ink; ctx.fillText(`peak ${pct(gmax)}`, X(gbest[0]) + 9, Y(gbest[1]) + 4);
+    if (et >= T0 && eb <= B1) { ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(et), Y(eb), 5, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('TANDEM LIMIT · BRIGHTER = BETTER', mx, my - 8);
+    // spectrum split
+    const sx = narrow ? 40 : w * 0.6 + 30, sw = narrow ? w - 60 : w * 0.4 - 46, sy = narrow ? h * 0.6 + 30 : 40, sh = narrow ? h * 0.4 - 50 : h - 90;
+    let pm = 0; for (let i = 0; i < PV.Es.length; i++) pm = Math.max(pm, PV.Phi[i]);
+    const SX = E => sx + E / 4 * sw, SY = v => sy + sh - v / pm * (sh - 4);
+    for (let i = 0; i < PV.Es.length; i += 2) { const E = PV.Es[i]; if (E > 4) break; const p = PV.Phi[i]; ctx.fillStyle = E >= et ? rgba(COL.eigen, 0.85) : E >= eb ? rgba(COL.ice, 0.75) : 'rgba(58,66,88,0.9)'; ctx.fillRect(SX(E), SY(p), Math.max(1, SX(E + PV.dE * 2) - SX(E)), sy + sh - SY(p)); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('PHOTONS BY ENERGY', sx, sy - 8); ctx.textAlign = 'center'; [1, 2, 3].forEach(E => ctx.fillText(`${E} eV`, SX(E), sy + sh + 13)); ctx.textAlign = 'left';
+    ctx.fillStyle = COL.eigen; ctx.fillText('top layer', SX(et) + 4, sy + 12); ctx.fillStyle = COL.ice; ctx.fillText('bottom', SX(eb) + 4, sy + 26);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

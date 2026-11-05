@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/34432263/README.md)
 # Eigenfunction
 
 Big ideas, explained visually. A browser notebook of **phenomena**: live simulations you can play with, each with a short explanation and the maths behind it on a toggle. It also has a map of the lineage of discoveries and a fringe-science series that sets out the strongest case for each claim, with the sceptics' reply, and leaves the decision to you.

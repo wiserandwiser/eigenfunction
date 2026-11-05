@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Three-Body Problem</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 022 colour code: pink, ice and violet are the three bodies; the faint twin in Bay 02 is a copy nudged by a hair. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.4}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 022 · Astrophysics series · 6 of 10</div>
+    <a class="navlink" href="021.html">← Φ 021</a>
+    <a class="navlink" href="023.html">Φ 023 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 022 · Astrophysics series · 6 of 10</p>
+    <h1>the three-body <span class="eig">problem</span></h1>
+    <p class="gloss">ASTROPHYSICS · celestial mechanics, chaos — <em>two bodies dance forever; add a third and the future becomes impossible to predict</em></p>
+    <p class="thesis">Newton solved the motion of two bodies under gravity exactly: neat ellipses, repeating forever. Add a third and there is, in general, no formula at all. The motion can be orderly for millions of years, then suddenly fling one body out of the system. It was here, in 1889, that Henri Poincaré first glimpsed chaos.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Celestial mechanics, chaos theory</dd></div>
+    <div><dt>Models</dt><dd>When a triple holds together, the butterfly effect in orbits, rare islands of order</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 6 of 10. Connects to Φ 005 (entropy and the arrow of time).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>body 1</span><span class="key"><i style="background:var(--ice)"></i>body 2</span><span class="key"><i style="background:var(--violet)"></i>body 3</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="triple">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Add a third</span><h2>A pair of stars, and a third that comes to visit</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Two equal stars orbit each other while a third circles the pair. Make the third heavier or bring it closer, and the system turns chaotic and often throws a star out."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="m1">Third star’s mass <input type="range" id="m1" min="0" max="100" step="1" value="2"><output id="m1o">—</output></label>
+          <label class="scrub" for="d1">Its distance <input type="range" id="d1" min="20" max="60" step="1" value="40"><output id="d1o">—</output></label>
+          <button class="btn solo" type="button" id="go1">Restart</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Stability rule says</b><span id="r1p" class="eg">—</span></div>
+          <div class="ro"><b>What happened</b><span id="r1h">—</span></div>
+          <div class="ro"><b>Orbits completed</b><span id="r1n">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Two stars in orbit trace the same ellipses forever. That is Newton’s great result, and it is why planets return on schedule.</p>
+        <p>Give the pair a light, distant companion and not much changes: the companion circles the pair as if it were one heavy star. This <strong>hierarchical</strong> layout is how real triple stars survive, like Alpha Centauri, where Proxima circles the inner pair about once every 550,000 years.</p>
+        <p>Make the third star heavier, or bring it closer, and its pull tugs the pair apart and back. The three trade energy in close passes, the paths stop repeating, and sooner or later one star, usually the lightest, gets <strong>thrown out</strong> of the system for good, leaving a tighter pair behind.</p>
+        <div class="task"><b>Try this</b>Start light and far, then raise the mass and bring the star closer. Find where the rule switches to unstable, and see whether the simulation agrees.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>R</var><sub>out</sub>/<var>a</var><sub>in</sub> &gt; 2.8 (1 + <var>m</var><sub>3</sub>/(<var>m</var><sub>1</sub>+<var>m</var><sub>2</sub>))<sup>2/5</sup>&nbsp; (circular orbits)</div>
+          <p>The Mardling–Aarseth (2001) rule of thumb for when a triple is long-term stable, here for circular orbits in one plane. Units: the inner stars weigh 1 each and start 1 apart. Newton’s laws are integrated with an adaptive leapfrog method and a tiny softening to survive very close passes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="butterfly">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The butterfly effect</span><h2>Two universes a hair apart</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Two copies of the same three-star system, one nudged by a tiny amount, run side by side. They overlap at first, then diverge completely. A graph shows the gap growing exponentially."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e2">Nudge <input type="range" id="e2" min="2" max="12" step="1" value="8"><output id="e2o">—</output></label>
+          <button class="btn solo" type="button" id="go2">Run</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Gap between the two</b><span id="r2g" class="eg">—</span></div>
+          <div class="ro"><b>Time</b><span id="r2t">—</span></div>
+          <div class="ro"><b>Copies still agree?</b><span id="r2a">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>This is the <span class="i">Pythagorean problem</span>, posed by Carl Burrau in 1913: three stars of mass 3, 4 and 5 start at rest at the corners of a 3-4-5 triangle. They fall together, swing through a series of near-collisions, and finally one pair escapes one way and the lightest star the other.</p>
+        <p>Run it twice, with one star moved by a billionth of the triangle’s size in the second copy. For a while the two are indistinguishable. Then the tiny difference grows, roughly <strong>multiplying by the same factor in each time interval</strong>, until the two universes have nothing in common.</p>
+        <p>That is chaos: completely determined by Newton’s laws, yet unpredictable in practice, because no measurement is perfect. Even our own solar system is chaotic: its planets’ positions can’t be predicted beyond about 100 million years.</p>
+        <div class="task"><b>Try this</b>Run with a tiny nudge, then a bigger one. Each factor of 10 smaller in the nudge buys only a little more time.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">|δ(<var>t</var>)| ≈ |δ₀| <var>e</var><sup>λ<var>t</var></sup>,&nbsp; predictability horizon ≈ (1/λ) ln(tolerance/|δ₀|)</div>
+          <p>λ is the Lyapunov exponent. Because the horizon grows only with the <em>logarithm</em> of your precision, ten times better measurements buy a fixed, small extra time. Units: <var>G</var> = 1; Burrau’s masses and triangle. The gap is the distance between matching stars, summed. Integrated with a fourth-order symplectic method and adaptive steps; the exact ending is itself sensitive to numerical precision, which is the point.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="islands">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Islands of order</span><h2>Rare, perfect dances</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Special exact solutions of the three-body problem: three equal stars chasing each other around a figure of eight, a rotating triangle, a line and a butterfly-shaped orbit. A nudge shows which survive a small disturbance."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Solution">
+            <button class="btn" type="button" data-sol="0" aria-pressed="true">Figure of eight</button>
+            <button class="btn" type="button" data-sol="1">Lagrange triangle</button>
+            <button class="btn" type="button" data-sol="2">Euler line</button>
+            <button class="btn" type="button" data-sol="3">Butterfly</button>
+          </div>
+          <button class="btn solo" type="button" id="nudge3">Nudge</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Found by</b><span id="r3f">—</span></div>
+          <div class="ro"><b>Survives a nudge?</b><span id="r3s" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Amid the chaos there are special, exactly repeating solutions. Euler (1767) found three stars on a rotating line, and Lagrange (1772) three at the corners of a spinning equilateral triangle. In 1993 Cris Moore found, by computer, three equal stars chasing each other around a <strong>figure of eight</strong>, proved in 2000 by Alain Chenciner and Richard Montgomery.</p>
+        <p>Since 2013, computer searches have turned up thousands more: butterflies, moths and yin-yangs. But most are <strong>unstable</strong>: the slightest disturbance and they break apart. The figure of eight is one of the rare ones that shrugs a nudge off.</p>
+        <p>Lagrange’s triangle survives in nature when one body is much lighter, as with the Trojan asteroids, which share Jupiter’s orbit 60° ahead and behind it.</p>
+        <div class="task"><b>Try this</b>Watch each dance, then press Nudge. Which keep their shape?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Figure of eight:&nbsp; <var>x</var>₁ = −<var>x</var>₂ = (0.97000, −0.24309),&nbsp; <var>x</var>₃ = 0,&nbsp; <var>v</var>₃ = −2<var>v</var>₁ = (−0.93241, −0.86473)</div>
+          <p>Equal masses, <var>G</var> = 1. Starting points are from Chenciner–Montgomery (figure of eight) and Šuvakov–Dmitrašinović (2013, butterfly I). The nudge moves one star by 1% of the orbit’s size. Equal-mass Lagrange and Euler configurations are unstable; Lagrange’s triangle becomes stable only when one mass outweighs the next by more than about 25 to 1.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Three bodies in the wild</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1889</div><h3>Poincaré’s prize</h3><p>King Oscar II of Sweden offered a prize for proving the solar system stable. Poincaré won, then found a serious error in his entry. Fixing it, he discovered the tangled behaviour we now call chaos.</p></div>
+      <div class="g"><div class="where">4.2 light-years</div><h3>Alpha Centauri</h3><p>The nearest star system is a stable hierarchical triple: two Sun-like stars orbiting every 80 years, and Proxima Centauri far out. It inspired Liu Cixin’s novel <em>The Three-Body Problem</em>.</p></div>
+      <div class="g"><div class="where">Our galaxy</div><h3>Hypervelocity stars</h3><p>When a binary star passes too close to the Milky Way’s central black hole, one star can be captured and the other flung out at over 1,000 km/s, fast enough to leave the galaxy.</p></div>
+      <div class="g"><div class="where">1.5 million km</div><h3>Lagrange points</h3><p>Spots where a small body can keep pace with two big ones. The James Webb Space Telescope orbits Sun–Earth L2, and Jupiter’s Trojans cluster at its L4 and L5.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Two bodies repeat forever; three are, in general, <span class="a">chaotic</span>: perfectly lawful, yet unpredictable, with only rare islands of order.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><span class="chip here">022 · Three-body problem</span><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 022 · Chaos in the heavens · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const BCOL = [COL.eigen, COL.ice, COL.violet];
+/* Newtonian gravity, G = 1, with an adaptive kick-drift-kick leapfrog. */
+function accel(B, e2) {
+  const n = B.length, ax = new Array(n).fill(0), ay = new Array(n).fill(0);
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+    const dx = B[j].x - B[i].x, dy = B[j].y - B[i].y, r2 = dx * dx + dy * dy + e2, ir3 = 1 / (r2 * Math.sqrt(r2));
+    ax[i] += B[j].m * dx * ir3; ay[i] += B[j].m * dy * ir3; ax[j] -= B[i].m * dx * ir3; ay[j] -= B[i].m * dy * ir3;
+  }
+  return [ax, ay];
+}
+function advance(B, T, e2, eta, maxSteps) {
+  let t = 0, steps = 0;
+  while (t < T && steps < maxSteps) {
+    let tau = Infinity;
+    for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) { const r = Math.hypot(B[j].x - B[i].x, B[j].y - B[i].y) + 1e-9; tau = Math.min(tau, Math.pow(r, 1.5) / Math.sqrt(B[i].m + B[j].m + 1e-12)); }
+    const dt = Math.min(T - t, eta * tau, 0.02);
+    let [ax, ay] = accel(B, e2);
+    B.forEach((b, i) => { b.vx += ax[i] * dt / 2; b.vy += ay[i] * dt / 2; b.x += b.vx * dt; b.y += b.vy * dt; });
+    [ax, ay] = accel(B, e2);
+    B.forEach((b, i) => { b.vx += ax[i] * dt / 2; b.vy += ay[i] * dt / 2; });
+    t += dt; steps++;
+  }
+  return t;
+}
+function advance4(B, T, e2, eta, maxSteps) {
+  const c = 1 / (2 - Math.cbrt(2)), W = [c, 1 - 2 * c, c];
+  let t = 0, steps = 0;
+  while (t < T && steps < maxSteps) {
+    let tau = Infinity;
+    for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) { const dx = B[j].x - B[i].x, dy = B[j].y - B[i].y, r = Math.hypot(dx, dy) + 1e-9, dv = Math.hypot(B[j].vx - B[i].vx, B[j].vy - B[i].vy); tau = Math.min(tau, Math.pow(r, 1.5) / Math.sqrt(B[i].m + B[j].m + 1e-12), r / (dv + 1e-9)); }
+    const dt = Math.min(T - t, eta * tau, 0.02);
+    for (const wk of W) { const h = wk * dt; let [ax, ay] = accel(B, e2);
+      B.forEach((b, i) => { b.vx += ax[i] * h / 2; b.vy += ay[i] * h / 2; b.x += b.vx * h; b.y += b.vy * h; });
+      [ax, ay] = accel(B, e2); B.forEach((b, i) => { b.vx += ax[i] * h / 2; b.vy += ay[i] * h / 2; }); }
+    t += dt; steps++;
+  }
+  return t;
+}
+const centre = B => { const M = B.reduce((s, b) => s + b.m, 0); return [B.reduce((s, b) => s + b.m * b.x, 0) / M, B.reduce((s, b) => s + b.m * b.y, 0) / M]; };
+function drawTrails(ctx, B, trails, X, Y, alpha, width) {
+  B.forEach((b, i) => { const tr = trails[i]; if (tr.length < 2) return; ctx.strokeStyle = rgba(BCOL[i], alpha); ctx.lineWidth = width; ctx.beginPath(); tr.forEach(([x, y], k) => k ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.stroke(); });
+  ctx.lineWidth = 1;
+}
+function drawBodies(ctx, B, X, Y, scale, ghost) {
+  B.forEach((b, i) => { const r = Math.max(3, 4 + 4 * Math.cbrt(b.m) * scale); if (ghost) { ctx.strokeStyle = rgba(BCOL[i], 0.7); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(X(b.x), Y(b.y), r + 3, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1; return; }
+    const g = ctx.createRadialGradient(X(b.x), Y(b.y), 0, X(b.x), Y(b.y), r * 2); g.addColorStop(0, '#d2d1d5'); g.addColorStop(0.4, BCOL[i]); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X(b.x), Y(b.y), r * 2, 0, Math.PI * 2); ctx.fill(); });
+}
+
+/* ---------- BAY 01: a pair and a visitor ---------- */
+(function () {
+  const cv = $('#c1'), mS = $('#m1'), mO = $('#m1o'), dS = $('#d1'), dO = $('#d1o');
+  const rP = $('#r1p'), rH = $('#r1h'), rN = $('#r1n');
+  const st = {};
+  function setup() {
+    const m3 = Math.max(0.005, +mS.value / 100), R = +dS.value / 10;
+    mO.value = `${m3.toFixed(2)} × each`; dO.value = `${R.toFixed(1)} × pair’s gap`;
+    const vin = Math.sqrt(2) / 2, vout = Math.sqrt((2 + m3) / R);
+    const B = [{ m: 1, x: -0.5, y: 0, vx: 0, vy: -vin }, { m: 1, x: 0.5, y: 0, vx: 0, vy: vin }, { m: m3, x: R, y: 0, vx: 0, vy: vout * 2 / (2 + m3) }];
+    const vc = -vout * m3 / (2 + m3); B[0].vy += vc; B[1].vy += vc;
+    const [cx, cy] = centre(B); B.forEach(b => { b.x -= cx; b.y -= cy; });
+    const crit = 2.8 * Math.pow(1 + m3 / 2, 0.4);
+    Object.assign(st, { B, R, t: 0, trails: [[], [], []], event: '', crit, dmin: 9, dmax: 0 });
+    setText(rP, R > crit ? `stable (needs > ${crit.toFixed(2)})` : `unstable (needs > ${crit.toFixed(2)})`);
+  }
+  mS.addEventListener('input', setup); dS.addEventListener('input', setup); $('#go1').addEventListener('click', setup);
+  setup();
+  function frame(dt) {
+    const B = st.B;
+    if (!REDUCE || st.t < 1) st.t += advance(B, REDUCE ? 30 : dt * 3, 1e-5, 0.01, 6000);
+    const [cx, cy] = centre(B);
+    B.forEach((b, i) => { st.trails[i].push([b.x - cx, b.y - cy]); if (st.trails[i].length > 500) st.trails[i].shift(); });
+    // events: ejection or disruption of the inner pair
+    if (!st.event) {
+      const far = B.findIndex(b => Math.hypot(b.x - cx, b.y - cy) > Math.max(9, st.R * 2.2));
+      const d01 = Math.hypot(B[0].x - B[1].x, B[0].y - B[1].y);
+      st.dmin = Math.min(st.dmin ?? 9, d01); st.dmax = Math.max(st.dmax ?? 0, d01);
+      if (far >= 0) st.event = `star ${far + 1} thrown out at t = ${st.t.toFixed(0)}`;
+      else if (d01 > 2.2 || d01 < 0.15) st.event = 'the pair was disrupted: chaos';
+    }
+    setText(rH, st.event || (st.dmax - st.dmin > 0.4 ? 'tangled: the pair is being pulled about' : st.t < 20 ? 'watching…' : 'holding together so far'));
+    setText(rN, `${Math.floor(st.t / (2 * Math.PI / Math.sqrt(2))).toLocaleString('en-US')} inner orbits`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const span = st.R * 1.35 + 0.6, sc = Math.min(w, h) / (2 * span), X = x => w / 2 + x * sc, Y = y => h / 2 - y * sc;
+    drawTrails(ctx, B, st.trails, x => X(x), y => Y(y), 0.45, 1.2);
+    drawBodies(ctx, B.map(b => ({ ...b, x: b.x - cx, y: b.y - cy })), X, Y, 1, false);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`t = ${st.t.toFixed(0)} · VIEW CENTRED ON THE SYSTEM’S BALANCE POINT`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the butterfly effect ---------- */
+(function () {
+  const cv = $('#c2'), eS = $('#e2'), eO = $('#e2o'), goB = $('#go2');
+  const rG = $('#r2g'), rT = $('#r2t'), rA = $('#r2a');
+  const TMAX = 80, SPEED = 3.2;
+  const st = {};
+  const burrau = () => [{ m: 3, x: 1, y: 3, vx: 0, vy: 0 }, { m: 4, x: -2, y: -1, vx: 0, vy: 0 }, { m: 5, x: 1, y: -1, vx: 0, vy: 0 }];
+  function setup() {
+    const k = +eS.value, d = Math.pow(10, -k); eO.value = `10${sup(-k)}`;
+    const A = burrau(), B = burrau(); B[0].x += d * 5;
+    Object.assign(st, { A, B, t: 0, run: !REDUCE, tr: [[], [], []], trB: [[], [], []], hist: [], d0: d * 5, split: null });
+  }
+  eS.addEventListener('input', setup); goB.addEventListener('click', () => { setup(); st.run = true; });
+  setup();
+  const gap = () => st.A.reduce((s, a, i) => s + Math.hypot(a.x - st.B[i].x, a.y - st.B[i].y), 0);
+  function frame(dt) {
+    if (REDUCE && st.t === 0) { while (st.t < 40) { const T = 0.25; advance4(st.A, T, 0, 0.005, 20000); advance4(st.B, T, 0, 0.005, 20000); st.t += T; st.hist.push([st.t, gap()]); } }
+    if (st.run && st.t < TMAX) {
+      const T = Math.min(dt * SPEED, TMAX - st.t);
+      advance4(st.A, T, 0, 0.005, 20000); advance4(st.B, T, 0, 0.005, 20000); st.t += T;
+      st.A.forEach((b, i) => { st.tr[i].push([b.x, b.y]); if (st.tr[i].length > 700) st.tr[i].shift(); });
+      st.B.forEach((b, i) => { st.trB[i].push([b.x, b.y]); if (st.trB[i].length > 700) st.trB[i].shift(); });
+      st.hist.push([st.t, Math.max(1e-14, gap())]);
+    }
+    const g = st.hist.length ? st.hist[st.hist.length - 1][1] : st.d0;
+    if (!st.split && g > 0.5) st.split = st.t;
+    setText(rG, g < 1e-2 ? (([m, e]) => `${m} × 10${sup(+e)}`)(g.toExponential(1).split('e')) : g.toFixed(g < 1 ? 2 : 1));
+    setText(rT, `${st.t.toFixed(1)} of ${TMAX}`);
+    setText(rA, st.split ? `no: they parted at t ≈ ${st.split.toFixed(0)}` : 'yes, indistinguishable');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, ph = narrow ? h * 0.62 : h, pw = narrow ? w : w * 0.6;
+    const span = 4.6, sc = Math.min(pw, ph) / (2 * span), X = x => pw / 2 + x * sc, Y = y => ph / 2 - y * sc;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, pw, ph); ctx.clip();
+    drawTrails(ctx, st.B, st.trB, X, Y, 0.18, 1);
+    drawTrails(ctx, st.A, st.tr, X, Y, 0.55, 1.3);
+    drawBodies(ctx, st.B, X, Y, 0.6, true);
+    drawBodies(ctx, st.A, X, Y, 0.6, false);
+    ctx.restore();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SOLID = ORIGINAL · RINGS = NUDGED COPY', 14, 18);
+    // gap plot, log scale
+    const gx = narrow ? 50 : pw + 50, gy = narrow ? ph + 16 : 34, gw = narrow ? w - 64 : w - pw - 64, gh = narrow ? h - ph - 40 : h - 80;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    const L0 = -13, L1 = 1.5, GX = t => gx + t / TMAX * gw, GY = v => gy + (L1 - Math.log10(v)) / (L1 - L0) * gh;
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [-12, -8, -4, 0].forEach(e => ctx.fillText(`10${sup(e)}`, gx - 5, GY(10 ** e) + 4)); ctx.textAlign = 'left';
+    ctx.fillText('GAP (LOG SCALE)', gx, gy - 8); ctx.fillText('time →', gx + gw - 44, gy + gh + 14);
+    ctx.strokeStyle = rgba(COL.ink, 0.12); ctx.beginPath(); ctx.moveTo(gx, GY(0.5)); ctx.lineTo(gx + gw, GY(0.5)); ctx.stroke();
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.6; ctx.beginPath(); st.hist.forEach(([t, v], i) => { const y = Math.max(gy, Math.min(gy + gh, GY(v))); i ? ctx.lineTo(GX(t), y) : ctx.moveTo(GX(t), y); }); ctx.stroke(); ctx.lineWidth = 1;
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: islands of order ---------- */
+(function () {
+  const cv = $('#c3'), nB = $('#nudge3');
+  const rF = $('#r3f'), rS = $('#r3s');
+  const w3 = Math.sqrt(3), we = Math.sqrt(5 / 4), p1 = 0.306893, p2 = 0.125507;
+  const SOL = [
+    { name: 'figure of eight', by: 'Moore 1993; proved by Chenciner & Montgomery, 2000', span: 1.3, ok: 'yes: it wobbles but keeps its shape', speed: 2,
+      init: () => [{ m: 1, x: 0.97000436, y: -0.24308753, vx: 0.466203685, vy: 0.43236573 }, { m: 1, x: -0.97000436, y: 0.24308753, vx: 0.466203685, vy: 0.43236573 }, { m: 1, x: 0, y: 0, vx: -0.93240737, vy: -0.86473146 }] },
+    { name: 'Lagrange triangle', by: 'Joseph-Louis Lagrange, 1772', span: 1.0, ok: 'no: with equal masses it flies apart', speed: 1.2,
+      init: () => [0, 1, 2].map(k => { const a = Math.PI / 2 + k * 2 * Math.PI / 3, r = 1 / w3; return { m: 1, x: r * Math.cos(a), y: r * Math.sin(a), vx: -w3 * r * Math.sin(a), vy: w3 * r * Math.cos(a) }; }) },
+    { name: 'Euler line', by: 'Leonhard Euler, 1767', span: 1.5, ok: 'no: the middle star slips out', speed: 1.2,
+      init: () => [{ m: 1, x: -1, y: 0, vx: 0, vy: -we }, { m: 1, x: 0, y: 0, vx: 0, vy: 0 }, { m: 1, x: 1, y: 0, vx: 0, vy: we }] },
+    { name: 'butterfly', by: 'Šuvakov & Dmitrašinović, 2013', span: 1.3, ok: 'no: it soon unravels into chaos', speed: 1.5,
+      init: () => [{ m: 1, x: -1, y: 0, vx: p1, vy: p2 }, { m: 1, x: 1, y: 0, vx: p1, vy: p2 }, { m: 1, x: 0, y: 0, vx: -2 * p1, vy: -2 * p2 }] }
+  ];
+  const st = { k: 0 };
+  function setup() { const s = SOL[st.k]; st.B = s.init(); st.t = 0; st.tr = [[], [], []]; st.nudged = false; setText(rF, s.by); setText(rS, 'press Nudge to test'); }
+  $$('[data-sol]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.sol; $$('[data-sol]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); setup(); }));
+  nB.addEventListener('click', () => { setup(); st.B[0].x += 0.01 * SOL[st.k].span; st.nudged = true; setText(rS, SOL[st.k].ok); });
+  setup();
+  function frame(dt) {
+    const s = SOL[st.k];
+    if (!REDUCE || st.t < 1) st.t += advance(st.B, REDUCE ? 6 : dt * s.speed, 1e-6, 0.005, 8000);
+    st.B.forEach((b, i) => { st.tr[i].push([b.x, b.y]); if (st.tr[i].length > 900) st.tr[i].shift(); });
+    if (st.B.some(b => Math.hypot(b.x, b.y) > s.span * 6) && st.t > 5) setup();
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sc = Math.min(w, h) / (2 * s.span * 1.25), X = x => w / 2 + x * sc, Y = y => h / 2 - y * sc;
+    drawTrails(ctx, st.B, st.tr, X, Y, 0.5, 1.4);
+    drawBodies(ctx, st.B, X, Y, 1, false);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`${s.name.toUpperCase()} · THREE EQUAL STARS${st.nudged ? ' · NUDGED 1%' : ''}`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

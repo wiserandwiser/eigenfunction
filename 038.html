@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Antimatter</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 038 colour code: pink = matter, violet = antimatter, ice = gamma-ray photons. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 038 · Particles & forces · 4 of 6</div>
+    <a class="navlink" href="037.html">← Φ 037</a>
+    <a class="navlink" href="039.html">Φ 039 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 038 · Particles &amp; forces · 4 of 6</p>
+    <h1><span class="eig">anti</span>matter</h1>
+    <p class="gloss">PARTICLES &amp; FORCES · mirror matter — <em>every particle has a twin with the opposite charge; meet, and both turn into pure energy</em></p>
+    <p class="thesis">In 1928 Paul Dirac wrote an equation for the electron that had a second, unexpected solution: a particle identical to the electron but with positive charge. Four years later it turned up in cosmic rays. Antimatter is now made routinely, used in hospital scanners every day, and poses one of the deepest puzzles in cosmology: why is there anything left at all?</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Particle physics, medical imaging, cosmology</dd></div>
+    <div><dt>Models</dt><dd>Making matter from light, the PET scanner, the great annihilation</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 4 of 6. Uses <var>E</var> = <var>mc</var>² and Φ 026 (the oldest light).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>matter</span><span class="key"><i style="background:var(--violet)"></i>antimatter</span><span class="key"><i style="background:var(--ice)"></i>gamma rays</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="pair">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Matter from light</span><h2>Pair creation in a magnetic field</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A gamma ray enters a chamber with a magnetic field. Above an energy threshold it turns into an electron and a positron, whose tracks curl in opposite directions and spiral inwards as they lose energy."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="E1">Gamma-ray energy <input type="range" id="E1" min="50" max="2000" step="1" value="1600"><output id="E1o">—</output></label>
+          <label class="scrub" for="B1">Magnetic field <input type="range" id="B1" min="2" max="40" step="1" value="15"><output id="B1o">—</output></label>
+          <button class="btn solo" type="button" id="fire1">Fire</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Pair created?</b><span id="r1p" class="eg">—</span></div>
+          <div class="ro"><b>Energy each particle moves with</b><span id="r1k">—</span></div>
+          <div class="ro"><b>Track radius at start</b><span id="r1r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p><var>E</var> = <var>mc</var>² works both ways. A gamma-ray photon with enough energy, passing close to a nucleus, can turn into an electron and its antiparticle, the <span class="v">positron</span>. Each has a mass worth 0.511 MeV, so the photon needs at least <strong>1.022 MeV</strong>; anything extra becomes motion.</p>
+        <p>In a magnetic field, charged particles curve. The electron and positron have opposite charges, so their tracks curl in <strong>opposite directions</strong>, a signature Carl Anderson spotted in cosmic-ray photographs in 1932. As they lose energy to the material around them, their curves tighten into spirals.</p>
+        <p>When the positron finally slows down and meets an electron, the two annihilate: their mass turns back into two gamma rays of 0.511 MeV each, flying off in exactly opposite directions.</p>
+        <div class="task"><b>Try this</b>Lower the energy below the threshold: nothing happens. Raise it and fire; then strengthen the field and watch the spirals tighten.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>E</var><sub>γ</sub> ≥ 2<var>m</var><sub>e</sub><var>c</var>² = 1.022 MeV,&nbsp; <var>r</var> = <var>p</var>/(<var>qB</var>),&nbsp; <var>r</var>[m] ≈ <var>p</var>[GeV/<var>c</var>] / (0.3 <var>B</var>[T])</div>
+          <p>The leftover energy is split equally here for simplicity (in reality the split varies). Tracks are drawn to scale for a chamber a few centimetres across, with a steady energy loss making them spiral. The nearby nucleus absorbs a little recoil, which is why pair creation can’t happen in empty space.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="pet">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Antimatter at work</span><h2>The PET scanner</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A ring of detectors around a patient. Each positron annihilation sends two gamma rays to opposite sides of the ring; drawing the line between them for thousands of events builds up an image of where a tracer has gathered."></canvas></div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="run2">Scan</button>
+          <button class="btn solo" type="button" id="clr2">Clear</button>
+          <div class="seg" role="group" aria-label="Show">
+            <button class="btn" type="button" data-sh="lines">Lines</button>
+            <button class="btn" type="button" data-sh="image" aria-pressed="true">Image</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Annihilations recorded</b><span id="r2n" class="eg">—</span></div>
+          <div class="ro"><b>Hot spot found?</b><span id="r2h">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A <strong>PET</strong> (positron emission tomography) scan uses antimatter on purpose. The patient is given a sugar-like molecule tagged with fluorine-18, a radioactive atom that emits positrons. Busy tissue, such as many cancers, soaks up more sugar and so glows brighter.</p>
+        <p>Each positron travels a millimetre or so, meets an electron and annihilates. The two gamma rays fly off back to back and hit a ring of detectors at almost the same instant. The annihilation happened somewhere on the <span class="i">line</span> between those two hits.</p>
+        <p>One line tells you little. Tens of millions of them, overlapping, pile up where the tracer is concentrated. A computer combines them into a 3D image. Hospitals around the world run millions of these scans a year.</p>
+        <div class="task"><b>Try this</b>Press Scan and watch the lines accumulate. Switch to Image to see the hidden hot spot emerge.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">e⁺ + e⁻ → γ + γ,&nbsp; <var>E</var><sub>γ</sub> = 511 keV each, back to back</div>
+          <p>The image here is a simple backprojection: every line adds a little brightness along its length, so a blurry halo surrounds each hot spot. Real scanners use filtered or iterative reconstruction, correct for absorption in the body, and use the slight difference in arrival times to locate each event along its line.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="survive">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">A cosmic puzzle</span><h2>Where did the antimatter go?</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A hot early universe filled with matter and antimatter particles. As it cools, pairs meet and annihilate into light. Only the tiny excess of matter survives, alongside a vast number of photons."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="x3">Excess of matter <input type="range" id="x3" min="0" max="20" step="1" value="4"><output id="x3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Cool the universe</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Survivors</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Light made per survivor</b><span id="r3p">—</span></div>
+          <div class="ro"><b>In our universe</b><span id="r3u">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The laws of physics treat matter and antimatter almost identically, so the Big Bang should have made equal amounts. As the universe cooled, every particle should have found its antiparticle and annihilated, leaving nothing but light.</p>
+        <p>Yet here we are. The microwave background (Φ 026) tells us there are about <strong>1.6 billion photons for every proton</strong>. That fits a universe that started with roughly one extra particle of matter for every billion matched pairs. The pairs annihilated into light; the one-in-a-billion leftovers became every star, planet and person.</p>
+        <p>In 1967 Andrei Sakharov listed what that requires, including a difference in how matter and antimatter behave, called <span class="i">CP violation</span>. It has been measured in quarks, but it is far too small to explain the leftover. The cause is one of the great open questions in physics.</p>
+        <div class="task"><b>Try this</b>Set the excess to zero and cool the universe: nothing survives. Then add a small excess and compare survivors with light.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">η = (<var>n</var><sub>B</sub> − <var>n</var><sub>B̄</sub>)/<var>n</var><sub>γ</sub> ≈ 6 × 10⁻¹⁰</div>
+          <p>The baryon-to-photon ratio, measured from the cosmic microwave background and from the amounts of light elements made in the first minutes. The animation exaggerates the excess enormously (percent instead of parts per billion) so that a few survivors are visible among a few hundred particles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1932</div><h3>The positron</h3><p>Carl Anderson photographed a cosmic-ray track that curved the wrong way for an electron but was far too light for a proton. Nobel Prize, 1936.</p></div>
+      <div class="g"><div class="where">1955</div><h3>The antiproton</h3><p>Emilio Segrè and Owen Chamberlain made antiprotons at Berkeley’s Bevatron, built with just enough energy to create them.</p></div>
+      <div class="g"><div class="where">1995 · 2010</div><h3>Antihydrogen</h3><p>CERN made the first antihydrogen atoms in 1995; in 2010 the ALPHA experiment trapped them in magnetic bottles for the first time.</p></div>
+      <div class="g"><div class="where">2023</div><h3>Antimatter falls down</h3><p>ALPHA-g showed that antihydrogen falls under gravity like ordinary matter, ruling out the idea that antimatter is repelled by Earth.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Energy can become a particle and its <span class="a">antiparticle</span>, and they annihilate back into light; why a sliver of matter survived the Big Bang is still unknown.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><span class="chip here">038 · Antimatter</span><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 038 · Mirror matter · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---------- BAY 01: pair creation ---------- */
+(function () {
+  const cv = $('#c1'), ES = $('#E1'), EO = $('#E1o'), BS = $('#B1'), BO = $('#B1o'), fireB = $('#fire1');
+  const rP = $('#r1p'), rK = $('#r1k'), rR = $('#r1r');
+  const ME = 0.511, LOSS = 0.25; // MeV per cm
+  const st = { t: 0, tracks: null, done: false };
+  function build() {
+    const E = +ES.value / 1000, B = +BS.value / 10, ke = (E - 2 * ME) / 2;
+    if (ke <= 0) return null;
+    const mk = sgn => { const pts = []; let x = 0, y = 0, a = 0, k = ke; const ds = 0.004; while (k > 0.002 && pts.length < 4000) { const p = Math.sqrt(k * k + 2 * k * ME), r = p / 1000 / (0.3 * B) * 100; a += sgn * ds / r; x += Math.cos(a) * ds; y += Math.sin(a) * ds; pts.push([x, y]); k -= LOSS * ds; } return pts; };
+    return { e: mk(1), p: mk(-1), ke, B };
+  }
+  fireB.addEventListener('click', () => { st.tracks = build(); st.t = 0; st.done = false; });
+  [ES, BS].forEach(s => s.addEventListener('input', () => { st.tracks = build(); st.t = REDUCE ? 9 : 0; }));
+  st.tracks = build(); st.t = REDUCE ? 9 : 0;
+  function frame(dt) {
+    const E = +ES.value / 1000, B = +BS.value / 10, ke = (E - 2 * ME) / 2;
+    EO.value = `${E.toFixed(2)} MeV`; BO.value = `${B.toFixed(1)} T`;
+    setText(rP, ke > 0 ? 'yes: electron + positron' : `no: needs at least 1.022 MeV`);
+    setText(rK, ke > 0 ? `${ke.toFixed(3)} MeV each` : '—');
+    const p0 = ke > 0 ? Math.sqrt(ke * ke + 2 * ke * ME) : 0; setText(rR, ke > 0 ? `${(p0 / 1000 / (0.3 * B) * 1000).toFixed(1)} mm` : '—');
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sc = Math.min(w, h) / 3.2, ox = w * 0.38, oy = h / 2; // px per cm
+    // field dots
+    for (let i = 0; i < 14; i++) for (let j = 0; j < 9; j++) { ctx.fillStyle = rgba(COL.ink, 0.08); ctx.fillRect((i + 0.5) * w / 14, (j + 0.5) * h / 9, 2, 2); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`MAGNETIC FIELD INTO THE SCREEN · ${B.toFixed(1)} T · SCALE: 1 cm`, 14, 18); ctx.strokeStyle = COL['ink-3']; ctx.beginPath(); ctx.moveTo(14, 28); ctx.lineTo(14 + sc, 28); ctx.stroke();
+    // incoming gamma
+    const tg = Math.min(1, st.t / 0.6); ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(ke > 0 ? ox * tg : w * tg, oy); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.ice; ctx.fillText('γ', 12, oy - 8);
+    if (ke > 0 && st.tracks && st.t > 0.6) {
+      ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(ox, oy, 3, 0, Math.PI * 2); ctx.fill();
+      const f = Math.min(1, (st.t - 0.6) / 2.5);
+      [['e', COL.eigen, 'e⁻'], ['p', COL.violet, 'e⁺']].forEach(([k, c, lab]) => { const pts = st.tracks[k], n = Math.floor(pts.length * f); ctx.strokeStyle = c; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(ox, oy); for (let i = 0; i < n; i++) ctx.lineTo(ox + pts[i][0] * sc, oy - pts[i][1] * sc); ctx.stroke(); ctx.lineWidth = 1; if (n > 5) { const q = pts[Math.min(n, pts.length) - 1]; ctx.fillStyle = c; ctx.fillText(lab, ox + q[0] * sc + 6, oy - q[1] * sc - 6); } });
+      if (f >= 1) { const q = st.tracks.p[st.tracks.p.length - 1], ax = ox + q[0] * sc, ay = oy - q[1] * sc, ta = st.t - 3.1, ang = 0.7, L = Math.min(1, ta) * Math.min(w, h) * 0.45;
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, 1 - ta)})`; ctx.beginPath(); ctx.arc(ax, ay, 4 + ta * 10, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = COL.ice; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(ax - Math.cos(ang) * L, ay - Math.sin(ang) * L); ctx.lineTo(ax + Math.cos(ang) * L, ay + Math.sin(ang) * L); ctx.stroke(); ctx.setLineDash([]);
+        if (ta > 0.3) { ctx.fillStyle = COL.ice; ctx.fillText('annihilation: two 511 keV gamma rays', Math.min(ax + 12, w - 250), Math.max(40, ay - 14)); } }
+    } else if (ke <= 0) { ctx.fillStyle = COL['ink-2']; ctx.fillText('below threshold: the gamma ray passes straight through', ox - 40, oy - 16); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: PET scanner ---------- */
+(function () {
+  const cv = $('#c2'), runB = $('#run2'), clrB = $('#clr2');
+  const rN = $('#r2n'), rH = $('#r2h');
+  const N = 140, img = new Float32Array(N * N), lines = [];
+  const st = { run: false, n: 0, show: 'image', recent: [] };
+  const HOT = [0.18, -0.12, 0.05], HEART = [-0.12, 0.08, 0.07];
+  function sample() {
+    const r = Math.random(); let x, y;
+    const g = () => { let u = 0; while (!u) u = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * Math.random()); };
+    if (r < 0.22) { x = HOT[0] + g() * HOT[2] * 0.5; y = HOT[1] + g() * HOT[2] * 0.5; }
+    else if (r < 0.42) { x = HEART[0] + g() * HEART[2] * 0.6; y = HEART[1] + g() * HEART[2] * 0.6; }
+    else { do { x = (Math.random() * 2 - 1) * 0.55; y = (Math.random() * 2 - 1) * 0.4; } while ((x / 0.55) ** 2 + (y / 0.4) ** 2 > 1); }
+    const a = Math.random() * Math.PI, dx = Math.cos(a), dy = Math.sin(a), b = x * dx + y * dy, c = x * x + y * y - 1, s = Math.sqrt(b * b - c);
+    return [x - (b + s) * dx, y - (b + s) * dy, x + (s - b) * dx, y + (s - b) * dy, x, y];
+  }
+  function addLine(L) { const [x1, y1, x2, y2] = L, steps = 160; for (let i = 0; i <= steps; i++) { const f = i / steps, x = x1 + (x2 - x1) * f, y = y1 + (y2 - y1) * f, px = Math.floor((x + 1) / 2 * N), py = Math.floor((1 - (y + 1) / 2) * N); if (px >= 0 && px < N && py >= 0 && py < N) img[py * N + px] += 1; } }
+  runB.addEventListener('click', () => { st.run = !st.run; runB.textContent = st.run ? 'Pause' : 'Scan'; });
+  clrB.addEventListener('click', () => { img.fill(0); lines.length = 0; st.n = 0; });
+  $$('[data-sh]').forEach(b => b.addEventListener('click', () => { st.show = b.dataset.sh; $$('[data-sh]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  if (REDUCE) for (let i = 0; i < 20000; i++) { const L = sample(); addLine(L); st.n++; }
+  const off = document.createElement('canvas'); off.width = off.height = N; const octx = off.getContext('2d'), im = octx.createImageData(N, N);
+  function frame(dt) {
+    if (st.run && !REDUCE && st.n < 40000) { const k = 160; for (let i = 0; i < k; i++) { const L = sample(); addLine(L); if (lines.length < 1500) lines.push(L); st.n++; st.recent.push([L, 0.4]); } if (st.recent.length > 40) st.recent.splice(0, st.recent.length - 40); }
+    st.recent.forEach(r => r[1] -= dt);
+    setText(rN, st.n.toLocaleString('en-US')); setText(rH, st.n > 4000 ? 'yes: lower right, plus the heart' : st.n > 1000 ? 'something is emerging' : 'not yet');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const R = Math.min(w, h) * 0.44, cx = w / 2, cy = h / 2;
+    ctx.fillStyle = 'rgba(160,170,190,0.08)'; ctx.beginPath(); ctx.ellipse(cx, cy, 0.55 * R, 0.4 * R, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = rgba(COL.ink, 0.25); ctx.stroke();
+    if (st.show === 'image' && st.n) {
+      let mx = 0; for (let i = 0; i < N * N; i++) mx = Math.max(mx, img[i]);
+      for (let i = 0; i < N * N; i++) { const v = Math.pow(img[i] / mx, 1.6), o = i * 4; im.data[o] = 255 * Math.min(1, v * 1.6); im.data[o + 1] = 179 * v; im.data[o + 2] = 92 * v * v; im.data[o + 3] = 255 * Math.min(1, v * 1.4); }
+      octx.putImageData(im, 0, 0); ctx.imageSmoothingEnabled = true; ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R - 4, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(off, cx - R, cy - R, 2 * R, 2 * R); ctx.restore();
+    } else { ctx.strokeStyle = rgba(COL.ice, 0.05); ctx.beginPath(); lines.forEach(([x1, y1, x2, y2]) => { ctx.moveTo(cx + x1 * R, cy - y1 * R); ctx.lineTo(cx + x2 * R, cy - y2 * R); }); ctx.stroke(); }
+    st.recent.forEach(([L, t]) => { if (t <= 0) return; ctx.strokeStyle = `rgba(134,207,255,${t})`; ctx.beginPath(); ctx.moveTo(cx + L[0] * R, cy - L[1] * R); ctx.lineTo(cx + L[2] * R, cy - L[3] * R); ctx.stroke(); ctx.fillStyle = `rgba(157,143,255,${t * 2})`; ctx.beginPath(); ctx.arc(cx + L[4] * R, cy - L[5] * R, 2.5, 0, Math.PI * 2); ctx.fill(); });
+    for (let k = 0; k < 72; k++) { const a = k / 72 * Math.PI * 2; ctx.fillStyle = COL['rule-hi']; ctx.fillRect(cx + Math.cos(a) * R - 3, cy + Math.sin(a) * R - 3, 6, 6); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('DETECTOR RING · PATIENT CROSS-SECTION', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the great annihilation ---------- */
+(function () {
+  const cv = $('#c3'), xS = $('#x3'), xO = $('#x3o'), goB = $('#go3');
+  const rS = $('#r3s'), rP = $('#r3p'), rU = $('#r3u');
+  const st = { P: [], ph: [], cool: false, made: 0 };
+  function reset() { const x = +xS.value / 100, N = 300, nm = Math.round(N / 2 * (1 + x)), na = Math.round(N / 2 * (1 - x)); st.P = []; for (let i = 0; i < nm + na; i++) st.P.push({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2, m: i < nm ? 1 : -1 }); st.ph = []; st.cool = false; st.made = 0; }
+  xS.addEventListener('input', reset); goB.addEventListener('click', () => { reset(); st.cool = true; });
+  reset();
+  function frame(dt) {
+    xO.value = `${xS.value}%${+xS.value ? ' (really 0.0000001%)' : ''}`;
+    const step = REDUCE ? 0 : dt;
+    st.P.forEach(p => { const sp = st.cool ? 2.2 : 1; p.x += p.vx * step * sp; p.y += p.vy * step * sp; if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1; p.x = clamp(p.x, 0, 1); p.y = clamp(p.y, 0, 1); });
+    if (st.cool || REDUCE) {
+      const reach = (st.P.length < 60 ? 0.09 : 0.04) + (REDUCE ? 1 : 0);
+      for (let i = 0; i < st.P.length; i++) { const a = st.P[i]; if (a.dead) continue; for (let j = i + 1; j < st.P.length; j++) { const b = st.P[j]; if (b.dead || a.m === b.m) continue; if (Math.abs(a.x - b.x) < reach && Math.abs(a.y - b.y) < reach) { a.dead = b.dead = true; st.made += 2; const an = Math.random() * 6.28; st.ph.push({ x: a.x, y: a.y, vx: Math.cos(an) * 0.5, vy: Math.sin(an) * 0.5, t: 1.5 }, { x: a.x, y: a.y, vx: -Math.cos(an) * 0.5, vy: -Math.sin(an) * 0.5, t: 1.5 }); break; } } }
+      st.P = st.P.filter(p => !p.dead);
+    }
+    st.ph.forEach(p => { p.x += p.vx * step; p.y += p.vy * step; p.t -= step; }); st.ph = st.ph.filter(p => p.t > 0);
+    const surv = st.P.filter(p => p.m > 0).length, anti = st.P.filter(p => p.m < 0).length;
+    setText(rS, st.cool ? `${surv} matter · ${anti} antimatter` : `${surv} matter · ${anti} antimatter (still hot)`);
+    setText(rP, st.cool && surv && !anti ? `${(st.made / surv).toFixed(0)} photons each` : st.cool && !surv && !anti ? 'nothing survived: only light' : '—');
+    setText(rU, 'about 1.6 billion photons per proton');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const X = x => 10 + x * (w - 20), Y = y => 26 + y * (h - 40);
+    if (!st.cool) { ctx.fillStyle = 'rgba(255,170,90,0.06)'; ctx.fillRect(0, 0, w, h); }
+    st.ph.forEach(p => { ctx.fillStyle = `rgba(134,207,255,${Math.min(1, p.t)})`; ctx.fillRect(X(p.x), Y(p.y), 3, 3); });
+    st.P.forEach(p => { ctx.fillStyle = p.m > 0 ? COL.eigen : COL.violet; ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 3.4, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(st.cool ? 'COOLING · PAIRS ANNIHILATE INTO LIGHT' : 'HOT EARLY UNIVERSE · PAIRS CONSTANTLY MADE AND DESTROYED', 14, 16);
+    ctx.fillStyle = COL.eigen; ctx.fillText('● matter', w - 170, 16); ctx.fillStyle = COL.violet; ctx.fillText('● antimatter', w - 96, 16);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

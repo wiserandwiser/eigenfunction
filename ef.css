@@ -1,0 +1,105 @@
+/* Eigenfunction · Specimen theme (A) · V1.2.0 · vivid
+   A lab notebook on cool slide paper. Hematoxylin violet for structure, eosin pink for the one thing to look at.
+   Simulations sit in light plates. They were drawn for a dark ground, so each canvas is shown through
+   invert + hue-rotate(180deg) + saturate(2.5): dark becomes paper, white becomes charcoal, hues keep their family
+   and the saturation boost lets vivid pinks, violets and blues through.
+   The --pl-* colours are chosen so that, after that filter, they land exactly on the page palette.
+   Loaded after each page's own stylesheet, so these tokens and rules win. */
+:root{
+  /* page (paper) */
+  --void:#e9ece6; --bay:#f3f5f0; --bay-2:#dfe3da; --rule:#cfd2c8; --rule-hi:#a3a79c;
+  --ink:#2e2c36; --ink-2:#4a4757; --ink-3:#5f5c72;     /* charcoal, never black */
+  --ice:#2b44e6;      /* cobalt: links, controls, structure */
+  --eigen:#de1f6e;    /* hot eosin pink: the one highlight */
+  --violet:#7026f2;   /* electric violet */
+  --display:"Newsreader","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --body:"Newsreader","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --plate:#f6f7f3;
+  --lattice:#6a34ff; --lattice-hi:#f0287a;
+  /* plates: drawn pre-inverted; the plate filter turns these into paper #f6f7f3, charcoal #2e2c36,
+     cobalt #2c4bff, eosin #f0287a and violet #7a2cff */
+  --pl-void:#080907; --pl-bay:#080907; --pl-bay-2:#111112; --pl-rule:#242328; --pl-rule-hi:#38363d;
+  --pl-ink:#d2d1d5; --pl-ink-2:#b7b5bc; --pl-ink-3:#95949d;
+  --pl-ice:#9fabf3; --pl-eigen:#e393b4; --pl-violet:#c6a6fb;
+  color-scheme:light;
+}
+html{background:var(--void)}
+[hidden]{display:none!important}
+body{background:transparent!important;font-size:18px;line-height:1.6}
+#mtbg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+::selection{background:color-mix(in srgb,var(--eigen) 22%,transparent)}
+:focus-visible{outline:2px solid var(--eigen);outline-offset:2px}
+
+/* top bar: a ruled notebook header */
+body::before{background:var(--void)}
+.topbar{background:color-mix(in srgb,var(--void) 92%,transparent);border-bottom:1px solid var(--ink)}
+.brand{font-family:var(--display);font-weight:400;letter-spacing:.005em;font-size:19px;text-transform:none;color:var(--ink);gap:9px}
+.brand svg{color:var(--ice)}
+.crumbs,.navlink{color:var(--ink-3)}
+.navlink:hover{color:var(--eigen)}
+.toggle{border-color:var(--rule-hi);border-radius:0}
+
+/* type: serif for thinking, mono for measuring */
+h1{font-weight:300;letter-spacing:-.022em}
+h1 .eig{color:var(--eigen);transform:none!important;font-style:italic;font-weight:300}
+h2{font-weight:400;letter-spacing:-.012em}
+.thesis{font-weight:400;color:var(--ink)}
+.gloss em{font-style:italic}
+.eyebrow{color:var(--ink-3)}
+.spec{border-top:1px solid var(--ink)}
+
+/* each bay is a figure: numbered, with the simulation mounted as a plate */
+.bay{border-top:1px solid var(--ink)}
+.bay-id{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--eigen)}
+.bay-id::before{content:"Fig. "}
+.bay-tag{color:var(--ink-3)}
+.viewport{background:var(--plate);border:1px solid var(--ink);outline:1px solid var(--rule-hi);outline-offset:4px;margin:5px}
+.viewport::after{display:none}
+.viewport canvas,.chart canvas{filter:invert(1) hue-rotate(180deg) saturate(2.5)}
+.viewport .hint{color:var(--ink-3)}
+.viewport .fallback{color:var(--ink-2)}
+.readouts{background:var(--bay);border-color:var(--rule-hi)}
+.ro{border-color:var(--rule)}
+.seg,.solo{border-color:var(--rule-hi)}
+.btn:hover{background:var(--bay-2);color:var(--ink)}
+.btn[aria-pressed="true"]{color:#fff;background:var(--ice)}
+.btn.eg[aria-pressed="true"]{color:#fff;background:var(--eigen)}
+.scrub input{accent-color:var(--ice)}
+.task{font-family:var(--body);font-size:16px;border-color:var(--ink)}
+.task b{font-family:var(--mono)}
+.math{border-top-color:color-mix(in srgb,var(--eigen) 40%,transparent)}
+.prose p{color:var(--ink-2)}
+.prose p:first-child{color:var(--ink)}
+
+/* observations, note to self, catalogue row */
+.guide{border-top:1px solid var(--ink)}
+.g{border-top-color:var(--rule-hi)}
+.g h3{font-weight:500}
+.carry{border-top:3px double var(--ink)}
+.carry p.big{font-weight:300;letter-spacing:-.012em}
+.carry p.big .a{font-style:italic}
+.queue .chip{border-color:var(--rule-hi);color:var(--ink-2)}
+.queue a.chip{border-color:color-mix(in srgb,var(--ice) 40%,transparent);color:var(--ice)}
+.queue .chip.here{color:var(--eigen);border-color:var(--eigen)}
+footer{border-top:1px solid var(--rule-hi);color:var(--ink-3)}
+
+/* ---------- home page ---------- */
+.chart{background:var(--plate)!important;border:1px solid var(--ink)!important;outline:1px solid var(--rule-hi);outline-offset:4px;margin:5px}
+.chart .corner{color:var(--ink-3)!important}
+.stats{background:transparent!important;border:0!important;border-top:1px solid var(--ink)!important;border-bottom:1px solid var(--ink)!important}
+.stats div{border-right:1px solid var(--rule)!important}
+.stats b{font-family:var(--display)!important;font-weight:300!important;font-size:40px!important}
+.lesson{background:color-mix(in srgb,var(--bay) 88%,transparent)!important;border-color:var(--rule)!important;border-top:1px solid var(--ink)!important}
+.lesson canvas{background:transparent;outline:1px solid var(--rule-hi);outline-offset:2px}
+.lesson h3{font-weight:400!important}
+.card{background:var(--bay)!important;border:1px solid var(--ink)!important;color:var(--ink)}
+.card h3{font-weight:400}
+.chip[aria-pressed="true"]{background:var(--ink)!important;color:var(--void)!important;border-color:var(--ink)!important}
+.chip[aria-pressed="true"] b{color:var(--bay-2)!important}
+.tag{color:var(--ink-2)}
+
+/* arrival scan (home page) */
+#ef-intro{position:fixed;inset:0;z-index:10000;cursor:pointer;transition:opacity .35s ease}
+#ef-intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#ef-intro.gone{opacity:0;pointer-events:none}

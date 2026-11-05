@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Quantum Consciousness</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 055 · Fringe science · 15 of 20</div>
+    <a class="navlink" href="054.html">← Φ 054</a>
+    <a class="navlink" href="056.html">Φ 056 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 055 · Fringe science · 15 of 20</p>
+    <h1>quantum <span class="eig">consciousness</span></h1>
+    <p class="gloss">FRINGE SCIENCE · Orch-OR — <em>the proposal that consciousness arises from quantum events in tiny protein tubes inside brain cells, ended by a collapse linked to gravity</em></p>
+    <p class="thesis">In 1989 the mathematical physicist Roger Penrose, who later won the Nobel Prize in Physics, argued that human understanding can’t be a computation and must involve new physics. With the anaesthesiologist Stuart Hameroff he proposed where: in microtubules, the protein scaffolding inside neurons, where quantum states would build up and then collapse through a gravity-related process, each collapse a moment of experience. Long dismissed as impossible in a warm brain, the theory has gained striking support since 2020. Here you can time a moment of consciousness, light up a microtubule’s quantum glow, and keep a rat awake with a microtubule drug.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum physics, neuroscience, anaesthesiology</dd></div>
+    <div><dt>Models</dt><dd>Penrose’s collapse clock, superradiance in tryptophan networks, the 2024 anaesthesia test</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 15 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 007 (superposition) and 012 (decoherence).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>quantum effect, prediction</span><span class="key"><i style="background:var(--ice)"></i>classical, control</span><span class="key"><i style="background:var(--violet)"></i>brain rhythm, collapse</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="or">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Objective reduction</span><h2>Timing a moment of experience</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A growing patch of microtubule lattice in superposition. A clock shows how long Penrose's formula says the superposition lasts before collapsing; with about twenty billion tubulins it matches the 25-millisecond period of the brain's 40-hertz gamma rhythm."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="n1">Tubulins in superposition <input type="range" id="n1" min="0" max="100" step="1" value="58"><output id="n1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Collapse time τ</b><span id="r1t" class="eg">—</span></div>
+          <div class="ro"><b>Moments per second</b><span id="r1f">—</span></div>
+          <div class="ro"><b>Matches a brain rhythm</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Penrose proposed that a quantum superposition cannot last forever: when two versions of reality differ in how they bend space-time, nature chooses between them after a time τ = ħ / <var>E</var><sub>G</sub>, where <var>E</var><sub>G</sub> is the gravitational energy of the difference. The more mass in superposition, the faster the collapse.</p>
+        <p>Hameroff realised the formula could be checked against the brain. If each collapse is a moment of experience, it should happen at the pace of the brain’s own rhythms.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>With roughly twenty billion tubulin proteins in superposition, a small fraction of the brain’s total, τ comes out at about 25 milliseconds: the period of the 40-hertz gamma rhythm most closely linked to conscious awareness. A theory built from black-hole physics landed on a neuroscience number without being tuned to it. Orch-OR is also one of very few theories of consciousness that makes testable physical predictions.</div>
+          <div class="con"><b>The case against</b>The estimate of <var>E</var><sub>G</sub> depends on uncertain assumptions about how tubulin mass is displaced, so the match could be looser than it looks.</div>
+        </div>
+        <div class="task"><b>Try this</b>Drag the number of tubulins until the clock reads 25 ms. Then try ten times fewer: the moments become too slow to keep up with thought.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">τ ≈ ħ / <var>E</var><sub>G</sub>,&nbsp; <var>E</var><sub>G</sub> ∝ <var>N</var><sub>tubulin</sub>,&nbsp; τ ≈ 25 ms at <var>N</var> ≈ 2 × 10<sup>10</sup></div>
+          <p>This follows the scaling used by Hameroff and Penrose in their 2014 review in <i>Physics of Life Reviews</i>, with collapse time inversely proportional to the number of tubulins involved. The brain contains roughly 10<sup>18</sup>–10<sup>19</sup> tubulins in all.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="glow">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Superradiance, 2024</span><h2>A quantum glow in warm protein</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A lattice of tryptophan molecules in a microtubule. When excited together they can emit light collectively, brighter and faster than the same molecules acting alone, an effect called superradiance. A chart compares collective and independent emission as the network grows."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="s2">Tryptophans in the network <input type="range" id="s2" min="0" max="100" step="1" value="70"><output id="s2o">—</output></label>
+          <div class="seg" role="group" aria-label="Emission">
+            <button class="btn" type="button" data-em="col" aria-pressed="true">Collective</button>
+            <button class="btn" type="button" data-em="ind">Independent</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Emission speed vs. one molecule</b><span id="r2e" class="eg">—</span></div>
+          <div class="ro"><b>Network size</b><span id="r2n">—</span></div>
+          <div class="ro"><b>At body temperature</b><span id="r2t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The standard objection to Orch-OR is that the brain is too warm, wet and noisy for quantum effects to survive. In 2000 the physicist Max Tegmark calculated that they would vanish within about 10<sup>−13</sup> seconds, a ten-trillionth of a second.</p>
+        <p>Microtubules are lined with the amino acid tryptophan, which absorbs and emits ultraviolet light. When many tryptophans are arranged in a precise lattice, they can share an excitation and release it together, a quantum effect called <span class="i">superradiance</span>, which is faster and brighter than the molecules acting alone.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 2024 Philip Kurian’s group at Howard University, with colleagues in Switzerland and Italy, reported in the <i>Journal of Physical Chemistry B</i> that tryptophan networks in microtubules show superradiance, with measured fluorescence matching the quantum prediction, at room temperature. Quantum effects are already known to matter in photosynthesis and perhaps bird navigation; this is evidence of collective quantum behaviour in exactly the structure Orch-OR points to. Hagan, Hameroff and Tuszyński had argued in 2002 that ordered water and shielding could extend coherence times by many orders of magnitude.</div>
+          <div class="con"><b>The case against</b>Superradiance lasts far less than the 25 ms the theory needs, and showing a quantum effect in a protein is not the same as showing it plays a role in thought.</div>
+        </div>
+        <div class="task"><b>Try this</b>Switch between collective and independent emission and grow the network. Collective emission speeds up as the network grows; independent molecules never do.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">collective decay rate ≈ <var>N</var><sub>eff</sub> × single-molecule rate</div>
+          <p>In an ideal superradiant system the emission rate grows in proportion to the number of molecules acting coherently. Disorder and temperature limit this, so the effective number saturates; the simulation uses a smooth saturation to reflect that.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="anaes">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Anaesthesia, 2024</span><h2>A microtubule drug delays unconsciousness</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Rats breathing anaesthetic gas, some given a drug that stabilises microtubules. A chart shows the share of each group still conscious over time; the treated rats stay conscious about a minute longer."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="r3">Microtubule protection <input type="range" id="r3" min="0" max="100" step="1" value="100"><output id="r3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">New group of rats</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Untreated: lose consciousness after</b><span id="r3a">—</span></div>
+          <div class="ro"><b>Treated: lose consciousness after</b><span id="r3b" class="eg">—</span></div>
+          <div class="ro"><b>Delay</b><span id="r3d">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Anaesthetics switch consciousness off and on again reliably, so how they work is one of the best clues to what consciousness is. Hameroff, an anaesthesiologist, has long argued that anaesthetic gases act on microtubules, dampening the quantum activity Orch-OR depends on.</p>
+        <p>That makes a prediction: drugs that stabilise microtubules should make animals harder to anaesthetise.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 2024 Michael Wiest’s group at Wellesley College gave rats epothilone B, a drug that binds and stabilises microtubules, and found in <i>eNeuro</i> that they took about 69 seconds longer to lose consciousness under isoflurane gas than untreated rats. The prediction came from the quantum theory first, and the result came out as predicted. Earlier modelling by Travis Craddock and colleagues showed anaesthetics dampen collective vibrations in tubulin in proportion to their potency.</div>
+          <div class="con"><b>The case against</b>Anaesthetics bind many proteins, especially in cell membranes, and microtubules could matter for non-quantum reasons, so the result supports the theory without proving it.</div>
+        </div>
+        <div class="task"><b>Try this</b>With full protection, compare the two curves and read off the delay. Set protection to zero and the curves merge.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">share still conscious at time <var>t</var> = 1 − Φ((<var>t</var> − <var>μ</var>) / <var>σ</var>)</div>
+          <p>Each simulated rat loses its righting reflex at a time drawn from a normal distribution, centred near four minutes for untreated rats; full protection shifts the centre by about 69 seconds, as reported. Each group has eight rats.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1989</div><h3>The Emperor’s New Mind</h3><p>Penrose argued that consciousness involves non-computable physics linked to quantum gravity.</p></div>
+      <div class="g"><div class="where">1996</div><h3>Orch-OR</h3><p>Hameroff and Penrose published “orchestrated objective reduction”, placing the process in neuronal microtubules.</p></div>
+      <div class="g"><div class="where">2020</div><h3>Penrose’s Nobel</h3><p>Penrose shared the Nobel Prize in Physics for showing that black holes follow from general relativity.</p></div>
+      <div class="g"><div class="where">2024</div><h3>Two results</h3><p>Superradiance in microtubule tryptophan networks, and a microtubule drug that delays anaesthesia in rats, both reported in peer-reviewed journals.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Orch-OR predicted a <span class="a">25-millisecond moment of experience</span> and a role for microtubules in anaesthesia; recent experiments have begun to back it, making it one of the few theories of consciousness that can be put to a physical test.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><span class="chip here">055 · Quantum consciousness</span><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 055 · Quantum Consciousness · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: collapse clock ---------- */
+(function () {
+  const cv = $('#c1'), NS = $('#n1'), NO = $('#n1o'), rT = $('#r1t'), rF = $('#r1f'), rM = $('#r1m');
+  const st = { t: 0 };
+  const band = f => f < 4 ? 'delta (slow sleep)' : f < 8 ? 'theta' : f < 13 ? 'alpha' : f < 30 ? 'beta' : f <= 100 ? (f > 30 && f < 50 ? 'gamma: the awareness rhythm' : 'gamma') : 'faster than any brain rhythm';
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const N = 10 ** (8 + 4 * +NS.value / 100), tau = 0.025 * 2e10 / N, f = 1 / tau;
+    NO.value = `${(N / 10 ** Math.floor(Math.log10(N))).toFixed(1)} × 10${sup(Math.floor(Math.log10(N)))}`;
+    setText(rT, tau >= 1 ? `${tau.toFixed(1)} s` : tau >= 1e-3 ? `${(tau * 1000).toFixed(1)} ms` : `${(tau * 1e6).toFixed(0)} µs`); setText(rF, f < 10 ? f.toFixed(2) : Math.round(f).toLocaleString('en')); setText(rM, band(f));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // lattice
+    const ly = 34, lh = h * 0.42, cols = w < 560 ? 22 : 40, rows = 13, cw = (w - 28) / cols, ch = lh / rows, frac = clamp((Math.log10(N) - 8) / 4, 0.03, 1);
+    const ph = (st.t / Math.max(tau, 0.004)) % 1, glow = REDUCE ? 0.6 : 0.35 + 0.65 * (1 - ph);
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const x = 14 + c * cw + (r % 2) * cw / 2, y = ly + r * ch, inS = (((c * 374761393 + r * 668265263) >>> 0) % 1000) / 1000 < frac;
+      ctx.fillStyle = inS ? rgba(COL.eigen, 0.25 + 0.6 * glow) : rgba(COL.ice, 0.18); ctx.beginPath(); ctx.ellipse(x + cw / 2, y + ch / 2, cw * 0.32, ch * 0.36, 0, 0, Math.PI * 2); ctx.fill(); }
+    tag(ctx, 'MICROTUBULE LATTICE · PINK: TUBULINS IN SUPERPOSITION', 14, 22);
+    // timeline 0..200 ms
+    const gx = 40, gy = ly + lh + 30, gw = w - gx - 16, gh = h - gy - 28, X = s => gx + s / 0.2 * gw, mid = gy + gh / 2;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.strokeStyle = COL.violet; ctx.lineWidth = 1.5; ctx.beginPath(); for (let i = 0; i <= 400; i++) { const s = i / 400 * 0.2, y = mid - Math.sin(2 * Math.PI * 40 * s) * gh * 0.32; i ? ctx.lineTo(X(s), y) : ctx.moveTo(X(s), y); } ctx.stroke(); ctx.lineWidth = 1;
+    tag(ctx, '40 Hz gamma rhythm', gx + 6, gy + 14, COL.violet);
+    if (tau < 0.2) { const n = Math.min(400, Math.floor(0.2 / tau)); ctx.fillStyle = COL.eigen; for (let i = 1; i <= n; i++) { const x = X(i * tau); ctx.fillRect(x - 1, gy + 4, n > 100 ? 1 : 2, gh - 8); } }
+    else tag(ctx, `one collapse every ${tau.toFixed(2)} s: off this chart`, gx + gw - 6, gy + gh - 8, COL.eigen, 'right');
+    [0, 50, 100, 150, 200].forEach(s => tag(ctx, `${s} ms`, X(s / 1000), gy + gh + 14, COL['ink-3'], 'center'));
+    tag(ctx, 'PINK TICKS: COLLAPSES (MOMENTS OF EXPERIENCE)', gx + gw, gy - 8, COL.eigen, 'right');
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: superradiance ---------- */
+(function () {
+  const cv = $('#c2'), SS = $('#s2'), SO = $('#s2o'), rE = $('#r2e'), rN = $('#r2n'), rT = $('#r2t');
+  const st = { em: 'col', t: 0, ph: [] };
+  segs('[data-em]', b => st.em = b.dataset.em);
+  const Neff = N => N / (1 + N / 12000) * 0.9;
+  const r0 = mk(5); for (let i = 0; i < 260; i++) st.ph.push(r0());
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const N = Math.round(10 ** (5 * +SS.value / 100)), col = st.em === 'col', sp = col ? Math.max(1, Neff(N)) : 1; SO.value = N.toLocaleString('en');
+    setText(rE, col ? `${sp < 10 ? sp.toFixed(1) : Math.round(sp).toLocaleString('en')}× faster` : '1× (no speed-up)'); setText(rN, `${N.toLocaleString('en')} tryptophans`); setText(rT, col ? 'collective effect persists' : '—');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // ring cross-section of a microtubule with dipoles
+    const cx = Math.min(w * 0.27, 170), cy = h * 0.42, R = Math.min(cx - 20, h * 0.3), M = 13 * 6, period = col ? 1.6 : 1.6;
+    const tt = st.t % period, burst = col ? Math.exp(-tt * 1.6) : 0;
+    for (let i = 0; i < M; i++) { const a = i / M * Math.PI * 2, x = cx + Math.cos(a) * R * (0.82 + 0.18 * ((i % 6) / 6)), y = cy + Math.sin(a) * R * (0.82 + 0.18 * ((i % 6) / 6));
+      const lit = col ? burst : (((st.t * 0.9 + st.ph[i]) % 1) < 0.06 ? 1 : 0);
+      ctx.fillStyle = lit > 0.05 ? rgba(COL.eigen, 0.3 + 0.7 * lit) : rgba(COL.ice, 0.35); ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2); ctx.fill(); }
+    if (col && burst > 0.05) { ctx.strokeStyle = rgba(COL.eigen, burst * 0.7); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R + 8 + (1 - burst) * 40, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1; }
+    tag(ctx, col ? 'collective flash' : 'independent flickers', cx, cy + R + 30, col ? COL.eigen : COL.ice, 'center');
+    // chart: speed-up vs network size
+    const gx = Math.max(cx + R + 50, w * 0.5), gy = 40, gw = w - gx - 16, gh = h - gy - 40, X = n => gx + Math.log10(n) / 5 * gw, Y = v => gy + gh - Math.log10(Math.max(1, v)) / 4 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx, Y(1)); ctx.lineTo(gx + gw, Y(1)); ctx.stroke();
+    ctx.strokeStyle = COL.eigen; ctx.beginPath(); for (let i = 0; i <= 100; i++) { const n = 10 ** (i / 20); i ? ctx.lineTo(X(n), Y(Math.max(1, Neff(n)))) : ctx.moveTo(X(n), Y(1)); } ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(X(N), Y(sp), 5, 0, Math.PI * 2); ctx.fill();
+    tag(ctx, 'collective', gx + gw - 6, Y(Neff(1e5)) + 14, COL.eigen, 'right'); tag(ctx, 'independent', gx + gw - 6, Y(1) - 6, COL.ice, 'right');
+    ['1', '100', '10⁴'].forEach((l, i) => tag(ctx, l, X(10 ** (i * 2)), gy + gh + 14, COL['ink-3'], 'center')); ['1×', '100×'].forEach((l, i) => tag(ctx, l, gx - 4, Y(10 ** (i * 2)) + 4, COL['ink-3'], 'right'));
+    tag(ctx, w < 560 ? 'SPEED-UP' : 'EMISSION SPEED-UP · NETWORK SIZE →', gx, gy - 8);
+    tag(ctx, 'MICROTUBULE CROSS-SECTION · DOTS: TRYPTOPHANS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: anaesthesia ---------- */
+(function () {
+  const cv = $('#c3'), RS = $('#r3'), RO = $('#r3o'), GB = $('#go3'), rA = $('#r3a'), rB = $('#r3b'), rD = $('#r3d');
+  const st = { seed: 4, base: [], t: 0 };
+  function gen() { const r = mk(st.seed); st.base = [0, 1].map(() => Array.from({ length: 8 }, () => 240 + 32 * gs(r))); st.t = 0; }
+  GB.addEventListener('click', () => { st.seed += 3; gen(); }); gen();
+  const fmt = s => `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s`;
+  function frame(dt) {
+    st.t = REDUCE ? 480 : Math.min(480, st.t + dt * 120);
+    const sh = 69 * +RS.value / 100; RO.value = `${RS.value}%`;
+    const A = st.base[0], B = st.base[1].map(v => v + sh), mA = A.reduce((a, v) => a + v, 0) / 8, mB = B.reduce((a, v) => a + v, 0) / 8;
+    setText(rA, fmt(mA)); setText(rB, fmt(mB)); setText(rD, `${mB - mA >= 0 ? '+' : '−'}${Math.abs(Math.round(mB - mA))} s`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 44, gy = 34, gw = w - gx - 16, gh = h - gy - 90, X = s => gx + s / 480 * gw, Y = v => gy + gh - v * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    [[A, COL.ice, 'untreated'], [B, COL.eigen, 'microtubule drug']].forEach(([arr, c, l], gi) => { const srt = arr.slice().sort((a, b) => a - b); ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); let v = 1;
+      srt.forEach(t => { if (t > st.t) return; ctx.lineTo(X(t), Y(v)); v -= 1 / 8; ctx.lineTo(X(t), Y(v)); }); ctx.lineTo(X(Math.min(st.t, 480)), Y(v)); ctx.stroke(); ctx.lineWidth = 1;
+      tag(ctx, l, X(gi ? mB : mA) + (gi ? 8 : -8), Y(0.5) + (gi ? -10 : 18), c, gi ? 'left' : 'right');
+      // rats as dots
+      const ry = gy + gh + 30 + gi * 24; tag(ctx, gi ? 'drug' : 'none', gx - 6, ry + 4, c, 'right'); arr.forEach((t, i) => { const down = t <= st.t; ctx.fillStyle = down ? rgba(c, 0.3) : c; ctx.beginPath(); ctx.ellipse(gx + 10 + i * 22, ry, 8, down ? 3 : 6, 0, 0, Math.PI * 2); ctx.fill(); }); });
+    dash(ctx, X(st.t), gy, X(st.t), gy + gh, rgba(COL.ink, 0.4)); tag(ctx, fmt(st.t), X(st.t) + 4, gy + 14, COL['ink-2']);
+    [0, 2, 4, 6, 8].forEach(m => tag(ctx, `${m} min`, X(m * 60), gy + gh + 13, COL['ink-3'], 'center'));
+    tag(ctx, 'SHARE OF RATS STILL CONSCIOUS UNDER ISOFLURANE', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

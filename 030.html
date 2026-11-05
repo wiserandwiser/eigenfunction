@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Batteries</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 030 colour code: pink = lithium ions, ice = electrons and lithium metal, violet = the cathode; red marks a short circuit. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 030 · Breakthrough technology · 4 of 8</div>
+    <a class="navlink" href="029.html">← Φ 029</a>
+    <a class="navlink" href="031.html">Φ 031 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 030 · Breakthrough technology · 4 of 8</p>
+    <h1><span class="eig">batteries</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · energy storage — <em>how lithium ions rock back and forth to power almost everything, and what comes next</em></p>
+    <p class="thesis">The lithium-ion battery in your phone works by shuttling charged lithium atoms between two layered materials. Since its launch in 1991 its cost has fallen about 90% in just over a decade, turning electric cars and grid storage from dreams into everyday hardware. The next leap, solid-state cells, depends on taming lithium’s habit of growing needles.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Electrochemistry, materials science</dd></div>
+    <div><dt>Models</dt><dd>The rocking-chair cell, building an electric car’s pack, dendrites and solid electrolytes</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 4 of 8. Pairs with Φ 029 (solar).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>lithium ions</span><span class="key"><i style="background:var(--ice)"></i>electrons · lithium metal</span><span class="key"><i style="background:var(--violet)"></i>cathode</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="rock">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The rocking chair</span><h2>Ions one way inside, electrons the other way outside</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A lithium-ion cell: lithium ions travel through the liquid electrolyte between layered graphite and a layered metal-oxide, while electrons travel the other way through an outside wire that lights a bulb during discharge."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Mode">
+            <button class="btn" type="button" data-mode="dis" aria-pressed="true">Discharge</button>
+            <button class="btn" type="button" data-mode="chg">Charge</button>
+          </div>
+          <label class="scrub" for="c1r">Current <input type="range" id="c1r" min="10" max="300" step="1" value="50"><output id="c1ro">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>State of charge</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Voltage</b><span id="r1v">—</span></div>
+          <div class="ro"><b>A full charge-or-empty takes</b><span id="r1t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A lithium-ion cell has two electrodes that can each store lithium <em>between their atomic layers</em>, like books slotted onto shelves. On one side is graphite, stacked sheets of carbon. On the other is a layered metal oxide, often of nickel, manganese and cobalt (NMC), or iron phosphate (LFP).</p>
+        <p>When you use the battery, lithium atoms in the graphite give up an electron each. The ions travel through the liquid <strong>electrolyte</strong> and a thin porous separator to the oxide. The electrons can’t pass through the electrolyte, so they take the long way round, <span class="i">through your phone</span>, doing work on the way. Charging pushes both back. Nothing is burned or used up; the lithium just rocks back and forth, which is why it is called a rocking-chair battery.</p>
+        <p>Pull current faster and the voltage sags, because the cell’s internal resistance turns some energy into heat. That is why fast charging gets warm, and why chargers slow down near full.</p>
+        <div class="task"><b>Try this</b>Discharge until the cell is nearly empty and watch the voltage fall. Then charge it, and try a high current.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Li<sub><var>x</var></sub>C₆ + Li<sub>1−<var>x</var></sub>MO₂ ⇄ C₆ + LiMO₂,&nbsp; <var>V</var> = <var>V</var><sub>OC</sub>(SoC) − <var>IR</var></div>
+          <p>Current is shown as a C-rate: 1C empties a full cell in one hour, 2C in thirty minutes. The open-circuit voltage curve is a smoothed NMC-graphite shape, 3.0–4.2 V, and the internal resistance is a single fixed value. Real cells also have slower diffusion effects, and their voltage depends on temperature and age.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="pack">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Energy density</span><h2>Build an electric car’s battery</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A car with its battery pack drawn to scale, sized for the chosen range and chemistry, beside a chart of how much energy each battery chemistry stores per kilogram."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Chemistry">
+            <button class="btn" type="button" data-chem="0">Lead–acid</button>
+            <button class="btn" type="button" data-chem="1">Sodium-ion</button>
+            <button class="btn" type="button" data-chem="2">LFP</button>
+            <button class="btn" type="button" data-chem="3" aria-pressed="true">NMC</button>
+            <button class="btn" type="button" data-chem="4">Solid-state (target)</button>
+          </div>
+          <label class="scrub" for="km2">Range <input type="range" id="km2" min="100" max="900" step="10" value="450"><output id="km2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Pack energy</b><span id="r2e">—</span></div>
+          <div class="ro"><b>Pack mass</b><span id="r2m" class="eg">—</span></div>
+          <div class="ro"><b>Pack volume</b><span id="r2v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>What matters for a car is <strong>energy density</strong>: how much energy a kilogram, or a litre, of battery holds. A typical electric car uses about 16 kWh per 100 km, so range comes down to how much battery you can carry.</p>
+        <p>Chemistries trade off. <span class="i">NMC</span> packs the most energy but uses costly nickel and cobalt. <span class="i">LFP</span> (lithium iron phosphate) holds less but is cheaper, safer and lasts thousands of cycles, and now powers most new electric cars sold in China. <span class="i">Sodium-ion</span> avoids lithium altogether, using abundant salt, at a further cost in density.</p>
+        <p>Petrol holds about 12,000 Wh per kilogram, around fifty times more than the best batteries. But an engine wastes most of it as heat, while an electric motor uses about 90%. The gap that actually matters is closer to fifteen-fold, and shrinking.</p>
+        <div class="task"><b>Try this</b>Set a 500 km range and switch between chemistries. Can lead–acid even fit in the car?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">pack energy = range × 0.16 kWh/km,&nbsp; mass = energy / (Wh/kg),&nbsp; volume = energy / (Wh/L)</div>
+          <p>Rough pack-level figures, including casing and cooling, about 2025: lead–acid 30 Wh/kg and 50 Wh/L; sodium-ion 110 and 150; LFP 140 and 220; NMC 190 and 300; solid-state targets around 300 and 500. Cells alone are denser still. The pack is drawn as a slab 2.4 m × 1.4 m under the floor; real packs add structure and cooling. Real consumption varies with speed, size and weather.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="dendrite">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The next leap</span><h2>Taming lithium’s needles</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Lithium metal plating onto an electrode during charging. In a liquid electrolyte it grows branching needles that reach across and short the cell; in a solid electrolyte it deposits as a flatter layer."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Electrolyte">
+            <button class="btn" type="button" data-el="liq" aria-pressed="true">Liquid electrolyte</button>
+            <button class="btn" type="button" data-el="sol">Solid electrolyte</button>
+          </div>
+          <label class="scrub" for="f3">Charging speed <input type="range" id="f3" min="0" max="100" step="1" value="60"><output id="f3o">—</output></label>
+          <button class="btn solo" type="button" id="re3">Restart</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Status</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Lithium plated</b><span id="r3p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The biggest prize is to swap graphite for pure <strong>lithium metal</strong>, which stores about ten times more per gram. The trouble is how lithium plates back on when you charge. Atoms land wherever they first touch, and any bump sticks out further into the flow of ions, so it catches more and grows faster.</p>
+        <p>The result is <span class="i">dendrites</span>: branching needles of lithium that can pierce the separator and short-circuit the cell, sometimes starting a fire. Fast charging makes it worse. This is why lithium-metal anodes, first tried in the 1970s, were abandoned for graphite.</p>
+        <p><strong>Solid-state</strong> batteries replace the flammable liquid with a solid ceramic or polymer electrolyte that is meant to press lithium flat and block needles. Getting a solid to stay in perfect contact through thousands of charges is hard; carmakers are now targeting the late 2020s.</p>
+        <div class="task"><b>Try this</b>Charge with a liquid electrolyte, fast, and watch the needles race across. Then switch to solid and compare.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">diffusion-limited aggregation:&nbsp; random walk + drift → stick on contact</div>
+          <p>A teaching model, not an electrochemical simulation. Each ion takes a random walk with a drift towards the electrode; faster charging means stronger drift and less time to spread out. In “liquid” mode ions stick wherever they first touch; in “solid” mode sharp tips are disfavoured, mimicking the mechanical pressure and even current of a good solid electrolyte. Real solid electrolytes can still grow dendrites along grain boundaries.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1970s–1985</div><h3>The inventors</h3><p>Stanley Whittingham made the first lithium-intercalation battery, John Goodenough found the cobalt-oxide cathode, and Akira Yoshino built the safe graphite design. They shared the 2019 Nobel Prize in Chemistry.</p></div>
+      <div class="g"><div class="where">1991</div><h3>Sony’s first cell</h3><p>The first commercial lithium-ion battery shipped in a Sony camcorder. Laptops and mobile phones followed, then electric cars.</p></div>
+      <div class="g"><div class="where">Prices</div><h3>The cost collapse</h3><p>Average pack prices fell from over $1,000 per kWh in 2010 to about $115 in 2024, driven by scale, much as with solar panels (Φ 029).</p></div>
+      <div class="g"><div class="where">The grid</div><h3>Grid batteries</h3><p>Huge battery parks now store midday solar for the evening peak. In California, on many days batteries now supply the largest share of power in the early evening.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A lithium-ion battery <span class="a">rocks lithium ions</span> between two layered materials while electrons do work outside; the next leap needs lithium to plate flat instead of growing needles.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><span class="chip here">030 · Batteries</span><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 030 · The rocking chair · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---------- BAY 01: the rocking-chair cell ---------- */
+(function () {
+  const cv = $('#c1'), cS = $('#c1r'), cO = $('#c1ro');
+  const rS = $('#r1s'), rV = $('#r1v'), rT = $('#r1t');
+  const N = 36, st = { mode: 'dis', soc: 0.92, ions: [], el: [], acc: 0 };
+  // each ion: side 'a' (anode) or 'c' (cathode) or travelling, with a home slot on each side
+  for (let i = 0; i < N; i++) st.ions.push({ slotA: i, slotC: i, side: i < N * 0.92 ? 'a' : 'c', t: 0 });
+  $$('[data-mode]').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; $$('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  const ocv = s => 3.0 + 0.55 * s + 0.65 * (1 - Math.exp(-7 * s)) - 0.05 + 0.1 * Math.pow(s, 6);
+  function frame(dt) {
+    const C = +cS.value / 100; cO.value = `${C.toFixed(1)}C`;
+    const step = REDUCE ? 0 : dt;
+    const inA = st.ions.filter(i => i.side === 'a').length, inC = st.ions.filter(i => i.side === 'c').length;
+    st.soc = (inA + st.ions.filter(i => i.side === 'tc').length) / N;
+    // launch ions at a rate proportional to the C-rate (visual: 1C ≈ one ion every 0.6 s)
+    st.acc += step * C * 1.6;
+    while (st.acc >= 1) { st.acc -= 1; const src = st.mode === 'dis' ? 'a' : 'c', cand = st.ions.filter(i => i.side === src); if (!cand.length) break; const io = cand[Math.floor(Math.random() * cand.length)]; io.side = st.mode === 'dis' ? 'ta' : 'tc'; io.t = 0; st.el.push({ t: 0, dir: st.mode === 'dis' ? 1 : -1 }); }
+    st.ions.forEach(io => { if (io.side === 'ta' || io.side === 'tc') { io.t += step * (0.5 + C * 0.4); if (io.t >= 1) io.side = io.side === 'ta' ? 'c' : 'a'; } });
+    st.el.forEach(e => e.t += step * (0.5 + C * 0.4)); st.el = st.el.filter(e => e.t < 1);
+    const soc = inA / N, V = ocv(soc) + (st.mode === 'dis' ? -1 : 1) * 0.08 * C;
+    setText(rS, `${Math.round(soc * 100)}%`); setText(rV, `${V.toFixed(2)} V${soc < 0.04 && st.mode === 'dis' ? ' · empty' : soc > 0.97 && st.mode === 'chg' ? ' · full' : ''}`);
+    setText(rT, C >= 1 ? `${Math.round(60 / C)} minutes` : `${(1 / C).toFixed(1)} hours`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const top = h * 0.3, bot = h - 24, ax0 = w * 0.08, ax1 = w * 0.36, cx0 = w * 0.64, cx1 = w * 0.92, sepX = w * 0.5;
+    ctx.fillStyle = rgba(COL.ice, 0.05); ctx.fillRect(ax1, top, cx0 - ax1, bot - top);
+    ctx.setLineDash([2, 4]); ctx.strokeStyle = rgba(COL.ink, 0.35); ctx.beginPath(); ctx.moveTo(sepX, top); ctx.lineTo(sepX, bot); ctx.stroke(); ctx.setLineDash([]);
+    // electrodes: graphite sheets and oxide layers
+    const rows = 9, rh = (bot - top) / rows;
+    for (let r = 0; r <= rows; r++) { const y = top + r * rh; ctx.strokeStyle = rgba(COL['ink-2'], 0.7); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ax0, y); ctx.lineTo(ax1, y); ctx.stroke(); ctx.strokeStyle = rgba(COL.violet, 0.8); ctx.beginPath(); ctx.moveTo(cx0, y); ctx.lineTo(cx1, y); ctx.stroke(); }
+    ctx.lineWidth = 1;
+    const slot = (i, x0, x1) => { const r = i % (rows), c = Math.floor(i / rows); return [x0 + (c + 0.5) / Math.ceil(N / rows) * (x1 - x0), top + (r + 0.5) * rh]; };
+    st.ions.forEach(io => {
+      let x, y; const pa = slot(io.slotA, ax0, ax1), pc = slot(io.slotC, cx0, cx1);
+      if (io.side === 'a') [x, y] = pa; else if (io.side === 'c') [x, y] = pc; else { const f = io.side === 'ta' ? io.t : 1 - io.t; x = pa[0] + (pc[0] - pa[0]) * f; y = pa[1] + (pc[1] - pa[1]) * f + Math.sin(f * Math.PI * 3) * 6; }
+      ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(x, y, 3.6, 0, Math.PI * 2); ctx.fill();
+    });
+    // outside circuit
+    const wy = top - 34; ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo((ax0 + ax1) / 2, top); ctx.lineTo((ax0 + ax1) / 2, wy); ctx.lineTo((cx0 + cx1) / 2, wy); ctx.lineTo((cx0 + cx1) / 2, top); ctx.stroke(); ctx.lineWidth = 1;
+    const lx = w / 2, glow = st.mode === 'dis' && soc > 0.03 ? Math.min(1, C) : 0;
+    if (st.mode === 'dis') { const g = ctx.createRadialGradient(lx, wy, 0, lx, wy, 26); g.addColorStop(0, rgba(COL.eigen, 0.9 * glow)); g.addColorStop(1, rgba(COL.eigen, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(lx, wy, 26, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = COL.ink; ctx.beginPath(); ctx.arc(lx, wy, 9, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = COL['ink-2']; ctx.fillText('your phone', lx - 34, wy - 16); }
+    else { ctx.fillStyle = COL['rule-hi']; ctx.fillRect(lx - 24, wy - 11, 48, 22); ctx.fillStyle = COL.ink; ctx.fillText('charger', lx - 22, wy + 4); }
+    st.el.forEach(e => { const f = e.dir > 0 ? e.t : 1 - e.t, L1 = wy - top, total = (w * 0.56) + 2 * Math.abs(L1); let d = f * total, x, y; const aX = (ax0 + ax1) / 2, cX = (cx0 + cx1) / 2; if (d < -L1) { x = aX; y = top - d; } else if (d < -L1 + (cX - aX)) { x = aX + d + L1; y = wy; } else { x = cX; y = wy + (d - (-L1 + cX - aX)); } ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('graphite (−)', ax0, bot + 16); ctx.fillText('metal oxide (+)', cx0, bot + 16); ctx.fillText('electrolyte', ax1 + 6, top + 14); ctx.fillStyle = COL['ink-3']; ctx.fillText('separator', sepX + 4, bot - 6);
+    ctx.fillStyle = COL.eigen; ctx.fillText('● Li⁺ ion', 20, 22); ctx.fillStyle = COL.ice; ctx.fillText('● electron', 106, 22);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: build a pack ---------- */
+(function () {
+  const cv = $('#c2'), kS = $('#km2'), kO = $('#km2o');
+  const rE = $('#r2e'), rM = $('#r2m'), rV = $('#r2v');
+  const CH = [['Lead–acid', 30, 50, '#95949d'], ['Sodium-ion', 110, 150, '#5a8fb3'], ['LFP', 140, 220, COL.ice], ['NMC', 190, 300, COL.eigen], ['Solid-state (target)', 300, 500, COL.violet]];
+  const st = { k: 3 };
+  $$('[data-chem]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.chem; $$('[data-chem]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame() {
+    const km = +kS.value; kO.value = `${km} km`;
+    const E = km * 0.16, c = CH[st.k], m = E * 1000 / c[1], vol = E * 1000 / c[2];
+    setText(rE, `${E.toFixed(0)} kWh`); setText(rM, `${Math.round(m).toLocaleString('en-US')} kg${m > 1500 ? ' · heavier than the car' : ''}`); setText(rV, `${Math.round(vol).toLocaleString('en-US')} litres`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, cw = narrow ? w - 28 : w * 0.58, ch = narrow ? h * 0.48 : h * 0.7, ox = 14, oy = narrow ? 26 : (h - ch) / 2;
+    // car side view, 4.6 m long; pack floor area up to 2.6 m × 1.5 m
+    const s = cw / 5.0, X = x => ox + 0.2 * s + x * s, base = oy + ch * 0.78;
+    ctx.strokeStyle = COL['ink-2']; ctx.lineWidth = 1.5; ctx.beginPath();
+    ctx.moveTo(X(0), base - 0.35 * s); ctx.lineTo(X(0.1), base - 0.75 * s); ctx.lineTo(X(1.2), base - 0.85 * s); ctx.lineTo(X(1.9), base - 1.35 * s); ctx.lineTo(X(3.3), base - 1.38 * s); ctx.lineTo(X(4.1), base - 0.9 * s); ctx.lineTo(X(4.6), base - 0.8 * s); ctx.lineTo(X(4.6), base - 0.3 * s); ctx.lineTo(X(0), base - 0.3 * s); ctx.closePath(); ctx.stroke(); ctx.lineWidth = 1;
+    [0.95, 3.7].forEach(x => { ctx.strokeStyle = COL['ink-2']; ctx.beginPath(); ctx.arc(X(x), base - 0.3 * s, 0.33 * s, 0, Math.PI * 2); ctx.stroke(); });
+    // pack: floor slab 2.6 m long, 1.5 m wide, height from volume
+    const L = 2.4, Wd = 1.4, H = vol / 1000 / (L * Wd), maxH = 0.18, over = H > maxH;
+    const ph = Math.min(H, 1.2) * s, px0 = X(1.1), px1 = X(1.1 + L), py1 = base - 0.32 * s;
+    ctx.fillStyle = rgba(c[3], over ? 0.35 : 0.75); ctx.fillRect(px0, py1 - ph, px1 - px0, ph); ctx.strokeStyle = over ? '#e393b4' : c[3]; ctx.strokeRect(px0, py1 - ph, px1 - px0, ph);
+    ctx.fillStyle = over ? '#e393b4' : COL['ink-2']; ctx.fillText(over ? `pack ${(H * 100).toFixed(0)} cm deep: no room left for people` : `pack ${(H * 100).toFixed(0)} cm deep under the floor`, X(0.2), oy + 14);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('4.6 m CAR · PACK DRAWN TO SCALE', X(0.2), base + 0.35 * s + 12);
+    // energy density bars
+    const bx = narrow ? 96 : w * 0.62 + 70, by = narrow ? oy + ch + 30 : 40, bw = narrow ? w - 130 : w * 0.38 - 90, bh = narrow ? h - by - 20 : h - 80, rowH = bh / (CH.length + 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('Wh PER KG (PACK)', bx - 56, by - 10);
+    CH.forEach((q, i) => { const y = by + i * rowH, wv = q[1] / 320 * bw; ctx.fillStyle = i === st.k ? q[3] : rgba(q[3], 0.35); ctx.fillRect(bx, y + 4, wv, rowH - 10); ctx.fillStyle = i === st.k ? COL.ink : COL['ink-2']; ctx.textAlign = 'right'; ctx.fillText(q[0].replace(' (target)', '*'), bx - 6, y + rowH / 2 + 3); ctx.textAlign = 'left'; ctx.fillText(String(q[1]), bx + wv + 4, y + rowH / 2 + 3); });
+    const y = by + CH.length * rowH; ctx.fillStyle = COL['ink-3']; ctx.fillText('petrol: 12,000 → off the chart', bx, y + rowH / 2 + 3);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: dendrites ---------- */
+(function () {
+  const cv = $('#c3'), fS = $('#f3'), fO = $('#f3o'), reB = $('#re3');
+  const rS = $('#r3s'), rP = $('#r3p');
+  const GW = 150, GH = 96, SEP = Math.floor(GH * 0.82);
+  const st = { el: 'liq', g: null, n: 0, maxY: 1, short: 0 };
+  function reset() { st.g = new Uint8Array(GW * GH); for (let x = 0; x < GW; x++) st.g[x] = 1; st.n = 0; st.maxY = 1; st.short = 0; }
+  $$('[data-el]').forEach(b => b.addEventListener('click', () => { st.el = b.dataset.el; $$('[data-el]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); reset(); }));
+  reB.addEventListener('click', reset); reset();
+  const at = (x, y) => (x < 0 || x >= GW || y < 0) ? 0 : y >= GH ? 0 : st.g[y * GW + x];
+  function walker(drift) {
+    let x = Math.floor(Math.random() * GW), y = Math.min(GH - 1, st.maxY + 6);
+    for (let s = 0; s < 3000; s++) {
+      const r = Math.random();
+      if (r < drift) y--; else { const d = Math.floor(Math.random() * 4); if (d === 0) x++; else if (d === 1) x--; else if (d === 2) y++; else y--; }
+      x = (x + GW) % GW; if (y >= GH) y = GH - 1; if (y < 1) y = 1;
+      const nb = at(x - 1, y) + at(x + 1, y) + at(x, y - 1) + at(x, y + 1);
+      if (nb > 0) {
+        const p = st.el === 'liq' ? 1 : Math.pow(nb / 4, 2.2) + (at(x, y - 1) && at(x - 1, y - 1) && at(x + 1, y - 1) ? 0.6 : 0);
+        if (Math.random() < p) { st.g[y * GW + x] = 2; st.n++; if (y > st.maxY) st.maxY = y; return; }
+      }
+    }
+  }
+  function frame(dt) {
+    const f = +fS.value / 100; fO.value = f < 0.33 ? 'slow' : f < 0.66 ? 'normal' : 'fast';
+    if (!st.short && !REDUCE) { const k = Math.round(40 + 160 * f); for (let i = 0; i < k; i++) { walker(0.02 + 0.3 * f); if (st.maxY >= SEP) { st.short = 1; break; } } }
+    if (st.short) { st.short += dt; if (st.short > 4) reset(); }
+    setText(rS, st.short ? 'SHORT CIRCUIT: a needle touched the other side' : st.maxY > SEP * 0.6 ? 'needles growing towards the separator' : 'plating lithium');
+    setText(rP, `${st.n.toLocaleString('en-US')} atoms (model units)`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cs = Math.min(w / GW, (h - 30) / GH), ox = (w - GW * cs) / 2, oy = 22;
+    const Y = y => oy + (GH - 1 - y) * cs;
+    ctx.fillStyle = rgba(COL.violet, 0.35); ctx.fillRect(ox, oy, GW * cs, (GH - 1 - SEP) * cs);
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('separator → cathode side', ox + 6, oy + 14);
+    ctx.strokeStyle = st.short ? '#e393b4' : rgba(COL.ink, 0.5); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ox, Y(SEP) + cs); ctx.lineTo(ox + GW * cs, Y(SEP) + cs); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = st.el === 'liq' ? rgba(COL.eigen, 0.04) : rgba(COL['ink-3'], 0.12); ctx.fillRect(ox, Y(SEP - 1), GW * cs, (SEP - 1) * cs);
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const v = st.g[y * GW + x]; if (!v) continue; ctx.fillStyle = v === 1 ? COL['ink-2'] : (st.short && y > st.maxY - 3 ? '#e393b4' : COL.ice); ctx.fillRect(ox + x * cs, Y(y), cs + 0.4, cs + 0.4); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('LITHIUM METAL ELECTRODE ↓', ox + 6, oy + GH * cs + 4);
+    if (st.short) { ctx.fillStyle = 'rgba(255,90,90,0.12)'; ctx.fillRect(0, 0, w, h); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

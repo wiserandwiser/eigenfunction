@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Eigenfunction</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: observatory front door. Placard header, a live galaxy chart (each spiral arm is a series, each star a lesson), then the catalogue as an instrument index. */
+:root{
+  --void:#04060c; --bay:#070b14; --bay-2:#0b1120; --rule:#161e33; --rule-hi:#26314d;
+  --ink:#e2e8f4; --ink-2:#a1acc2; --ink-3:#62708a;
+  --ice:#86cfff; --eigen:#e393b4; --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{font-family:var(--body);font-size:17px;line-height:1.6;
+  background:radial-gradient(1100px 560px at 50% 18%, color-mix(in srgb,var(--violet) 7%,transparent), transparent 70%),
+  linear-gradient(color-mix(in srgb,var(--rule) 50%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+  linear-gradient(90deg,color-mix(in srgb,var(--rule) 50%,transparent) 1px,transparent 1px) 0 0/56px 56px,var(--void)}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--void)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.bar .spacer{flex:1}
+.bar .meta{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase}
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;align-items:end;padding-block:48px 24px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(40px,6.2vw,84px);line-height:.95;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);font-weight:500}
+.tag{font-family:var(--body);font-style:italic;font-size:clamp(18px,2.2vw,22px);color:var(--ink-2);margin:14px 0 0;max-width:34ch}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--rule-hi);background:color-mix(in srgb,var(--bay) 80%,transparent)}
+.stats div{padding:14px 16px;border-right:1px solid var(--rule)}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font-family:var(--display);font-weight:500;font-size:34px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.stats span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.chart{position:relative;border:1px solid var(--rule-hi);background:radial-gradient(closest-side,color-mix(in srgb,var(--bay-2) 90%,transparent),var(--void));aspect-ratio:16/9;max-width:100%;overflow:hidden;touch-action:pan-y}
+.chart canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+.chart canvas.drag{cursor:grabbing}
+.chart .corner{position:absolute;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
+.chart .tl{top:12px;left:14px}
+@media (max-width:560px){.chart .tl{display:none}}.chart .br{bottom:12px;right:14px;text-align:right}
+.modes{position:absolute;top:10px;right:12px;z-index:4;display:flex;border:1px solid var(--rule-hi);background:color-mix(in srgb,var(--bay) 92%,transparent)}
+.modes button{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:11px 13px;min-height:40px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.modes button+button{border-left:1px solid var(--rule-hi)}
+.modes button[aria-pressed="true"]{color:var(--ink);background:var(--bay-2);box-shadow:inset 0 -2px 0 var(--eigen)}
+.modes svg{display:block}
+.chart canvas[hidden]{display:none}
+.ztool{position:absolute;z-index:4;top:60px;right:12px;display:flex;flex-direction:column;border:1px solid var(--rule-hi);background:color-mix(in srgb,var(--bay) 92%,transparent)}
+.ztool button{font-family:var(--mono);font-size:15px;line-height:1;color:var(--ink-2);background:transparent;border:0;width:40px;height:40px;cursor:pointer;display:grid;place-items:center}
+.ztool button+button{border-top:1px solid var(--rule-hi)}
+.ztool button:hover{color:var(--ink);background:var(--bay-2)}
+.ztool button[hidden]{display:none}
+.ztool svg{display:block}
+html .chart.fs,html.phi .chart.fs,html body .chart.fs{position:fixed!important;inset:0!important;margin:0!important;z-index:2147483000!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;aspect-ratio:auto!important;border:0!important;transform:none!important;touch-action:none}
+.chart:fullscreen{width:100vw;height:100vh;aspect-ratio:auto!important;border:0;touch-action:none}
+.zhint{position:absolute;z-index:4;left:14px;bottom:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);background:color-mix(in srgb,var(--bay) 92%,transparent);border:1px solid var(--rule-hi);padding:8px 12px;pointer-events:none;transition:opacity .8s;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.zhint[hidden]{display:none}
+@media (max-width:700px){.zhint{top:60px;bottom:auto;left:12px;max-width:calc(100% - 76px);white-space:normal;line-height:1.5}}
+.blabs{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}.blabs[hidden]{display:none}
+.blobe{position:absolute;left:0;top:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sc);white-space:nowrap;transition:opacity .3s;text-shadow:0 0 6px var(--void),0 0 2px var(--void)}
+.blobe.hot{font-weight:600;letter-spacing:.2em}
+.bneu{position:absolute;left:0;top:0;font-family:var(--display);font-size:13px;color:var(--ink);white-space:nowrap;transition:opacity .2s;text-shadow:0 0 6px var(--void),0 0 2px var(--void)}
+.bneu span{font-family:var(--mono);font-size:10px;color:var(--sc)}
+.bnogl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+@media (max-width:560px){.blobe{font-size:9px}}
+.gback{position:absolute;z-index:4;top:10px;left:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--bay-2);border:1px solid var(--eigen);padding:11px 13px;min-height:40px;cursor:pointer}
+.gback[hidden]{display:none}
+.chart:has(.gback:not([hidden])) .tl{visibility:hidden}
+.card{position:absolute;z-index:3;width:min(300px,calc(100% - 24px));background:color-mix(in srgb,var(--bay) 94%,transparent);border:1px solid var(--rule-hi);padding:14px 16px;pointer-events:auto}
+.card .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.card h3{font-family:var(--display);font-weight:500;font-size:20px;margin:4px 0 6px;line-height:1.15}
+.card p{font-size:14.5px;line-height:1.45;color:var(--ink-2);margin:0 0 10px}
+.card a{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:1px solid color-mix(in srgb,var(--ice) 45%,transparent);padding:6px 10px;display:inline-block}
+.card a:hover{background:var(--bay-2)}
+.card a[hidden]{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip b{font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink-2);background:var(--bay-2)}
+.hint{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin:10px 0 0;letter-spacing:.04em}
+section.cat{padding-block:56px 40px}
+.cat-head{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between;margin-bottom:18px}
+.cat-head h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3.4vw,36px);margin:0}
+.search{display:flex;align-items:center;gap:10px;border:1px solid var(--rule-hi);background:var(--bay);padding:0 12px;min-width:0;flex:0 1 360px}
+.search input{flex:1;min-width:0;background:transparent;border:0;color:var(--ink);font-family:var(--mono);font-size:13px;padding:11px 0;outline:none}
+.search label{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-top:16px}
+.lesson{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:14px;border:1px solid var(--rule);background:color-mix(in srgb,var(--bay) 85%,transparent);text-decoration:none;color:inherit;transition:border-color .15s,background .15s}
+.lesson:hover{border-color:var(--rule-hi);background:var(--bay-2)}
+.lesson.soon{opacity:.55;cursor:default}
+.lesson.soon:hover{border-color:var(--rule);background:color-mix(in srgb,var(--bay) 85%,transparent)}
+.soon-tag{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-size:9px;letter-spacing:.14em;white-space:nowrap}
+.lesson canvas{width:64px;height:64px;display:block}
+.lesson .n{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+.lesson h3{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.2;margin:2px 0 4px;color:var(--ink)}
+.lesson p{font-size:13.5px;line-height:1.42;color:var(--ink-2);margin:0}
+.empty{font-family:var(--mono);font-size:12px;color:var(--ink-3);padding:24px 0}
+footer{border-top:1px solid var(--rule);padding-block:22px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-3)}
+@media (max-width:760px){.hero{grid-template-columns:1fr;gap:22px;padding-block:32px 18px}.chart{aspect-ratio:4/5}.chart.is-graph{aspect-ratio:2/3}}
+@media (prefers-reduced-motion:reduce){.lesson{transition:none}}
+.by{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-3);margin:14px 0 0}
+.by a{color:var(--eigen);text-decoration:none}.by a:hover{text-decoration:underline}
+footer .by{display:block;margin-top:8px}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<div id="ef-intro" aria-hidden="true"><canvas></canvas></div>
+<script src="intro.js"></script>
+
+<header class="topbar"><div class="wrap bar">
+  <div class="brand"><svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction</div>
+  <div class="spacer"></div>
+  <a class="meta" href="lineage.html">Lineage</a>
+  <a class="meta" href="#catalogue">Catalogue</a>
+</div></header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Live simulations · a personal observatory</p>
+    <h1>A catalogue of<br><span class="eig">phenomena</span></h1>
+    <p class="tag">Working models I build to understand things, each one a phenomenon to push, pull and break: quantum waves, dying stars, new technology, and the claims at the edge of science.</p>
+  </div>
+  <div class="stats" aria-label="Catalogue at a glance">
+    <div><b id="stL">—</b><span>Phenomena</span></div>
+    <div><b id="stS">—</b><span>Series</span></div>
+    <div><b id="stM">—</b><span>Live models</span></div>
+  </div>
+</section>
+
+<section class="wrap" aria-label="Phenomena galaxy">
+  <div class="chart" id="chart">
+    <canvas id="gal" aria-label="A rotating spiral galaxy. Each arm is a series and each glowing symbol is a phenomenon. Drag to turn it; hover or tap a symbol to see it and open it."></canvas>
+    <canvas id="brain" hidden aria-label="A brain scanned as points. Each lobe is a series and each bright cluster is a phenomenon; axons join pages that build on each other. Drag to turn it; hover a neuron to fire it, and hover a series to set its lobe off."></canvas>
+    <div class="blabs" id="blabs" hidden></div>
+    <canvas id="graph" hidden aria-label="A graph of linked phenomena. Large rings are topics, small symbols are phenomena, and lines join pages that build on each other. Drag nodes; hover or tap to trace links."></canvas>
+    <div class="modes" role="group" aria-label="View">
+      <button type="button" data-view="galaxy" aria-pressed="true"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 7c0-2 2-3 3.5-2S12 8.5 9.5 10 3.5 10.5 2.5 7.5 4 1.5 7.5 1.5 13 4 12.5 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Galaxy</button>
+      <button type="button" data-view="brain" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2.2C5.6 1.4 3.6 1.9 3.1 3.4 1.7 3.6 1 5.1 1.6 6.4.9 7.6 1.4 9.3 2.8 9.7c.2 1.5 1.9 2.4 3.2 1.8L7 11.2V2.2zM7 2.2c1.4-.8 3.4-.3 3.9 1.2 1.4.2 2.1 1.7 1.5 3 .7 1.2.2 2.9-1.2 3.3-.2 1.5-1.9 2.4-3.2 1.8L7 11.2" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M4.2 5.2c.8.3 1.3 1 1.2 1.9M9.8 5.2c-.8.3-1.3 1-1.2 1.9" stroke="currentColor" stroke-width="1"/></svg>Brain</button>
+      <button type="button" data-view="graph" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3l8 2M3 3l2 8M11 5l-6 6M11 5l1 6" stroke="currentColor" stroke-width="1"/><circle cx="3" cy="3" r="1.8" fill="currentColor"/><circle cx="11" cy="5" r="1.8" fill="currentColor"/><circle cx="5" cy="11" r="1.8" fill="currentColor"/><circle cx="12" cy="11" r="1.2" fill="currentColor"/></svg>Graph</button>
+    </div>
+    <div class="ztool" id="ztool" role="group" aria-label="Navigate">
+      <button type="button" id="fsb" aria-label="Full screen" title="Full screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1.5 5V1.5H5M9 1.5h3.5V5M12.5 9v3.5H9M5 12.5H1.5V9" stroke="currentColor" stroke-width="1.3"/></svg></button>
+      <button type="button" id="zin" aria-label="Zoom in" title="Zoom in" hidden>+</button>
+      <button type="button" id="zout" aria-label="Zoom out" title="Zoom out" hidden>−</button>
+      <button type="button" id="zrst" aria-label="Reset view" title="Reset view" hidden>⟲</button>
+    </div>
+    <div class="zhint" id="zhint" hidden></div>
+    <button type="button" class="gback" id="gback" hidden>← Full graph</button>
+    <div class="corner tl" id="ctl">Φ galaxy · drag to turn</div>
+    <div class="corner br" id="cnt">—</div>
+    <div class="card" id="card" hidden>
+      <div class="n" id="cardN">—</div>
+      <h3 id="cardT">—</h3>
+      <p id="cardD">—</p>
+      <a id="cardA" href="#" target="_blank" rel="noopener">Open →</a>
+    </div>
+  </div>
+  <div class="legend" id="legend" role="group" aria-label="Series"></div>
+  <p class="hint" id="hint">Pick a series to swing its arm to the front. Inner stars are the first phenomena in each series.</p>
+</section>
+
+<section class="wrap cat" id="catalogue">
+  <div class="cat-head">
+    <h2>Catalogue</h2>
+    <div class="search"><label for="q">Find</label><input id="q" type="search" placeholder="entropy, quarks, telepathy…" autocomplete="off"></div>
+  </div>
+  <div class="legend" id="filters" role="group" aria-label="Filter by series"></div>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>Nothing matches that search.</p>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Home · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+/* ===== Series ===== */
+const SERIES = {
+  F: { name: 'Foundations', col: '#b7b5bc', ink: '#4a4757' },
+  Q: { name: 'Quantum', col: '#c6a6fb', ink: '#7a2cff' },
+  A: { name: 'Astrophysics', col: '#9fabf3', ink: '#2c4bff' },
+  B: { name: 'Breakthrough tech', col: '#e393b4', ink: '#f0287a' },
+  P: { name: 'Particles & forces', col: '#f3a6d5', ink: '#d4148a' },
+  T: { name: 'Time', col: '#4e8296', ink: '#1b9fd1' },
+  C: { name: 'Causality', col: '#f5aab7', ink: '#d61a3c' },
+  N: { name: 'Penrose', col: '#cfd3e7', ink: '#1f2a5c' },
+  X: { name: 'Fringe: physics & energy', col: '#5a8fb3', ink: '#0a8ee8' },
+  M: { name: 'Fringe: mind', col: '#cd96e5', ink: '#b52cf0' }
+};
+/* ===== Lessons: one line per lesson. To add a lesson, add one line. ===== */
+const LESSONS = [
+{n:"001", t:"Eigenfunction", s:"F", g:"wave", u:"001.html", d:"The special shapes a system keeps when it vibrates, and why the quantum world comes in steps.", k:["waves", "quantum"], r:[]},
+{n:"002", t:"Quantum Tunnelling", s:"F", g:"packet", u:"002.html", d:"Arriving on the far side of a wall you never had the energy to climb.", k:["quantum", "waves"], r:[]},
+{n:"003", t:"Curved Spacetime", s:"F", g:"grid", u:"003.html", d:"Space and time as one fabric, which mass can bend.", k:["spacetime"], r:["002"]},
+{n:"004", t:"Warp Drives", s:"F", g:"grid", u:"004.html", d:"Moving a patch of space, instead of moving a ship through space.", k:["spacetime", "propulsion"], r:["003"]},
+{n:"005", t:"Entropy and Time's Arrow", s:"F", g:"particles", u:"005.html", d:"The number of ways things can be arranged that look the same from outside.", k:["time", "info"], r:["004"]},
+{n:"006", t:"How a Neural Net Learns", s:"F", g:"net", u:"006.html", d:"A stack of simple adjustable functions, tuned by trial and error until they fit the data.", k:["info"], r:["005"]},
+{n:"007", t:"The Double Slit", s:"Q", g:"wave", u:"007.html", d:"Two paths adding up, so that some places get more and some get none.", k:["quantum", "waves"], r:[]},
+{n:"008", t:"The Uncertainty Principle", s:"Q", g:"packet", u:"008.html", d:"The sharper a particle’s position, the blurrier its motion, and the reverse.", k:["quantum", "waves"], r:[]},
+{n:"009", t:"Quantum Spin", s:"Q", g:"spin", u:"009.html", d:"A built-in magnetism that, whenever you measure it, comes out as only up or down.", k:["quantum"], r:["008", "015"]},
+{n:"010", t:"Entanglement", s:"Q", g:"pair", u:"010.html", d:"Two particles sharing one state, so their answers stay linked however far apart they are.", k:["quantum", "info"], r:["009", "011", "016"]},
+{n:"011", t:"Quantum Teleportation", s:"Q", g:"pair", u:"011.html", d:"Moving a quantum state to a distant particle without sending the particle.", k:["quantum", "info"], r:["010", "016"]},
+{n:"012", t:"Decoherence", s:"Q", g:"particles", u:"012.html", d:"A superposition leaking into its surroundings until its quantum behaviour can no longer be seen.", k:["quantum"], r:["007", "015"]},
+{n:"013", t:"The Quantum Zeno Effect", s:"Q", g:"spin", u:"013.html", d:"A system checked often enough never gets the chance to change.", k:["quantum", "time"], r:["009"]},
+{n:"014", t:"Why Matter Is Solid", s:"Q", g:"atom", u:"014.html", d:"No two electrons may share exactly the same quantum state.", k:["quantum", "matter"], r:["008", "009"]},
+{n:"015", t:"How a Quantum Computer Works", s:"Q", g:"bars", u:"015.html", d:"Steering waves of probability so wrong answers cancel and right ones add up.", k:["info", "quantum"], r:["007", "012", "016"]},
+{n:"016", t:"Quantum Cryptography", s:"Q", g:"pair", u:"016.html", d:"Sharing a secret over a line where any eavesdropper is bound to leave fingerprints.", k:["info", "quantum"], r:["009", "010", "011", "015"]},
+{n:"017", t:"How Stars Die", s:"A", g:"star", u:"017.html", d:"A star’s whole life, written in one number: the mass it is born with.", k:["stars", "matter"], r:["014", "018"]},
+{n:"018", t:"Where Gold Comes From", s:"A", g:"star", u:"018.html", d:"Every atom heavier than helium was cooked somewhere, and the ring on your finger came from a collision of dead stars.", k:["stars", "matter"], r:["017", "019"]},
+{n:"019", t:"Gravitational Waves", s:"A", g:"grid", u:"019.html", d:"When heavy things whirl around each other, space itself ripples, and we can now feel it.", k:["spacetime", "waves", "stars"], r:["003", "017", "018", "020"]},
+{n:"020", t:"Pulsar Timing", s:"A", g:"orbit", u:"020.html", d:"Dead stars that tick like atomic clocks, used to feel waves light-years long.", k:["stars", "spacetime"], r:["017", "019", "023"]},
+{n:"021", t:"Seeing a Black Hole", s:"A", g:"ring", u:"021.html", d:"You can’t photograph darkness, but you can photograph the shadow it casts on light.", k:["spacetime", "stars"], r:["003"]},
+{n:"022", t:"The Three-Body Problem", s:"A", g:"orbit", u:"022.html", d:"Two bodies dance forever; add a third and the future becomes impossible to predict.", k:["stars"], r:["005"]},
+{n:"023", t:"Exoplanets", s:"A", g:"orbit", u:"023.html", d:"Finding planets we can’t see, from a star’s faint dimming and tiny wobble.", k:["stars"], r:["017", "020"]},
+{n:"024", t:"Dark Matter", s:"A", g:"grid", u:"024.html", d:"Most of the matter in the universe gives off no light, and we know it is there only by its pull.", k:["dark", "stars"], r:["003", "021", "026"]},
+{n:"025", t:"Dark Energy", s:"A", g:"ring", u:"025.html", d:"The expansion of the universe is speeding up, and nobody knows why.", k:["dark", "energy"], r:["017", "024"]},
+{n:"026", t:"The Oldest Light", s:"A", g:"ring", u:"026.html", d:"A baby picture of the universe, taken 380,000 years after the Big Bang.", k:["dark", "time", "stars"], r:["024", "025"]},
+{n:"027", t:"Fusion Power", s:"B", g:"star", u:"027.html", d:"Bottling a small star, and why it has taken 70 years.", k:["energy", "matter"], r:["002", "017", "028"]},
+{n:"028", t:"Superconductors", s:"B", g:"coil", u:"028.html", d:"Metals that lose all electrical resistance, push magnetic fields out, and make the strongest magnets on Earth.", k:["energy", "quantum"], r:["027"]},
+{n:"029", t:"Next-Gen Solar", s:"B", g:"bars", u:"029.html", d:"Why a solar cell can never catch all the sunlight, and how stacking two materials breaks the ceiling.", k:["energy"], r:[]},
+{n:"030", t:"Batteries", s:"B", g:"bars", u:"030.html", d:"How lithium ions rock back and forth to power almost everything, and what comes next.", k:["energy"], r:["029"]},
+{n:"031", t:"Chips at the Atomic Edge", s:"B", g:"bars", u:"031.html", d:"A hundred billion switches on a fingernail, printed with light, and now meeting quantum mechanics head-on.", k:["info", "quantum"], r:["002"]},
+{n:"032", t:"How Language Models Think", s:"B", g:"net", u:"032.html", d:"Predicting the next word, one step at a time, with attention deciding what to look back at.", k:["info", "mind"], r:["006"]},
+{n:"033", t:"Metamaterials", s:"B", g:"coil", u:"033.html", d:"Engineered structures that bend light the wrong way, focus it with a flat slab, and steer it around objects.", k:["waves", "matter"], r:["024", "031"]},
+{n:"034", t:"Light Sails", s:"B", g:"sail", u:"034.html", d:"Riding a laser beam to another star, by pushing with light itself.", k:["propulsion", "energy"], r:["004", "023"]},
+{n:"035", t:"The Standard Model", s:"P", g:"atom", u:"035.html", d:"Seventeen particles and three forces that explain everything we’ve ever measured, except gravity.", k:["matter"], r:["007", "036", "040"]},
+{n:"036", t:"The Higgs Field", s:"P", g:"spin", u:"036.html", d:"An invisible field fills all of space, and how strongly a particle feels it sets its mass.", k:["matter"], r:["035"]},
+{n:"037", t:"Neutrino Oscillations", s:"P", g:"wave", u:"037.html", d:"Particles that pass through the Earth untouched, and change identity as they fly.", k:["matter", "stars"], r:["017"]},
+{n:"038", t:"Antimatter", s:"P", g:"atom", u:"038.html", d:"Every particle has a twin with the opposite charge; meet, and both turn into pure energy.", k:["matter"], r:["026"]},
+{n:"039", t:"Quark Confinement", s:"P", g:"atom", u:"039.html", d:"A force that grows stronger the further you pull, so quarks can never be set free.", k:["matter"], r:["035"]},
+{n:"040", t:"Symmetry & Noether", s:"P", g:"atom", u:"040.html", d:"Every symmetry of the laws of nature comes with something that can never be created or destroyed.", k:["matter", "energy"], r:["026", "035", "038"]},
+{n:"041", t:"Cold Fusion", s:"X", g:"star", u:"041.html", d:"The claim that nuclear reactions can happen at room temperature, inside a metal packed with heavy hydrogen.", k:["energy", "matter"], r:["002"]},
+{n:"042", t:"Perpetual Motion", s:"X", g:"wheel", u:"042.html", d:"Machines claimed to run for ever, or to deliver more energy than they are fed.", k:["energy"], r:["040"]},
+{n:"043", t:"Zero-Point Energy", s:"X", g:"ring", u:"043.html", d:"The claim that the restless energy of empty space can be tapped as a power source.", k:["energy", "quantum"], r:["007"]},
+{n:"044", t:"EmDrive", s:"X", g:"sail", u:"044.html", d:"A sealed metal cone, filled with microwaves, said to push itself along without throwing anything out the back.", k:["propulsion"], r:["034"]},
+{n:"045", t:"Electric Universe", s:"X", g:"coil", u:"045.html", d:"The claim that electric currents in plasma, not gravity alone, shape the cosmos and help power the stars.", k:["stars"], r:["017"]},
+{n:"046", t:"Plasma Cosmology", s:"X", g:"particles", u:"046.html", d:"A universe with no Big Bang, shaped over vast spans of time by electric currents and magnetic fields in plasma.", k:["stars", "dark"], r:["024"]},
+{n:"047", t:"Tired Light", s:"X", g:"ring", u:"047.html", d:"The idea that light from distant galaxies is reddened because it loses energy on its long journey, not because space is stretching.", k:["stars", "dark"], r:["024", "046"]},
+{n:"048", t:"Anti-Gravity Devices", s:"X", g:"orbit", u:"048.html", d:"Machines claimed to reduce, shield or modify gravity: spinning gyroscopes, superconducting discs and rotating rings.", k:["propulsion", "spacetime"], r:["003"]},
+{n:"049", t:"Orgone Energy", s:"X", g:"coil", u:"049.html", d:"A proposed universal life energy, said to collect inside layered boxes and to act on the body and the weather.", k:["energy", "mind"], r:["041"]},
+{n:"050", t:"Scalar Waves", s:"X", g:"coil", u:"050.html", d:"A hidden kind of wave, said to pass through matter, carry energy with little loss, and act where ordinary fields are zero.", k:["waves", "energy", "propulsion"], r:["034"]},
+{n:"051", t:"Telepathy", s:"M", g:"pair", u:"051.html", d:"The claim that thoughts, images or feelings can pass between people without any known sense.", k:["mind"], r:["049"]},
+{n:"052", t:"Precognition", s:"M", g:"eye", u:"052.html", d:"The claim that information about events can reach us before they happen.", k:["mind", "time"], r:["051"]},
+{n:"053", t:"Remote Viewing", s:"M", g:"net", u:"053.html", d:"The claim that a trained person can describe a hidden or distant place they have no ordinary way to know.", k:["mind"], r:["051"]},
+{n:"054", t:"Psychokinesis", s:"M", g:"dice", u:"054.html", d:"The claim that intention alone can nudge physical events, from falling dice to electronic noise.", k:["mind", "matter"], r:["051", "059"]},
+{n:"055", t:"Quantum Consciousness", s:"M", g:"atom", u:"055.html", d:"The proposal that consciousness arises from quantum events in tiny protein tubes inside brain cells, ended by a collapse linked to gravity.", k:["mind", "quantum"], r:["007"]},
+{n:"056", t:"Morphic Resonance", s:"M", g:"net", u:"056.html", d:"The proposal that forms and habits are shaped by fields carrying a collective memory of everything similar that came before.", k:["mind"], r:["049"]},
+{n:"057", t:"Near-Death Experiences", s:"M", g:"eye", u:"057.html", d:"Vivid, structured experiences reported by people who come close to death, and the question of whether consciousness can continue when the brain stops.", k:["mind"], r:["055"]},
+{n:"058", t:"Reincarnation Research", s:"M", g:"eye", u:"058.html", d:"Young children who describe, often in verifiable detail, the life of a person who died before they were born.", k:["mind", "time"], r:["052"]},
+{n:"059", t:"Global Consciousness Project", s:"M", g:"particles", u:"059.html", d:"A worldwide network of random number generators testing whether mass human attention leaves a trace in physical randomness.", k:["mind"], r:["051"]},
+{n:"060", t:"Ganzfeld Experiments", s:"M", g:"bars", u:"060.html", d:"A telepathy test in which a relaxed receiver, cut off from sight and sound, tries to sense an image a distant sender is concentrating on.", k:["mind"], r:["051"]},
+{n:"061", t:"The Fourth Dimension", s:"T", g:"grid", u:"061.html", d:"Time as a direction you can lay out like space, and shapes that need one more direction than we have.", k:["time", "spacetime", "geometry"], r:["003"], soon:1},
+{n:"062", t:"Time Loops", s:"T", g:"orbit", u:"062.html", d:"Worldlines that bend round through spacetime and meet their own past.", k:["time", "spacetime", "cause"], r:["003", "061"], soon:1},
+{n:"063", t:"Synchronicities", s:"T", g:"dice", u:"063.html", d:"Events that line up in time so strikingly that they seem connected by meaning rather than by cause.", k:["time", "mind", "cause"], r:["052"], soon:1},
+{n:"064", t:"Time Crystals", s:"T", g:"spin", u:"064.html", d:"A driven many-body system that settles into a rhythm twice as slow as the push it receives, and keeps that rhythm even when the pushes are imperfect.", k:["time", "quantum", "matter"], r:["009", "040"], soon:1},
+{n:"065", t:"Tachyons and Retrocausality", s:"T", g:"sail", u:"065.html", d:"Hypothetical particles that always move faster than light, and the idea that effects can come before their causes.", k:["time", "cause", "propulsion"], r:["005", "037", "052", "062", "069", "073"], soon:1},
+{n:"066", t:"Four Causes", s:"C", g:"wheel", u:"066.html", d:"Four different answers to the question “why?”: what a thing is made of, what shape it takes, what made it, and what it is for.", k:["cause"], r:["067"], soon:1},
+{n:"067", t:"Hume's Billiard Balls", s:"C", g:"pair", u:"067.html", d:"We see one ball hit another and the second move, but never the causing itself, only one event followed by another.", k:["cause", "mind"], r:["066", "068"], soon:1},
+{n:"068", t:"Laplace's Demon", s:"C", g:"particles", u:"068.html", d:"An intellect that knows every position and force at one instant and could therefore compute the entire past and future.", k:["cause", "info"], r:["022", "067"], soon:1},
+{n:"069", t:"Pilot-Wave", s:"C", g:"wave", u:"069.html", d:"A reading of quantum mechanics in which particles always have definite positions and are steered along exact paths by a real wave.", k:["quantum", "waves", "cause"], r:["007", "068"], soon:1},
+{n:"070", t:"Quantum Eraser", s:"C", g:"eye", u:"070.html", d:"An experiment where erasing which-path information brings back interference, even when the choice is made after the particle has landed.", k:["quantum", "time", "cause"], r:["007", "010"], soon:1},
+{n:"071", t:"Game of Life", s:"C", g:"net", u:"071.html", d:"A grid of cells with four fixed rules, where every future is completely determined and yet can only be found by running it.", k:["info", "cause"], r:["022", "068"], soon:1},
+{n:"072", t:"Correlation vs. Intervention", s:"C", g:"bars", u:"072.html", d:"Two things that rise and fall together may not cause each other; the test is what happens when you reach in and set one of them yourself.", k:["cause", "info"], r:["067", "073"], soon:1},
+{n:"073", t:"Light Cones", s:"C", g:"star", u:"073.html", d:"The limit set by the speed of light on what can affect what: every event has a cone of possible futures and a cone of possible pasts.", k:["spacetime", "time", "cause"], r:["003", "062", "074", "075", "076"], soon:1},
+{n:"074", t:"Impossible Triangle", s:"N", g:"spin", u:"074.html", d:"A drawing of three beams meeting at right angles in a closed loop: every corner is a real object, the whole is not.", k:["geometry", "mind"], r:["075"], soon:1},
+{n:"075", t:"Penrose Diagrams", s:"N", g:"grid", u:"075.html", d:"Maps that squeeze all of an infinite spacetime onto one page while keeping light rays at 45°, so cause and effect can be read off at a glance.", k:["spacetime", "geometry"], r:["021", "073", "076"], soon:1},
+{n:"076", t:"Singularity Theorem", s:"N", g:"ring", u:"076.html", d:"Once gravity traps light in a closed surface, some path through spacetime must come to an end in a finite time: a singularity is unavoidable.", k:["spacetime", "stars"], r:["004", "073", "075"], soon:1},
+{n:"077", t:"Penrose Process", s:"N", g:"coil", u:"077.html", d:"A way to steal rotational energy from a black hole by splitting matter inside the region where space itself is dragged around.", k:["spacetime", "energy", "stars"], r:["021", "076"], soon:1},
+{n:"078", t:"Penrose Tiling", s:"N", g:"atom", u:"078.html", d:"Two tile shapes that cover the whole plane in perfect order, yet never repeat the same pattern by sliding.", k:["geometry", "matter"], r:["074", "079"], soon:1},
+{n:"079", t:"Weyl Curvature", s:"N", g:"sail", u:"079.html", d:"Penrose’s proposal that the Big Bang began with one kind of curvature switched off, which would explain why time has a direction.", k:["spacetime", "time", "dark"], r:["005", "019", "076"], soon:1}
+];
+
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+
+/* ===== Glyphs: engraved line symbols, one per topic. Crisp strokes, no glows.
+   paper = the ground colour, used to knock shapes out (so a ring has a real hole). ===== */
+const LW = r => Math.max(1.1, r * 0.075);
+const GLYPH = {
+  wave(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 1.3; c.beginPath(); for (let i = 0; i <= 40; i++) { const x = -r + i / 40 * 2 * r, y = Math.sin(i / 40 * Math.PI * 2) * Math.cos(t * 2) * r * 0.55; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); c.lineWidth = LW(r) * 0.6; c.setLineDash([r * 0.08, r * 0.1]); c.beginPath(); c.moveTo(-r, 0); c.lineTo(r, 0); c.stroke(); c.setLineDash([]); },
+  packet(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.8; c.strokeRect(-r * 0.09, -r * 0.8, r * 0.18, r * 1.6); for (let k = -3; k <= 3; k++) { c.beginPath(); c.moveTo(-r * 0.09, k * r * 0.22); c.lineTo(r * 0.09, k * r * 0.22 + r * 0.12); c.stroke(); } c.lineWidth = LW(r) * 1.2; c.beginPath(); const p = ((t * 0.5) % 1) * 2.4 - 1.2; for (let i = 0; i <= 50; i++) { const x = -r + i / 50 * 2 * r, e = Math.exp(-(((x / r) - p) ** 2) * 6), y = Math.sin(x / r * 14) * e * r * 0.6; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); },
+  grid(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.8; for (let k = -2; k <= 2; k++) { c.beginPath(); for (let i = 0; i <= 24; i++) { const x = -r + i / 24 * 2 * r, d = Math.exp(-(x * x) / (r * r * 0.25)); const y = k * r * 0.36 + d * r * 0.34 * (1 + 0.2 * Math.sin(t * 2)); i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); } c.fillStyle = col; c.beginPath(); c.arc(0, r * 0.12, r * 0.13, 0, 7); c.fill(); },
+  orbit(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.8; c.beginPath(); c.ellipse(0, 0, r * 0.9, r * 0.5, 0, 0, 7); c.stroke(); c.lineWidth = LW(r) * 1.1; c.beginPath(); c.arc(0, 0, r * 0.2, 0, 7); c.stroke(); const a = t * 1.6; c.fillStyle = col; c.beginPath(); c.arc(Math.cos(a) * r * 0.9, Math.sin(a) * r * 0.5, r * 0.11, 0, 7); c.fill(); },
+  spin(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.7; c.setLineDash([r * 0.06, r * 0.07]); c.beginPath(); c.ellipse(0, -r * 0.55, r * 0.45, r * 0.14, 0, 0, 7); c.stroke(); c.setLineDash([]); const a = t * 2.4, x = Math.cos(a) * r * 0.45, y = -r * 0.55 + Math.sin(a) * r * 0.14; c.lineWidth = LW(r) * 1.4; c.beginPath(); c.moveTo(0, r * 0.7); c.lineTo(x, y); c.stroke(); c.fillStyle = col; c.beginPath(); c.arc(x, y, r * 0.1, 0, 7); c.fill(); c.beginPath(); c.arc(0, r * 0.7, r * 0.07, 0, 7); c.fill(); },
+  pair(c, t, r, col) { const s = 0.5 + 0.5 * Math.sin(t * 3); c.strokeStyle = col; c.lineWidth = LW(r) * 0.8; c.setLineDash([r * 0.1, r * 0.08]); c.lineDashOffset = -t * r * 0.4; c.beginPath(); c.moveTo(-r * 0.45, 0); c.lineTo(r * 0.45, 0); c.stroke(); c.setLineDash([]); c.lineDashOffset = 0; c.lineWidth = LW(r) * 1.2; [-1, 1].forEach(k => { c.beginPath(); c.arc(k * r * 0.65, 0, r * (0.17 + 0.04 * s), 0, 7); c.stroke(); c.fillStyle = col; c.beginPath(); c.arc(k * r * 0.65, 0, r * 0.07, 0, 7); c.fill(); }); },
+  particles(c, t, r, col) { c.fillStyle = col; c.strokeStyle = col; c.lineWidth = LW(r) * 0.6; c.beginPath(); c.arc(0, 0, r * 0.92, 0, 7); c.stroke(); for (let i = 0; i < 14; i++) { const a = i * 2.39996, sp = (Math.sin(t * 0.8 + i) * 0.5 + 0.5), d = r * (0.12 + 0.72 * sp) * ((i % 3) / 3 + 0.4); c.beginPath(); c.arc(Math.cos(a + t * 0.3) * d, Math.sin(a + t * 0.3) * d, r * 0.065, 0, 7); c.fill(); } },
+  net(c, t, r, col, paper) { const P = [[-0.7, -0.5], [-0.7, 0.5], [0, -0.7], [0, 0], [0, 0.7], [0.7, 0]]; const E = [[0, 2], [0, 3], [1, 3], [1, 4], [2, 5], [3, 5], [4, 5]]; c.strokeStyle = col; E.forEach(([a, b], i) => { c.lineWidth = LW(r) * (0.5 + 0.9 * (0.5 + 0.5 * Math.sin(t * 3 - i))); c.beginPath(); c.moveTo(P[a][0] * r, P[a][1] * r); c.lineTo(P[b][0] * r, P[b][1] * r); c.stroke(); }); c.lineWidth = LW(r); P.forEach(([x, y]) => { c.fillStyle = paper; c.beginPath(); c.arc(x * r, y * r, r * 0.12, 0, 7); c.fill(); c.stroke(); }); },
+  star(c, t, r, col) { const s = 0.85 + 0.15 * Math.sin(t * 2.5); c.strokeStyle = col; c.lineWidth = LW(r) * 1.1; c.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + t * 0.2, rr = i % 2 ? r * 0.32 * s : r * 0.9 * s; const x = Math.cos(a) * rr, y = Math.sin(a) * rr; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.closePath(); c.stroke(); c.lineWidth = LW(r) * 0.5; c.beginPath(); c.arc(0, 0, r * 0.18, 0, 7); c.stroke(); },
+  ring(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.6; for (let k = 0; k < 4; k++) { c.beginPath(); c.arc(0, 0, r * (0.5 + k * 0.13), 0, 7); c.stroke(); } c.lineWidth = LW(r) * 1.4; c.beginPath(); c.arc(0, 0, r * 0.36, 0, 7); c.stroke(); const a = t * 1.5; c.fillStyle = col; c.beginPath(); c.arc(Math.cos(a) * r * 0.69, Math.sin(a) * r * 0.69, r * 0.08, 0, 7); c.fill(); },
+  atom(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.7; for (let k = 0; k < 3; k++) { c.save(); c.rotate(k * Math.PI / 3); c.beginPath(); c.ellipse(0, 0, r * 0.9, r * 0.32, 0, 0, 7); c.stroke(); const a = t * 2 + k * 2; c.fillStyle = col; c.beginPath(); c.arc(Math.cos(a) * r * 0.9, Math.sin(a) * r * 0.32, r * 0.08, 0, 7); c.fill(); c.restore(); } c.fillStyle = col; c.beginPath(); c.arc(0, 0, r * 0.12, 0, 7); c.fill(); },
+  bars(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.6; c.beginPath(); c.moveTo(-r * 0.92, r * 0.8); c.lineTo(r * 0.92, r * 0.8); c.stroke(); for (let i = 0; i < 5; i++) { const h = r * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2 + i * 1.3))) * 1.5, x = -r * 0.85 + i * r * 0.36; c.lineWidth = LW(r); c.strokeRect(x, r * 0.8 - h, r * 0.24, h); if (i === 3) { c.fillStyle = col; c.fillRect(x, r * 0.8 - h, r * 0.24, h); } else { c.lineWidth = LW(r) * 0.4; for (let y = r * 0.8 - h + r * 0.12; y < r * 0.8; y += r * 0.14) { c.beginPath(); c.moveTo(x, y); c.lineTo(x + r * 0.24, y - r * 0.08); c.stroke(); } } } },
+  sail(c, t, r, col) { const y = Math.sin(t * 1.5) * r * 0.1; c.strokeStyle = col; c.lineWidth = LW(r) * 0.6; for (let i = -2; i <= 2; i++) { c.beginPath(); c.moveTo(-r, i * r * 0.15); c.lineTo(-r * 0.1, i * r * 0.15 + y); c.stroke(); } c.lineWidth = LW(r) * 1.2; c.beginPath(); c.moveTo(0, -r * 0.75 + y); c.quadraticCurveTo(r * 0.45, y, 0, r * 0.75 + y); c.closePath(); c.stroke(); c.lineWidth = LW(r) * 0.5; for (let k = 1; k < 4; k++) { c.beginPath(); c.moveTo(0, -r * 0.75 + y + k * r * 0.37); c.lineTo(r * 0.16, -r * 0.6 + y + k * r * 0.37); c.stroke(); } },
+  coil(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 1.1; c.beginPath(); for (let i = 0; i <= 80; i++) { const f = i / 80, a = f * Math.PI * 8 + t * 3, x = -r * 0.85 + f * r * 1.7, y = Math.sin(a) * r * 0.45; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); c.lineWidth = LW(r) * 0.5; c.setLineDash([r * 0.06, r * 0.08]); c.beginPath(); c.moveTo(-r, 0); c.lineTo(r, 0); c.stroke(); c.setLineDash([]); },
+  wheel(c, t, r, col) { c.strokeStyle = col; c.lineWidth = LW(r) * 0.9; c.beginPath(); c.arc(0, 0, r * 0.65, 0, 7); c.stroke(); for (let i = 0; i < 6; i++) { const a = t * 0.9 + i * Math.PI / 3, x = Math.cos(a) * r * 0.65, y = Math.sin(a) * r * 0.65; c.lineWidth = LW(r) * 0.6; c.beginPath(); c.moveTo(0, 0); c.lineTo(x, y); c.stroke(); c.fillStyle = col; c.beginPath(); c.arc(x + (Math.cos(a) > 0 ? r * 0.2 : 0), y, r * 0.09, 0, 7); c.fill(); } c.beginPath(); c.arc(0, 0, r * 0.08, 0, 7); c.fill(); },
+  eye(c, t, r, col) { const o = 0.35 + 0.15 * Math.max(0, Math.sin(t * 1.2)); c.strokeStyle = col; c.lineWidth = LW(r) * 1.2; c.beginPath(); c.moveTo(-r * 0.9, 0); c.quadraticCurveTo(0, -r * o * 2, r * 0.9, 0); c.quadraticCurveTo(0, r * o * 2, -r * 0.9, 0); c.stroke(); const px = Math.sin(t) * r * 0.2; c.lineWidth = LW(r) * 0.8; c.beginPath(); c.arc(px, 0, r * 0.24, 0, 7); c.stroke(); c.fillStyle = col; c.beginPath(); c.arc(px, 0, r * 0.1, 0, 7); c.fill(); },
+  dice(c, t, r, col) { c.save(); c.rotate(Math.sin(t) * 0.4); c.strokeStyle = col; c.lineWidth = LW(r); c.strokeRect(-r * 0.6, -r * 0.6, r * 1.2, r * 1.2); c.fillStyle = col; const f = Math.floor(t * 1.2) % 6 + 1, D = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]], 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] }; D[f].forEach(([x, y]) => { c.beginPath(); c.arc(x * r * 0.32, y * r * 0.32, r * 0.09, 0, 7); c.fill(); }); c.restore(); }
+};
+/* mode 'paper': drawn straight onto the page in the series ink colour.
+   mode 'plate': drawn inside the galaxy/graph plate, which the stylesheet inverts, so it uses the light series colour and a pre-inverted ground. */
+function drawGlyph(ctx, L, x, y, r, t, alpha, mode) {
+  if (L.soon) alpha *= 0.38;
+  const PHI = document.documentElement.classList.contains('phi'), S = SERIES[L.s], paperMode = mode === 'paper' && !PHI, col = paperMode ? (S.ink || S.col) : S.col, paper = paperMode ? '#f6f7f3' : (PHI ? '#08121b' : '#080905'), fn = GLYPH[L.g] || GLYPH.star;
+  ctx.save(); ctx.translate(x, y); ctx.globalAlpha = alpha; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  fn(ctx, t + (+L.n) * 0.37, r, col, paper); ctx.restore();
+}
+
+/* ===== Stats, legend, filters ===== */
+const keys = Object.keys(SERIES), count = k => LESSONS.filter(l => l.s === k).length;
+const LIVE = LESSONS.filter(l => !l.soon).length, SOON = LESSONS.length - LIVE, PH = `${LIVE} phenomena${SOON ? ` · ${SOON} coming soon` : ''}`;
+$('#stL').textContent = LIVE; $('#stS').textContent = keys.filter(k => count(k)).length; $('#stM').textContent = LIVE * 3;
+$('#cnt').textContent = `${PH} · ${keys.filter(k => count(k)).length} arms`;
+const state = { focus: null, filter: null };
+function chips(el, onClick) { keys.forEach(k => { if (!count(k)) return; const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.dataset.k = k; b.setAttribute('aria-pressed', 'false'); b.innerHTML = `<i style="background:${SERIES[k].col}"></i>${SERIES[k].name} <b>${count(k)}</b>`; b.addEventListener('click', () => onClick(k)); el.appendChild(b); }); }
+const press = (el, k) => el.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.k === k)));
+
+/* ===== Galaxy geometry ===== */
+const arms = keys.filter(k => count(k)), NA = arms.length;
+const NODES = LESSONS.map(L => { const ai = arms.indexOf(L.s), list = LESSONS.filter(x => x.s === L.s), j = list.indexOf(L), f = (j + 1) / (list.length + 1); const th = ai / NA * Math.PI * 2 + f * 2.6, rad = 0.16 + f * 0.78; return { L, x: Math.cos(th) * rad, z: Math.sin(th) * rad, y: (Math.sin(j * 1.7 + ai) * 0.02) }; });
+const DUST = (() => { let s = 7; const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; const out = []; for (let i = 0; i < 2600; i++) { const ai = Math.floor(r() * NA), f = Math.pow(r(), 0.8), th = ai / NA * Math.PI * 2 + f * 2.6 + (r() - 0.5) * 0.5 * (1 - f * 0.4), rad = 0.04 + f * 0.98 + (r() - 0.5) * 0.06; out.push({ x: Math.cos(th) * rad, z: Math.sin(th) * rad, y: (r() - 0.5) * 0.05 * (1 - f), k: arms[ai], b: r() }); } for (let i = 0; i < 500; i++) { const a = r() * 6.283, rad = Math.pow(r(), 2) * 0.22; out.push({ x: Math.cos(a) * rad, z: Math.sin(a) * rad, y: (r() - 0.5) * 0.06, k: null, b: r() }); } return out; })();
+
+const cv = $('#gal'), chart = $('#chart'), card = $('#card');
+const view = { yaw: 0.4, tilt: 1.05, target: null, drag: null, hover: null, pinned: null, t: 0, z: 1, zT: 1, px: 0, py: 0, pxT: 0, pyT: 0, tiltT: null };
+let W = 0, H = 0, DPR = 1, PROJ = [];
+function resize() { const r = cv.getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1); W = r.width; H = r.height; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); }
+new ResizeObserver(resize).observe(cv); resize();
+function project(p) { const cy = Math.cos(view.yaw), sy = Math.sin(view.yaw); let x = p.x * cy - p.z * sy, z = p.x * sy + p.z * cy, y = p.y; const ct = Math.cos(view.tilt), st = Math.sin(view.tilt); const y2 = y * ct - z * st, z2 = y * st + z * ct; const S = Math.min(W, H * 1.55) * 0.47, d = 3.2, k = d / (d + z2), ux = x * S * k, uy = y2 * S * k; return { sx: W / 2 + view.px + ux * view.z, sy: H / 2 + view.py + uy * view.z, k, z: z2, ux, uy }; }
+function frame(dt) {
+  view.t += REDUCE ? 0 : dt;
+  if (view.target != null) { let d = view.target - view.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); view.yaw += d * Math.min(1, dt * 3); if (Math.abs(d) < 0.002) view.target = null; }
+  else if (!view.drag && !REDUCE && !view.pinned) view.yaw += dt * 0.05;
+  { const e = Math.min(1, dt * 6); view.z += (view.zT - view.z) * e; view.px += (view.pxT - view.px) * e; view.py += (view.pyT - view.py) * e; if (view.tiltT != null) { view.tilt += (view.tiltT - view.tilt) * e; if (Math.abs(view.tiltT - view.tilt) < 0.002) view.tiltT = null; } }
+  const ctx = cv.getContext('2d'); ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.clearRect(0, 0, W, H);
+  const core = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.min(W, H) * 0.32); core.addColorStop(0, 'rgba(107,95,142,0.3)'); core.addColorStop(0.25, 'rgba(107,95,142,0.08)'); core.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = core; ctx.fillRect(0, 0, W, H);
+  DUST.forEach(p => { const q = project(p), dim = state.focus && p.k && p.k !== state.focus ? 0.25 : 1, col = p.k ? SERIES[p.k].col : '#6b5f8e'; ctx.fillStyle = rgba(col, (0.18 + 0.5 * p.b) * dim * Math.min(1, q.k)); const s = (0.6 + p.b * 1.2) * q.k * Math.sqrt(view.z); ctx.fillRect(q.sx - s / 2, q.sy - s / 2, s, s); });
+  PROJ = NODES.map(n => ({ n, q: project(n) })).sort((a, b) => b.q.z - a.q.z);
+  const base = Math.max(9, Math.min(W, H) * 0.028);
+  PROJ.forEach(({ n, q }) => { const on = !state.focus || n.L.s === state.focus, hov = view.hover === n || view.pinned === n; const r = base * q.k * Math.min(2.2, Math.sqrt(view.z)) * (hov ? 1.45 : 1); drawGlyph(ctx, n.L, q.sx, q.sy, r, view.t, (on ? 1 : 0.22) * Math.max(0.35, Math.min(1, 1.6 - q.z))); n.sx = q.sx; n.sy = q.sy; n.ux = q.ux; n.uy = q.uy; n.r = r; if (hov || (W > 700 && on && state.focus) || (view.z > 1.7 && on && q.sx > -40 && q.sx < W && q.sy > 0 && q.sy < H)) { ctx.font = `11px ${getComputedStyle(document.body).getPropertyValue('--mono')}`; ctx.fillStyle = 'rgba(226,232,244,0.85)'; ctx.fillText(n.L.n, q.sx + r + 4, q.sy + 4); } });
+  if (view.pinned || view.hover) placeCard(view.pinned || view.hover);
+}
+function placeCard(n) { const cw = card.offsetWidth, ch = card.offsetHeight; if (state.view === 'graph' && chart.clientWidth < 560) { card.style.left = '10px'; card.style.top = `${chart.clientHeight - ch - 10}px`; return; } const CW = chart.clientWidth, CH = chart.clientHeight; if ((state.view === 'brain' || FS.on) && CW < 560) { card.style.left = '10px'; card.style.top = `${CH - ch - 10}px`; return; } let x = n.sx + 22, y = n.sy - ch / 2; if (x + cw > CW - 10) x = n.sx - cw - 22; x = Math.max(10, Math.min(CW - cw - 10, x)); y = Math.max(58, Math.min(CH - ch - 10, y)); card.style.left = `${x}px`; card.style.top = `${y}px`; }
+function showCard(n) { if (!n) { card.hidden = true; return; } const L = n.L, S = SERIES[L.s]; $('#cardN').textContent = `Φ ${L.n} · ${S.name}`; $('#cardN').style.color = S.ink || S.col; $('#cardT').textContent = L.t; $('#cardD').textContent = L.soon ? `${L.d} Coming soon.` : L.d; $('#cardA').href = L.soon ? '#' : L.u; $('#cardA').hidden = !!L.soon; if (L.soon) $('#cardN').textContent += ' · coming soon'; card.hidden = false; placeCard(n); }
+function pick(x, y) { let best = null, bd = 1e9; for (let i = PROJ.length - 1; i >= 0; i--) { const n = PROJ[i].n; if (state.focus && n.L.s !== state.focus) continue; const d = Math.hypot(n.sx - x, n.sy - y); if (d < Math.max(14, n.r * 1.3) && d < bd) { bd = d; best = n; } } return best; }
+const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+cv.addEventListener('pointerdown', e => { const [x, y] = pos(e); view.drag = { x, y, yaw: view.yaw, tilt: view.tilt, moved: false }; view.tiltT = null; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
+cv.addEventListener('pointermove', e => { const [x, y] = pos(e); if (view.drag) { const dx = x - view.drag.x; const dy = y - view.drag.y; if (Math.hypot(dx, dy) > 4) view.drag.moved = true; view.yaw = view.drag.yaw + dx * 0.008; if (FS.on) view.tilt = Math.max(0.2, Math.min(1.5, view.drag.tilt - dy * 0.005)); view.target = null; return; } if (view.pinned) return; const n = pick(x, y); if (n !== view.hover) { view.hover = n; showCard(n); } cv.style.cursor = n ? 'pointer' : 'grab'; });
+cv.addEventListener('pointerup', e => { const [x, y] = pos(e); const moved = view.drag && view.drag.moved; view.drag = null; cv.classList.remove('drag'); if (moved) return; const n = pick(x, y); view.pinned = n; view.hover = null; showCard(n); });
+cv.addEventListener('pointerleave', () => { if (!view.pinned && !view.drag) { view.hover = null; showCard(null); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { view.pinned = null; showCard(null); } });
+
+chips($('#legend'), k => { state.focus = state.focus === k ? null : k; press($('#legend'), state.focus); view.pinned = null; showCard(null); if (state.focus) { const ai = arms.indexOf(k), th = ai / NA * Math.PI * 2 + 1.3; view.target = Math.PI / 2 - th; } });
+
+/* ===== Catalogue ===== */
+const grid = $('#grid'), cards = [];
+LESSONS.forEach(L => { const a = document.createElement(L.soon ? 'div' : 'a'); a.className = L.soon ? 'lesson soon' : 'lesson'; if (!L.soon) { a.href = L.u; a.target = '_blank'; a.rel = 'noopener'; } else a.setAttribute('aria-disabled', 'true'); const S = SERIES[L.s]; a.innerHTML = `<canvas width="192" height="192" aria-hidden="true"></canvas><div><div class="n" style="color:${S.ink || S.col}">Φ ${L.n} · ${S.name}${L.soon ? ' <span class="soon-tag">Coming soon</span>' : ''}</div><h3></h3><p></p></div>`; a.querySelector('h3').textContent = L.t; a.querySelector('p').textContent = L.d; grid.appendChild(a); cards.push({ L, el: a, cv: a.querySelector('canvas'), vis: false }); });
+const io = new IntersectionObserver(es => es.forEach(e => { const c = cards.find(x => x.el === e.target); if (c) c.vis = e.isIntersecting; }));
+cards.forEach(c => io.observe(c.el));
+function drawCards(t, all) { cards.forEach(c => { if (!all && (!c.vis || c.el.hidden)) return; const x = c.cv.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, 192, 192); drawGlyph(x, c.L, 96, 96, 58, t, 1, 'paper'); }); }
+function applyFilter() { const q = $('#q').value.trim().toLowerCase(); let shown = 0; cards.forEach(c => { const L = c.L, hit = (!state.filter || L.s === state.filter) && (!q || `${L.n} ${L.t} ${L.d} ${SERIES[L.s].name}`.toLowerCase().includes(q)); c.el.hidden = !hit; if (hit) shown++; }); $('#empty').hidden = shown > 0; }
+chips($('#filters'), k => { state.filter = state.filter === k ? null : k; press($('#filters'), state.filter); applyFilter(); });
+$('#q').addEventListener('input', applyFilter);
+
+/* ===== Graph view: topic hubs + phenomena, joined by the pages' own cross-references ===== */
+const HUBS = { waves: 'Waves', quantum: 'Quantum', info: 'Information', spacetime: 'Spacetime', stars: 'Stars & cosmos', dark: 'Dark universe', energy: 'Energy', matter: 'Matter & forces', time: 'Time', mind: 'Mind', propulsion: 'Reaching the stars', cause: 'Cause & determinism', geometry: 'Geometry' };
+const gcv = $('#graph');
+const G = (() => {
+  let sd = 11; const rnd = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+  const hk = Object.keys(HUBS).filter(h => LESSONS.some(L => (L.k || []).includes(h)));
+  const nodes = [], byN = {}, byH = {}, links = [], seen = new Set();
+  hk.forEach((h, i) => { const a = i / hk.length * Math.PI * 2; const nd = { hub: h, name: HUBS[h], x: Math.cos(a) * 260, y: Math.sin(a) * 190, vx: 0, vy: 0, deg: 0 }; nodes.push(nd); byH[h] = nd; });
+  LESSONS.forEach(L => { const h = byH[(L.k || [])[0]] || { x: 0, y: 0 }; const nd = { L, x: h.x + (rnd() - 0.5) * 90, y: h.y + (rnd() - 0.5) * 90, vx: 0, vy: 0, deg: 0 }; nodes.push(nd); byN[L.n] = nd; });
+  nodes.forEach((n, i) => { n.i = i; n.nb = new Set(); });
+  const add = (a, b, kind) => { if (!a || !b || a === b) return; const id = Math.min(a.i, b.i) + '-' + Math.max(a.i, b.i); if (seen.has(id)) return; seen.add(id); links.push({ a, b, kind }); a.deg++; b.deg++; a.nb.add(b); b.nb.add(a); };
+  LESSONS.forEach(L => { (L.k || []).forEach(h => add(byN[L.n], byH[h], 'hub')); (L.r || []).forEach(m => add(byN[L.n], byN[m], 'ref')); });
+  return { nodes, links, heat: 1, cam: { x: 0, y: 0, s: 1, init: false }, hover: null, pinned: null, drag: null, q: '', W: 0, H: 0, DPR: 1 };
+})();
+const gVis = n => n.hub ? [...n.nb].some(m => gVis(m)) : (!state.focus || n.L.s === state.focus) && (!state.filter || n.L.s === state.filter);
+const gHit = n => !n.hub && !!G.q && `${n.L.n} ${n.L.t} ${n.L.d} ${SERIES[n.L.s].name} ${(n.L.k || []).map(h => HUBS[h]).join(' ')}`.toLowerCase().includes(G.q);
+function gTick() {
+  const N = G.nodes, a = G.heat;
+  for (let i = 0; i < N.length; i++) { const p = N[i]; for (let j = i + 1; j < N.length; j++) { const q = N[j]; let dx = p.x - q.x, dy = p.y - q.y; const d2 = dx * dx + dy * dy + 0.01; if (d2 > 300000) continue; const d = Math.sqrt(d2), f = (p.hub && q.hub ? 26000 : p.hub || q.hub ? 2600 : 1400) / d2; dx /= d; dy /= d; p.vx += dx * f; p.vy += dy * f; q.vx -= dx * f; q.vy -= dy * f; } }
+  G.links.forEach(l => { const rest = l.kind === 'hub' ? 72 : 96, k = l.kind === 'hub' ? 0.03 : 0.012; let dx = l.b.x - l.a.x, dy = l.b.y - l.a.y; const d = Math.hypot(dx, dy) || 1, f = (d - rest) * k; dx /= d; dy /= d; l.a.vx += dx * f; l.a.vy += dy * f; l.b.vx -= dx * f; l.b.vy -= dy * f; });
+  N.forEach(p => { p.vx -= p.x * 0.004; p.vy -= p.y * 0.006; if (G.drag && G.drag.n === p) { p.vx = p.vy = 0; return; } p.vx = clampV(p.vx * 0.82); p.vy = clampV(p.vy * 0.82); p.x += p.vx * a; p.y += p.vy * a; });
+  G.heat = Math.max(G.drag ? 1 : 0.05, G.heat * 0.994);
+}
+const clampV = v => Math.max(-30, Math.min(30, v));
+for (let i = 0; i < 420; i++) gTick(); G.heat = 0.25;
+function gResize() { const r = gcv.getBoundingClientRect(); G.DPR = Math.min(2, window.devicePixelRatio || 1); G.W = r.width; G.H = r.height; gcv.width = Math.round(G.W * G.DPR); gcv.height = Math.round(G.H * G.DPR); }
+new ResizeObserver(gResize).observe(gcv);
+G.uz = 1; G.uzT = 1; G.ux = 0; G.uy = 0; G.uxT = 0; G.uyT = 0; G.e = { x: 0, y: 0, s: 1 };
+const gScr = n => G.rot ? [G.W / 2 + (n.y - G.e.y) * G.e.s, G.H / 2 + (n.x - G.e.x) * G.e.s] : [G.W / 2 + (n.x - G.e.x) * G.e.s, G.H / 2 + (n.y - G.e.y) * G.e.s];
+function graphFrame(dt) {
+  if (!G.W) gResize(); if (!G.W) return;
+  view.t += REDUCE ? 0 : dt; if (!REDUCE || G.drag) gTick();
+  const W = G.W, H = G.H, vis = G.nodes.filter(gVis); G.rot = H > W * 1.15;
+  const frameSet = G.pinned ? [G.pinned, ...G.pinned.nb].filter(gVis) : vis, smax = G.pinned ? 2.4 : 1.9;
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; frameSet.forEach(n => { x0 = Math.min(x0, n.x); x1 = Math.max(x1, n.x); y0 = Math.min(y0, n.y); y1 = Math.max(y1, n.y); });
+  if (frameSet.length && !G.drag) { const top = 54, bot = G.pinned && W < 560 && !card.hidden ? card.offsetHeight + 34 : G.pinned ? 70 : 40, ew = G.rot ? y1 - y0 : x1 - x0, eh = G.rot ? x1 - x0 : y1 - y0, s = Math.max(0.3, Math.min(smax, Math.min((W - (G.pinned ? 150 : 70)) / Math.max(1, ew), (H - top - bot) / Math.max(1, eh)))), sh = (top - bot) / 2 / s, cx = (x0 + x1) / 2 - (G.rot ? sh : 0), cy = (y0 + y1) / 2 - (G.rot ? 0 : sh), k = G.cam.init ? Math.min(1, dt * 3) : 1; G.cam.x += (cx - G.cam.x) * k; G.cam.y += (cy - G.cam.y) * k; G.cam.s += (s - G.cam.s) * k; G.cam.init = true; }
+  { const e = Math.min(1, dt * 6); G.uz += (G.uzT - G.uz) * e; G.ux += (G.uxT - G.ux) * e; G.uy += (G.uyT - G.uy) * e; G.e = { x: G.cam.x + G.ux, y: G.cam.y + G.uy, s: G.cam.s * G.uz }; }
+  const ctx = gcv.getContext('2d'); ctx.setTransform(G.DPR, 0, 0, G.DPR, 0, 0); ctx.clearRect(0, 0, W, H);
+  G.nodes.forEach(n => { [n.sx, n.sy] = gScr(n); });
+  const F = G.pinned || G.hover, HV = G.hover, lit = F ? new Set([F, ...F.nb]) : null, hits = G.q ? new Set(G.nodes.filter(gHit)) : null;
+  const MONO = getComputedStyle(document.body).getPropertyValue('--mono');
+  G.links.forEach(l => {
+    if (!gVis(l.a) || !gVis(l.b)) return;
+    const on = F && (l.a === F || l.b === F); let al = l.kind === 'hub' ? 0.13 : 0.34;
+    if (F) al = on ? 0.95 : al * 0.25; if (hits && !hits.has(l.a) && !hits.has(l.b)) al *= 0.35;
+    const col = on ? '#e393b4' : l.kind === 'hub' ? '#a1acc2' : (l.a.L ? SERIES[l.a.L.s].col : '#a1acc2');
+    ctx.strokeStyle = rgba(col, al); ctx.lineWidth = on ? 1.6 : l.kind === 'hub' ? 0.8 : 1.1; ctx.setLineDash(l.kind === 'hub' && !on ? [2, 4] : []);
+    ctx.beginPath(); ctx.moveTo(l.a.sx, l.a.sy); ctx.lineTo(l.b.sx, l.b.sy); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+  const zs = Math.max(0.75, Math.min(FS.on ? 2 : 1.35, G.e.s));
+  G.nodes.forEach(n => {
+    const v = gVis(n); let al = v ? 1 : 0.06; if (v && lit && !lit.has(n)) al = 0.22; if (v && hits && !n.hub && !hits.has(n)) al = Math.min(al, 0.22);
+    if (n.hub) {
+      const r = Math.min(24, 11 + n.deg * 0.45) * zs, on = F === n || (lit && lit.has(n));
+      ctx.globalAlpha = al; ctx.fillStyle = '#0b1120'; ctx.strokeStyle = on ? '#e393b4' : '#62708a'; ctx.lineWidth = on ? 2 : 1.2;
+      ctx.beginPath(); ctx.arc(n.sx, n.sy, r, 0, 7); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.arc(n.sx, n.sy, r * 0.45, 0, 7); ctx.strokeStyle = rgba(on ? '#e393b4' : '#a1acc2', 0.5); ctx.stroke();
+      ctx.font = `500 10.5px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = on ? '#e393b4' : '#a1acc2'; const hl = n.name.toUpperCase(), hw = ctx.measureText(hl).width; ctx.fillText(hl, Math.max(hw / 2 + 6, Math.min(W - hw / 2 - 6, n.sx)), n.sy + r + 14); ctx.textAlign = 'left'; ctx.globalAlpha = 1; n.r = r;
+    } else {
+      const big = F === n, r = Math.min(13, 7 + n.deg * 0.5) * zs * (big ? 1.45 : 1); n.r = r;
+      drawGlyph(ctx, n.L, n.sx, n.sy, r, view.t, al);
+      const label = v && (big || n === HV || (lit && lit.has(n)) || (hits && hits.has(n)) || (!F && !hits && G.e.s > 1.45 && W > 700) || (G.uz > 1.6 && n.sx > 0 && n.sx < W && n.sy > 0 && n.sy < H));
+      if (label) { ctx.font = `11px ${MONO}`; const short = W < 560 && !big && n !== HV && ((hits && hits.size > 6) || (G.pinned && G.pinned.hub)), t = short ? n.L.n : `${n.L.n} ${n.L.t}`; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(4,6,12,0.85)'; const tw = ctx.measureText(t).width, lx = n.sx + r + 5 + tw > W - 6 ? n.sx - r - 5 - tw : n.sx + r + 5; ctx.strokeText(t, lx, n.sy + 4); ctx.fillStyle = big ? '#ffffff' : '#e2e8f4'; ctx.fillText(t, lx, n.sy + 4); }
+    }
+  });
+  if (G.pinned) placeCard(G.pinned); else if (G.hover && G.hover.L) placeCard(G.hover);
+  gBack.hidden = !G.pinned;
+}
+function gPick(x, y) { let best = null, bd = 1e9; G.nodes.forEach(n => { if (!gVis(n)) return; const d = Math.hypot(n.sx - x, n.sy - y); if (d < Math.max(18, n.r * 1.4) && d < bd) { bd = d; best = n; } }); return best; }
+const gPos = e => { const r = gcv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+gcv.addEventListener('pointerdown', e => { const [x, y] = gPos(e), n = gPick(x, y); G.drag = n ? { n, x, y, moved: false, type: e.pointerType } : { n: null, x, y, moved: false, type: e.pointerType }; if (n) { G.heat = 1; gcv.setPointerCapture(e.pointerId); gcv.classList.add('drag'); } });
+gcv.addEventListener('pointermove', e => {
+  const [x, y] = gPos(e);
+  if (G.drag && G.drag.n) { if (Math.hypot(x - G.drag.x, y - G.drag.y) > 4) G.drag.moved = true; if (G.drag.moved) { const n = G.drag.n, u = (x - G.W / 2) / G.e.s, v = (y - G.H / 2) / G.e.s; if (G.rot) { n.x = G.e.x + v; n.y = G.e.y + u; } else { n.x = G.e.x + u; n.y = G.e.y + v; } } return; }
+  const n = gPick(x, y); gcv.style.cursor = n ? 'pointer' : 'default';
+  if (n !== G.hover) { G.hover = n; if (!G.pinned) showCard(n && n.L ? n : null); }
+});
+// a topic gets its own card: what it gathers
+function showHubCard(n) {
+  const L = [...n.nb].filter(m => m.L && gVis(m)).map(m => m.L);
+  $('#cardN').textContent = 'Topic'; $('#cardN').style.color = 'var(--eigen)'; $('#cardT').textContent = n.name;
+  $('#cardD').textContent = `${L.length} phenomena. Click a symbol to open it; on a phone, tap once to see it and again to open.`;
+  $('#cardA').hidden = true; card.hidden = false; placeCard(n);
+}
+function gFocus(n) {
+  G.pinned = n; G.uzT = 1; G.uxT = 0; G.uyT = 0; G.hover = null; G.heat = Math.max(G.heat, 0.3);
+  if (!n) { showCard(null); return; }
+  if (n.hub) showHubCard(n); else showCard(n);
+}
+gcv.addEventListener('pointerup', e => {
+  const [x, y] = gPos(e), d = G.drag; G.drag = null; gcv.classList.remove('drag'); if (d && d.moved) return;
+  const n = gPick(x, y);
+  if (!n) return;                                   // empty space keeps the current focus
+  // a phenomenon opens on a mouse click, or on a second tap; a topic ring zooms in
+  if (n.L && !n.L.soon && (d && d.type === 'mouse' && !FS.on || n === G.pinned && !FS.on)) { G.toOpen = n.L.u; return; }
+  if (n === G.pinned) return;
+  gFocus(n);
+});
+// opening happens in the click event, which every browser treats as a real user action (no popup blocking)
+gcv.addEventListener('click', () => {
+  const u = G.toOpen; G.toOpen = null; if (!u) return;
+  const w = window.open(u, '_blank'); if (w) w.opener = null; else location.href = u;
+});
+gcv.addEventListener('pointercancel', () => { G.drag = null; gcv.classList.remove('drag'); });
+gcv.addEventListener('pointerleave', () => { G.hover = null; if (!G.pinned && !G.drag) showCard(null); });
+const gBack = $('#gback');
+gBack.addEventListener('click', () => gFocus(null));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') gFocus(null); });
+$('#q').addEventListener('input', () => { G.q = $('#q').value.trim().toLowerCase(); });
+
+/* ===== Brain view: a LiDAR-scanned brain. Each series is a lobe, each phenomenon a neuron, cross-references are axons.
+   Hover a neuron to fire it: pulses run down its axons and light the pages it links to. Hover or pick a series to set its lobe off in a storm. ===== */
+const bcv = $('#brain'), blabs = $('#blabs');
+const B = { ready: false, loading: false, yaw: 0.5, pitch: 0.18, z: 1, zT: 1, tg: [0, 0, 0], tgT: [0, 0, 0], fly: null, drag: null, hover: null, pinned: null, storm: null, pulses: [], flash: {}, t: 0, lastAmb: 0 };
+function brainLoad() { if (B.ready || B.loading) return; B.loading = true; if (window.THREE) { brainInit(); return; }
+  const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'; s.onload = brainInit; s.onerror = () => { blabs.innerHTML = '<div class="bnogl">The brain view needs an internet connection the first time, to load its 3D engine.</div>'; }; document.head.appendChild(s); }
+function brainInit() {
+  try { const t = document.createElement('canvas'); if (!(t.getContext('webgl2') || t.getContext('webgl'))) throw 0; } catch (e) { blabs.innerHTML = '<div class="bnogl">This view needs WebGL, which this browser has switched off.</div>'; return; }
+  const T3 = THREE, SMALL = Math.min(innerWidth, innerHeight) < 700, Q = SMALL ? 0.55 : 1;
+  let sd = 21; const rnd = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+  // brain surface
+  const surf = (u, v) => { const th = u * Math.PI * 2, ph = v * Math.PI; let x = Math.sin(ph) * Math.cos(th), y = Math.cos(ph), z = Math.sin(ph) * Math.sin(th);
+    const g = 1 + 0.045 * Math.sin(9 * th + 3 * Math.sin(5 * ph)) * Math.sin(7 * ph + 2 * Math.cos(4 * th)) + 0.02 * Math.sin(23 * th) * Math.sin(17 * ph);
+    return [x * 0.95 * g, y * 0.82 * g * (y < 0 ? 0.8 : 1), z * 1.22 * g]; };
+  const hemi = (u, v, h) => { let [x, y, z] = surf(u, v); x = Math.abs(x) * 0.78 + 0.05; if (y < -0.15) y = -0.15 + (y + 0.15) * 0.55; const tp = Math.exp(-((y + 0.3) ** 2) * 12) * Math.exp(-((z - 0.25) ** 2) * 3); x += tp * 0.12; if (y > 0.35) x *= 1 - (y - 0.35) * 0.35; return new T3.Vector3(x * h, y, z); };
+  const SURF = []; for (let i = 0; i < 7000; i++) { const h = i % 2 ? 1 : -1; SURF.push(hemi(rnd(), Math.acos(1 - 2 * rnd()) / Math.PI, h)); }
+  const ANCH = { Q: [-0.45, 0.45, 0.7], F: [-0.35, 0.8, 0.05], A: [-0.6, 0.3, -0.5], B: [-0.8, -0.22, 0.35], P: [-0.4, 0.0, -1], M: [0.45, 0.45, 0.7], C: [0.35, 0.8, 0.05], X: [0.6, 0.3, -0.5], T: [0.8, -0.22, 0.35], N: [0.4, 0.0, -1] };
+  const lobeKeys = arms.slice(); const extra = [[0, 0.9, -0.5], [0, -0.2, 0.9]]; lobeKeys.forEach((k, i) => { if (!ANCH[k]) ANCH[k] = extra[i % 2]; });
+  const neurons = LESSONS.map(L => { const a = new T3.Vector3(...ANCH[L.s]).normalize(), j = new T3.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).multiplyScalar(0.55); const dir = a.clone().add(j).normalize();
+    let best = SURF[0], bd = -2; for (const p of SURF) { if (Math.sign(p.x) !== Math.sign(a.x || 1) && Math.abs(a.x) > 0.1) continue; const d = p.clone().normalize().dot(dir); if (d > bd) { bd = d; best = p; } }
+    return { L, p: best.clone().multiplyScalar(0.9), sx: 0, sy: 0, i: 0 }; });
+  neurons.forEach((n, i) => n.i = i); const byNum = {}; neurons.forEach(n => byNum[n.L.n] = n);
+  // relax neurons apart
+  for (let it = 0; it < 40; it++) neurons.forEach(a => neurons.forEach(b => { if (a === b) return; const d = a.p.clone().sub(b.p), l = d.length(); if (l < 0.13 && l > 1e-5) { d.multiplyScalar((0.13 - l) * 0.3 / l); a.p.add(d); b.p.sub(d); } }));
+  // axons: cross-references plus the order within each series
+  const ax = [], seen = new Set(), addAx = (a, b, kind) => { if (!a || !b || a === b) return; const id = Math.min(a.i, b.i) + '-' + Math.max(a.i, b.i); if (seen.has(id)) return; seen.add(id); ax.push({ a, b, kind }); };
+  LESSONS.forEach(L => (L.r || []).forEach(m => addAx(byNum[L.n], byNum[m], 'ref')));
+  arms.forEach(k => { const list = neurons.filter(n => n.L.s === k); for (let i = 1; i < list.length; i++) addAx(list[i - 1], list[i], 'seq'); });
+  neurons.forEach(n => n.ax = ax.filter(e => e.a === n || e.b === n));
+  // point buffers
+  const pos = [], col = [], sz = [], kd = [], br0 = [], own = [], prm = [];
+  const C = k => new T3.Color(SERIES[k].col), GREY = new T3.Color('#7d8aa3');
+  const push = (v, c, s, k, b, o, t) => { pos.push(v.x, v.y, v.z); col.push(c.r, c.g, c.b); sz.push(s); kd.push(k); br0.push(b); own.push(o); prm.push(t); };
+  const NS = Math.round(16000 * Q); for (let i = 0; i < NS; i++) { const h = rnd() < 0.5 ? -1 : 1, v = hemi(rnd(), Math.acos(1 - 2 * rnd()) / Math.PI, h); push(v, GREY, 0.9, 2, 0.16, -1, 0); }
+  for (let i = 0; i < Math.round(2400 * Q); i++) { const u = rnd() * Math.PI * 2, w = Math.acos(2 * rnd() - 1); push(new T3.Vector3(Math.sin(w) * Math.cos(u) * 0.55, -0.62 + Math.cos(w) * 0.25, -0.75 + Math.sin(w) * Math.sin(u) * 0.35), GREY, 0.8, 2, 0.12, -1, 0); }
+  for (let i = 0; i < Math.round(700 * Q); i++) { const u = rnd() * Math.PI * 2, y = -0.55 - rnd() * 0.55; push(new T3.Vector3(Math.cos(u) * 0.13, y, -0.35 + Math.sin(u) * 0.13 - (y + 0.55) * 0.25), GREY, 0.8, 2, 0.12, -1, 0); }
+  const NPN = Math.round(34 * Q) + 8; neurons.forEach((n, i) => { const c = C(n.L.s); for (let k = 0; k < NPN; k++) { const u = rnd() * Math.PI * 2, w = Math.acos(2 * rnd() - 1), r = 0.02 + Math.pow(rnd(), 0.7) * 0.035; push(new T3.Vector3(n.p.x + Math.sin(w) * Math.cos(u) * r, n.p.y + Math.cos(w) * r, n.p.z + Math.sin(w) * Math.sin(u) * r), c, 2.0, 0, n.L.soon ? 0.25 : 0.85, i, 0); } });
+  ax.forEach((e, j) => { const A = e.a.p, Bp = e.b.p, mid = A.clone().add(Bp).multiplyScalar(0.5).multiplyScalar(e.kind === 'seq' ? 0.82 : 0.4), cu = new T3.QuadraticBezierCurve3(A, mid, Bp), m = Math.round((e.kind === 'seq' ? 16 : 30) * (0.6 + A.distanceTo(Bp))) ; e.c = cu;
+    const c = C(e.a.L.s); for (let k = 1; k < m; k++) push(cu.getPoint(k / m), c, 1.0, 1, e.kind === 'seq' ? 0.1 : 0.16, neurons.length + j, k / m); });
+  const N = pos.length / 3, BR = new Float32Array(br0), BASE = new Float32Array(br0), OWN = new Int32Array(own), PRM = new Float32Array(prm);
+  const geo = new T3.BufferGeometry(); geo.setAttribute('position', new T3.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new T3.Float32BufferAttribute(col, 3));
+  geo.setAttribute('sz', new T3.Float32BufferAttribute(sz, 1)); geo.setAttribute('kd', new T3.Float32BufferAttribute(kd, 1)); geo.setAttribute('br', new T3.BufferAttribute(BR, 1));
+  const PHIM = document.documentElement.classList.contains('phi'); const mat = new T3.ShaderMaterial({ transparent: true, depthWrite: false, blending: PHIM ? T3.AdditiveBlending : T3.NormalBlending, uniforms: { uPx: { value: 1 }, uT: { value: 0 }, uAdd: { value: document.documentElement.classList.contains('phi') ? 1 : 0 } },
+    vertexShader: `attribute float sz; attribute float kd; attribute float br; attribute vec3 color; uniform float uPx, uT; varying vec3 vC; varying float vA;
+      void main(){ vec3 p = position; if (kd < 0.5) p *= 1.0 + 0.02 * br * sin(uT * 9.0 + position.x * 40.0); vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv;
+        gl_PointSize = clamp(sz * uPx * (0.8 + 0.9 * br) / -mv.z, 1.0, 22.0); vC = color; vA = br; }`,
+    fragmentShader: `uniform float uAdd; varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; vec3 c = uAdd > 0.5 ? vC * min(1.0, 0.5 + 0.3 * vA) : vC; gl_FragColor = vec4(c, clamp(vA * (uAdd > 0.5 ? 0.26 : 0.7), 0.0, 0.95) * smoothstep(0.5, 0.08, d)); }` });
+  const scene = new T3.Scene(), cam = new T3.PerspectiveCamera(34, 1, 0.1, 50), ren = new T3.WebGLRenderer({ canvas: bcv, antialias: false, alpha: true });
+  ren.setClearColor(0, 0); scene.add(new T3.Points(geo, mat));
+  // labels: lobes always, neurons on hover
+  const lobeLab = {}; arms.forEach(k => { const el = document.createElement('div'); el.className = 'blobe'; el.textContent = SERIES[k].name; el.style.setProperty('--sc', SERIES[k].ink || SERIES[k].col); blabs.appendChild(el); const ps = neurons.filter(n => n.L.s === k).map(n => n.p); const c = ps.reduce((a, p) => a.add(p), new T3.Vector3()).multiplyScalar(1 / ps.length); lobeLab[k] = { el, c: c.multiplyScalar(1.18) }; });
+  const nLab = {}; const labFor = n => { if (nLab[n.i]) return nLab[n.i]; const el = document.createElement('div'); el.className = 'bneu'; el.style.setProperty('--sc', SERIES[n.L.s].ink || SERIES[n.L.s].col); el.innerHTML = `<span>Φ ${n.L.n}</span> ${n.L.t}`; blabs.appendChild(el); nLab[n.i] = el; return el; };
+  B.neurons = neurons; B.ax = ax; B.ren = ren; B.cam = cam; B.scene = scene; B.mat = mat; B.geo = geo; B.BR = BR; B.BASE = BASE; B.OWN = OWN; B.PRM = PRM; B.N = N; B.lobeLab = lobeLab; B.labFor = labFor; B.nLab = nLab; B.SMALL = SMALL;
+  B.ready = true; brainResize();
+  $('#cnt').textContent = `${PH} · ${arms.length} lobes · ${ax.filter(e => e.kind === 'ref').length} axons`;
+}
+function brainResize() { if (!B.ready) return; const W = bcv.clientWidth, H = bcv.clientHeight; if (!W) return; const dpr = Math.min(B.SMALL ? 1.5 : 2, devicePixelRatio || 1); B.ren.setPixelRatio(dpr); B.ren.setSize(W, H, false); B.cam.aspect = W / H; B.cam.updateProjectionMatrix(); B.mat.uniforms.uPx.value = H * dpr * 0.03; }
+new ResizeObserver(brainResize).observe(bcv);
+function fire(n, now, depth) { if (!n) return; B.flash[n.i] = now; n.ax.forEach(e => { if (B.pulses.length < 400) B.pulses.push({ e, from: n, t0: now + Math.random() * 120, d: 700 + e.c.getLength() * 500, depth }); }); }
+function brainFrame(dt) {
+  if (!B.ready) { brainLoad(); return; }
+  const now = performance.now(); B.t += REDUCE ? 0 : dt;
+  if (!B.drag && !REDUCE && !B.pinned && !B.fly) B.yaw += dt * 0.12;
+  { const e = Math.min(1, dt * 5); B.z += (B.zT - B.z) * e; for (let i = 0; i < 3; i++) B.tg[i] += (B.tgT[i] - B.tg[i]) * e; if (B.fly) { let d = B.fly.yaw - B.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); B.yaw += d * e; B.pitch += (B.fly.pitch - B.pitch) * e; if (Math.abs(d) < 0.002 && Math.abs(B.fly.pitch - B.pitch) < 0.002) B.fly = null; } }
+  const W = bcv.clientWidth, H = bcv.clientHeight, cam = B.cam, dist = (W < 560 ? 4.6 : 3.9) / B.z, T = B.tg; B.dist = dist;
+  cam.position.set(T[0] + Math.sin(B.yaw) * Math.cos(B.pitch) * dist, T[1] + Math.sin(B.pitch) * dist + 0.05, T[2] + Math.cos(B.yaw) * Math.cos(B.pitch) * dist); cam.lookAt(T[0], T[1] - 0.05, T[2]);
+  // activity: ambient sparks, hover fires, series storm
+  if (!REDUCE && now - B.lastAmb > 700) { B.lastAmb = now; const n = B.neurons[Math.floor(Math.random() * B.neurons.length)]; if (!n.L.soon && n.ax.length) { const e = n.ax[Math.floor(Math.random() * n.ax.length)]; B.pulses.push({ e, from: n, t0: now, d: 900, depth: 9 }); } }
+  const storm = B.storm || state.focus; if (storm && !REDUCE) { if (Math.random() < dt * 14) { const list = B.neurons.filter(n => n.L.s === storm); const n = list[Math.floor(Math.random() * list.length)]; fire(n, now, 1); } }
+  const BR = B.BR, BASE = B.BASE, OWN = B.OWN, PRM = B.PRM, NN = B.neurons.length;
+  const dimS = state.focus || state.filter, q = $('#q').value.trim().toLowerCase();
+  const nv = new Float32Array(NN); B.neurons.forEach((n, i) => { let v = n.L.soon ? 0.25 : 0.8; if (dimS && n.L.s !== dimS) v = 0.12; if (q && !`${n.L.n} ${n.L.t} ${n.L.d} ${SERIES[n.L.s].name}`.toLowerCase().includes(q)) v = Math.min(v, 0.1); const f = B.flash[i]; if (f) { const a = (now - f) / 600; if (a < 1) v += 1.4 * (1 - a); } if (B.hover === n || B.pinned === n) v = 2.2; nv[i] = v; });
+  const ev = new Float32Array(B.ax.length); B.ax.forEach((e, j) => { let v = e.kind === 'seq' ? 0.07 : 0.13; if (dimS && e.a.L.s !== dimS && e.b.L.s !== dimS) v *= 0.4; const F = B.hover || B.pinned; if (F && (e.a === F || e.b === F)) v = 0.45; ev[j] = v; });
+  const prog = new Map(); B.pulses = B.pulses.filter(p => { const k = (now - p.t0) / p.d; if (k > 1) { const to = p.e.a === p.from ? p.e.b : p.e.a; if (p.depth < 2 && !p.done) { p.done = true; fire(to, now, p.depth + 1); } else B.flash[to.i] = now; return false; } if (k >= 0) { const j = B.ax.indexOf(p.e); if (!prog.has(j)) prog.set(j, []); prog.get(j).push(p.e.a === p.from ? k : 1 - k); } return true; });
+  for (let i = 0; i < B.N; i++) { const o = OWN[i]; if (o < 0) { BR[i] = BASE[i] * (dimS ? 0.8 : 1); continue; } if (o < NN) { BR[i] = BASE[i] * nv[o] / 0.8; continue; } const j = o - NN; let v = ev[j]; const ps = prog.get(j); if (ps) ps.forEach(k => { const d = (PRM[i] - k) * 9; v += 1.6 * Math.exp(-d * d); }); BR[i] = v; }
+  B.geo.attributes.br.needsUpdate = true; B.mat.uniforms.uT.value = B.t;
+  B.ren.render(B.scene, cam);
+  // project neurons for picking, labels, card
+  const V = new THREE.Vector3(); B.neurons.forEach(n => { V.copy(n.p).project(cam); n.sx = (V.x * 0.5 + 0.5) * W; n.sy = (-V.y * 0.5 + 0.5) * H; n.front = V.z; });
+  Object.entries(B.lobeLab).forEach(([k, o]) => { V.copy(o.c).project(cam); o.el.style.transform = `translate(${(V.x * 0.5 + 0.5) * W}px,${(-V.y * 0.5 + 0.5) * H}px) translate(-50%,-50%)`; const on = !dimS || dimS === k; o.el.style.opacity = W < 560 && !on ? 0 : on ? 0.95 : 0.3; o.el.classList.toggle('hot', storm === k); });
+  const F = B.hover || B.pinned, show = new Set(); if (F && W >= 560) { show.add(F.i); F.ax.forEach(e => show.add((e.a === F ? e.b : e.a).i)); }
+  if (B.z > 1.6) { const cp = cam.position, boxes = [], cand = B.neurons.filter(n => n.sx > 8 && n.sx < W - 60 && n.sy > 50 && n.sy < H - 20 && n.front < 1 && n.p.distanceTo(cp) < dist + 0.25 && (!dimS || n.L.s === dimS)).sort((a, b) => a.p.distanceTo(cp) - b.p.distanceTo(cp)); show.forEach(i => { const n = B.neurons[i]; boxes.push([n.sx, n.sy - 9, n.sx + 190, n.sy + 9]); }); for (const n of cand) { if (show.size > (W < 560 ? 14 : 34)) break; if (show.has(n.i)) continue; const w = 30 + 6.4 * (n.L.t.length + 6), bx = [n.sx + 6, n.sy - 9, n.sx + 6 + w, n.sy + 9]; if (boxes.some(b => bx[0] < b[2] && bx[2] > b[0] && bx[1] < b[3] && bx[3] > b[1])) continue; boxes.push(bx); show.add(n.i); } }
+  Object.keys(B.nLab).forEach(i => { if (!show.has(+i)) B.nLab[i].style.opacity = 0; });
+  show.forEach(i => { const n = B.neurons[i], el = B.labFor(n); el.style.transform = `translate(${n.sx + 9}px,${n.sy}px) translateY(-50%)`; el.style.opacity = n === F ? 0 : 0.92; });
+  { const lob = B.z > 1.6; Object.values(B.lobeLab).forEach(o => { if (lob) o.el.style.opacity = Math.min(+o.el.style.opacity, 0.35); }); }
+  if (F) placeCard(F);
+}
+function bPick(x, y) { let best = null, bd = B.SMALL ? 22 : 14; (B.neurons || []).forEach(n => { const d = Math.hypot(n.sx - x, n.sy - y) + (n.front > 0.5 ? 0 : 0); if (d < bd) { bd = d; best = n; } }); return best; }
+const bpos = e => { const r = bcv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+bcv.addEventListener('pointerdown', e => { const [x, y] = bpos(e); B.drag = { x, y, yaw: B.yaw, pitch: B.pitch, moved: false }; bcv.setPointerCapture(e.pointerId); bcv.classList.add('drag'); });
+bcv.addEventListener('pointermove', e => { const [x, y] = bpos(e); if (B.drag) { const dx = x - B.drag.x, dy = y - B.drag.y; if (Math.hypot(dx, dy) > 4) B.drag.moved = true; B.fly = null; B.yaw = B.drag.yaw - dx * 0.008 / Math.sqrt(B.z); B.pitch = Math.max(-0.9, Math.min(1.1, B.drag.pitch + dy * 0.006 / Math.sqrt(B.z))); return; } if (B.pinned) return; const n = bPick(x, y); if (n !== B.hover) { B.hover = n; if (n) { fire(n, performance.now(), 0); showCard(n); } else showCard(null); } });
+bcv.addEventListener('pointerup', e => { const [x, y] = bpos(e); const moved = B.drag && B.drag.moved; B.drag = null; bcv.classList.remove('drag'); if (moved) return; const n = bPick(x, y);
+  if (n && B.pinned === n && !n.L.soon && !FS.on) { const w = window.open(n.L.u, '_blank'); if (w) w.opener = null; else location.href = n.L.u; return; }
+  B.pinned = n; B.hover = null; if (n) fire(n, performance.now(), 0); showCard(n); });
+bcv.addEventListener('pointerleave', () => { if (!B.pinned && !B.drag) { B.hover = null; showCard(null); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { B.pinned = null; if (state.view === 'brain') showCard(null); } });
+document.querySelectorAll('#legend .chip').forEach(c => { c.addEventListener('mouseenter', () => { B.storm = c.dataset.k; }); c.addEventListener('mouseleave', () => { B.storm = null; }); });
+
+
+/* ===== Full screen + zoom / pan / fly ===== */
+const FS = { on: false, native: false, ph: null };
+const fsb = $('#fsb'), zin = $('#zin'), zout = $('#zout'), zrst = $('#zrst'), zhint = $('#zhint');
+const FS_IN = fsb.innerHTML, FS_OUT = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5 1.5V5H1.5M12.5 5H9V1.5M9 12.5V9h3.5M1.5 9H5v3.5" stroke="currentColor" stroke-width="1.3"/></svg>';
+const ZHINT = { galaxy: 'Drag to turn · wheel or pinch to zoom · right-drag or two fingers to pan · double-click a star to fly to it', brain: 'Drag to turn · wheel or pinch to zoom · right-drag or two fingers to pan · double-click a neuron to fly to it', graph: 'Wheel or pinch to zoom · drag empty space to pan · drag nodes · double-click a node to fly to it' };
+const ZHINT_S = { galaxy: 'Pinch to zoom · two fingers to pan · double-tap a star', brain: 'Pinch to zoom · two fingers to pan · double-tap a neuron', graph: 'Pinch to zoom · drag to pan · double-tap a node' };
+let zhT = 0;
+function fsHint() { if (!FS.on) { zhint.hidden = true; return; } zhint.textContent = (chart.clientWidth < 700 ? ZHINT_S : ZHINT)[state.view]; zhint.hidden = false; zhint.style.opacity = 1; clearTimeout(zhT); zhT = setTimeout(() => { zhint.style.opacity = 0; }, 5000); }
+function fsSync(on) {
+  FS.on = on; chart.classList.toggle('fs', on && !FS.native); fsb.innerHTML = on ? FS_OUT : FS_IN; fsb.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); fsb.title = fsb.getAttribute('aria-label');
+  [zin, zout, zrst].forEach(b => b.hidden = !on); if (!on) navReset(true); fsHint();
+  requestAnimationFrame(() => { resize(); gResize(); brainResize(); });
+}
+function fsEnter() {
+  // iPhone Safari exposes webkitRequestFullscreen but ignores it for anything except video, so check it is enabled and that it actually started
+  const rq = chart.requestFullscreen || chart.webkitRequestFullscreen, ok = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+  if (!rq || !ok) { fsFallback(); return; }
+  FS.native = true; const fail = () => { if (FS.on) return; FS.native = false; fsFallback(); };
+  try { const p = rq.call(chart); if (p && p.catch) p.catch(fail); } catch (e) { fail(); return; }
+  setTimeout(() => { if (!(document.fullscreenElement || document.webkitFullscreenElement)) fail(); }, 700);
+}
+function fsFallback() { // no Fullscreen API (iPhone): lift the chart out of any transformed parent and pin it to the window
+  FS.sy = scrollY; FS.ph = document.createComment('chart'); chart.parentNode.insertBefore(FS.ph, chart); document.body.appendChild(chart); document.documentElement.style.overflow = 'hidden'; fsSync(true);
+}
+function fsExit() {
+  if (FS.native) { const ex = document.exitFullscreen || document.webkitExitFullscreen; if (ex && (document.fullscreenElement || document.webkitFullscreenElement)) ex.call(document); return; }
+  if (FS.ph) { FS.ph.parentNode.insertBefore(chart, FS.ph); FS.ph.remove(); FS.ph = null; } document.documentElement.style.overflow = ''; fsSync(false); if (FS.sy != null) { scrollTo(0, FS.sy); FS.sy = null; }
+}
+['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { const el = document.fullscreenElement || document.webkitFullscreenElement; if (el === chart) fsSync(true); else if (FS.native && FS.on) { FS.native = false; fsSync(false); } }));
+fsb.addEventListener('click', () => FS.on ? fsExit() : fsEnter());
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && FS.on && !FS.native) fsExit(); if (FS.on && (e.key === '+' || e.key === '=')) navZoom(1.25); if (FS.on && (e.key === '-' || e.key === '_')) navZoom(0.8); if (FS.on && e.key === '0') navReset(); });
+
+const clampZ = z => Math.max(0.6, Math.min(state.view === 'graph' ? 8 : 6, z));
+function navZoom(f, cx, cy, now) { // zoom about a point on screen (default: centre)
+  const CW = chart.clientWidth, CH = chart.clientHeight; if (cx == null) { cx = CW / 2; cy = CH / 2; }
+  if (state.view === 'galaxy') { const z1 = clampZ(view.zT * f), r = z1 / view.zT; view.pxT = (cx - CW / 2) - (cx - CW / 2 - view.pxT) * r; view.pyT = (cy - CH / 2) - (cy - CH / 2 - view.pyT) * r; view.zT = z1; if (now) { view.z = view.zT; view.px = view.pxT; view.py = view.pyT; } }
+  else if (state.view === 'graph') { const s0 = G.cam.s * G.uzT, ox = G.cam.x + G.uxT, oy = G.cam.y + G.uyT, a = (cx - G.W / 2), b = (cy - G.H / 2); const wx = G.rot ? ox + b / s0 : ox + a / s0, wy = G.rot ? oy + a / s0 : oy + b / s0; G.uzT = clampZ(G.uzT * f); const s1 = G.cam.s * G.uzT; if (G.rot) { G.uyT = wy - G.cam.y - a / s1; G.uxT = wx - G.cam.x - b / s1; } else { G.uxT = wx - G.cam.x - a / s1; G.uyT = wy - G.cam.y - b / s1; } if (now) { G.uz = G.uzT; G.ux = G.uxT; G.uy = G.uyT; } }
+  else { B.zT = clampZ(B.zT * f); if (now) B.z = B.zT; }
+}
+function navPan(dx, dy) {
+  if (state.view === 'galaxy') { view.pxT += dx; view.pyT += dy; view.px += dx; view.py += dy; }
+  else if (state.view === 'graph') { const s = G.cam.s * G.uz; if (G.rot) { G.uyT -= dx / s; G.uxT -= dy / s; } else { G.uxT -= dx / s; G.uyT -= dy / s; } G.ux = G.uxT; G.uy = G.uyT; }
+  else if (B.ready) { const cam = B.cam, H = bcv.clientHeight || 1, wpp = 2 * (B.dist || 4) * Math.tan(cam.fov * Math.PI / 360) / H, R = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), U = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1); for (let i = 0; i < 3; i++) { const v = (-R.getComponent(i) * dx + U.getComponent(i) * dy) * wpp; B.tgT[i] += v; B.tg[i] += v; } }
+}
+function navReset(now) {
+  view.zT = 1; view.pxT = 0; view.pyT = 0; view.tiltT = 1.05; G.uzT = 1; G.uxT = 0; G.uyT = 0; B.zT = 1; B.tgT = [0, 0, 0];
+  if (now) { view.z = 1; view.px = 0; view.py = 0; view.tilt = 1.05; view.tiltT = null; G.uz = 1; G.ux = 0; G.uy = 0; B.z = 1; B.tg = [0, 0, 0]; }
+}
+const pickAt = (x, y) => state.view === 'galaxy' ? pick(x, y) : state.view === 'graph' ? gPick(x, y) : bPick(x, y);
+function navFly(x, y, hit) { // double-click / double-tap: fly to what is under the pointer
+  if (state.view === 'galaxy') { const n = hit || pick(x, y); if (!n) { navZoom(1.8, x, y); return; } view.target = null; view.pinned = n; view.hover = null; showCard(n); view.zT = clampZ(Math.max(view.zT, 2.6)); view.pxT = -n.ux * view.zT; view.pyT = -n.uy * view.zT; }
+  else if (state.view === 'graph') { const n = hit || gPick(x, y); if (!n) { navZoom(1.8, x, y); return; } gFocus(n); }
+  else { const n = hit || bPick(x, y); if (!n) { navZoom(1.6); return; } B.pinned = n; B.hover = null; fire(n, performance.now(), 0); showCard(n); B.zT = Math.max(B.zT, 2.4); B.tgT = [n.p.x, n.p.y, n.p.z]; const L = n.p.length() || 1; B.fly = { yaw: Math.atan2(n.p.x, n.p.z), pitch: Math.max(-0.9, Math.min(1.1, Math.asin(Math.max(-1, Math.min(1, n.p.y / L))))) }; }
+}
+zin.addEventListener('click', () => navZoom(1.35)); zout.addEventListener('click', () => navZoom(1 / 1.35)); zrst.addEventListener('click', () => { navReset(); B.fly = null; view.pinned = null; B.pinned = null; if (state.view === 'graph') gFocus(null); showCard(null); });
+chart.addEventListener('wheel', e => { if (!FS.on) return; e.preventDefault(); const r = chart.getBoundingClientRect(), d = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY; navZoom(Math.exp(-d * 0.0016), e.clientX - r.left, e.clientY - r.top, true); }, { passive: false });
+chart.addEventListener('contextmenu', e => { if (FS.on) e.preventDefault(); });
+// gestures run in the capture phase so they can take over from each view's own drag handlers
+const PT = new Map(); let GST = null, TAP = null;
+const cpos = e => { const r = chart.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+const onCanvas = e => e.target === cv || e.target === gcv || e.target === bcv;
+const dropDrags = () => { view.drag = null; G.drag = null; B.drag = null; [cv, gcv, bcv].forEach(c => c.classList.remove('drag')); };
+chart.addEventListener('pointerdown', e => {
+  if (!FS.on || !onCanvas(e)) return;
+  const [x, y] = cpos(e); PT.set(e.pointerId, { x, y });
+  if (PT.size === 2) { const [a, b] = [...PT.values()]; GST = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; dropDrags(); TAP = null; e.stopPropagation(); return; }
+  if (PT.size > 2) { e.stopPropagation(); return; }
+  const panBtn = e.pointerType === 'mouse' && (e.button === 2 || e.button === 1 || e.shiftKey), emptyGraph = state.view === 'graph' && !gPick(x, y);
+  if (panBtn || emptyGraph) { GST = { kind: 'pan', x, y, x0: x, y0: y }; try { e.target.setPointerCapture(e.pointerId); } catch (_) {} e.stopPropagation(); if (panBtn) e.preventDefault(); }
+}, true);
+chart.addEventListener('pointermove', e => {
+  if (!FS.on || !PT.has(e.pointerId)) return;
+  const [x, y] = cpos(e); PT.set(e.pointerId, { x, y });
+  if (GST && GST.kind === 'pinch' && PT.size >= 2) { const [a, b] = [...PT.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2; navPan(mx - GST.mx, my - GST.my); navZoom(d / GST.d, mx, my, true); GST.d = d; GST.mx = mx; GST.my = my; e.stopPropagation(); }
+  else if (GST && GST.kind === 'pan') { navPan(x - GST.x, y - GST.y); GST.x = x; GST.y = y; e.stopPropagation(); }
+}, true);
+const ptEnd = e => {
+  if (!PT.has(e.pointerId)) return; PT.delete(e.pointerId);
+  if (GST) { const g = GST, [x, y] = cpos(e); if (!PT.size) GST = null; e.stopPropagation(); if (g.kind === 'pan' && Math.hypot(x - g.x0, y - g.y0) < 5 && e.type === 'pointerup') tapCheck(e, x, y); return; }
+  if (e.type === 'pointerup') { const [x, y] = cpos(e); if (tapCheck(e, x, y)) { e.stopPropagation(); dropDrags(); } }
+};
+function tapCheck(e, x, y) { // a second tap within 320 ms and 26 px is a double tap: fly there
+  const t = performance.now();
+  if (TAP && t - TAP.t < 380 && Math.hypot(x - TAP.x, y - TAP.y) < 28) { const h = TAP.hit; TAP = null; navFly(x, y, h); return true; }
+  TAP = { t, x, y, hit: pickAt(x, y) }; return false;
+}
+chart.addEventListener('pointerup', ptEnd, true); chart.addEventListener('pointercancel', ptEnd, true);
+
+/* ===== View switch ===== */
+const HINT = {
+  brain: 'Each lobe is a series and each bright cluster a phenomenon. Hover a neuron to fire it and watch the pulse reach the pages it links to; hover a series to set its lobe off. Drag to turn; click a neuron to preview it and again to open it.',
+  galaxy: 'Pick a series to swing its arm to the front. Inner stars are the first phenomena in each series.',
+  graph: 'Rings are topics, symbols are phenomena; solid lines join pages that build on each other. Click a ring to zoom in on its topic and click a symbol to open its page (on a phone, tap once to preview and again to open). Full graph or Esc zooms back out. Drag nodes to rearrange; the series chips, filter and Find all apply here.'
+};
+function setView(m) {
+  chart.classList.toggle('is-graph', m === 'graph'); state.view = m; cv.hidden = m !== 'galaxy'; gcv.hidden = m !== 'graph'; bcv.hidden = m !== 'brain'; blabs.hidden = m !== 'brain'; B.pinned = null; B.hover = null; if (m === 'brain') { brainLoad(); requestAnimationFrame(brainResize); }
+  document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === m)));
+  $('#ctl').textContent = m === 'graph' ? 'Φ graph · drag the nodes' : m === 'brain' ? 'Φ brain · drag to turn' : 'Φ galaxy · drag to turn';
+  const refs = G.links.filter(l => l.kind === 'ref').length;
+  $('#cnt').textContent = m === 'graph' ? `${PH} · ${G.nodes.length - LESSONS.length} topics · ${refs} cross-links` : m === 'brain' ? `${PH} · ${arms.length} lobes` : `${PH} · ${arms.length} arms`;
+  $('#hint').textContent = HINT[m]; view.pinned = null; view.hover = null; G.pinned = null; G.hover = null; showCard(null); $('#cardA').hidden = false;
+  if (m === 'graph') { gResize(); G.heat = Math.max(G.heat, 0.4); }
+  navReset(true); fsHint();
+  try { localStorage.setItem('ef-view', m); } catch (e) {}
+}
+document.querySelectorAll('.modes button').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+try { const v = localStorage.getItem('ef-view'); if (v === 'graph' || v === 'brain') setView(v); } catch (e) {}
+
+/* ===== Loop ===== */
+let last = performance.now(), chartVis = true;
+const chartOn = () => { const r = chart.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; };
+function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (chartOn()) (state.view === 'graph' ? graphFrame(dt) : state.view === 'brain' ? brainFrame(dt) : frame(dt)); if (!REDUCE) drawCards(now / 1000, false); requestAnimationFrame(loop); }
+frame(0); drawCards(1.2, true); requestAnimationFrame(loop);
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

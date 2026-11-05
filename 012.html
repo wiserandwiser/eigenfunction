@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Decoherence</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 012 colour code: pink = quantum coherence, violet = information leaking to the environment, ice = the environment. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/3.8}}
+h1 .eig{transform:none}
+h1 .fade{background:linear-gradient(90deg,var(--ink) 30%,color-mix(in srgb,var(--ink) 15%,transparent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.check{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.check input{accent-color:var(--eigen);width:15px;height:15px}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 012 · Quantum series · 6 of 10</div>
+    <a class="navlink" href="011.html">← Φ 011</a>
+    <a class="navlink" href="013.html">Φ 013 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 012 · Quantum series · 6 of 10</p>
+    <h1><span class="eig">de</span><span class="fade">coherence</span></h1>
+    <p class="gloss">QUANTUM · decoherence — <em>a superposition leaking into its surroundings until its quantum behaviour can no longer be seen</em></p>
+    <p class="thesis">If everything is quantum, why does nothing around you ever seem to be in two places at once? Because nothing around you is ever alone. Every stray air molecule and photon carries away a little information, and that leak is enough to make the quantum world look classical.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum foundations → quantum engineering</dd></div>
+    <div><dt>Models</dt><dd>Interference in a gas, an ensemble losing its phase, the race for longer-lived qubits</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 6 of 10. Builds on the double slit (Φ 007).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>coherence</span><span class="key"><i style="background:var(--violet)"></i>leaked information</span><span class="key"><i style="background:var(--ice)"></i>environment</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="gas">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The leak</span><h2>Let the air in and the stripes fade</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Molecules passing two slits through a chamber of gas. Some collide with gas particles. The screen below shows the interference pattern fading as collisions become more common."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="g1">Gas in the chamber <input type="range" id="g1" min="0" max="100" step="1" value="0"><output id="g1o">vacuum</output></label>
+          <button class="btn solo" type="button" id="clr1">Clear screen</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Chance of a collision</b><span id="r1p" class="vi">—</span></div>
+          <div class="ro"><b>Stripe contrast</b><span id="r1v" class="eg">—</span></div>
+          <div class="ro"><b>Molecules landed</b><span id="r1n">0</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Go back to the double slit of Φ 007, firing large molecules this time. In a perfect vacuum they make clean interference stripes.</p>
+        <p>Each molecule is drawn as two faint dots, one through each slit, because until something records its path it really does take both. Now let a little gas into the chamber. Each time a molecule bumps a gas particle, the gas particle bounces off in a slightly different direction depending on which slit the molecule was passing. Nobody needs to read that record. The fact that it now <span class="v">exists</span> in the environment is enough, just like the which-path detector in Φ 007.</p>
+        <p>The stripes fade, and the more gas, the faster. In 2003 a Vienna group did exactly this with C₇₀ molecules and measured the fading, in step with the collision rate. A year later they did it with heat instead: molecules hot enough to glow gave off photons that carried away the path information.</p>
+        <p>That is <strong>decoherence</strong>. Large objects are constantly hit by air, light and heat, so their superpositions leak away almost instantly. That is why you never see a chair in two places.</p>
+        <div class="task"><b>Try this</b>Start in vacuum and let the stripes form. Then add gas and clear the screen at each step. Watch the contrast drop as the violet collision flashes become common.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>V</var> = <var>V</var>₀ <var>e</var><sup>−<var>nσL</var></sup></div>
+          <p>The fringe visibility falls exponentially with gas density <var>n</var>, collision cross-section <var>σ</var> and path length <var>L</var>: a molecule that scatters anything loses its interference, while one that slips through untouched keeps it. Formally, the environment becomes entangled with the path, |<var>L</var>⟩|<var>e</var><sub>L</sub>⟩ + |<var>R</var>⟩|<var>e</var><sub>R</sub>⟩, and interference survives only in proportion to the overlap ⟨<var>e</var><sub>L</sub>|<var>e</var><sub>R</sub>⟩.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="dephase">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Losing the phase</span><h2>A superposition that drifts out of step</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Many copies of a qubit, each an arrow on a circle, fanning out as noise gives each a different phase. Their average, the coherence, shrinks. A spin echo flips them and they refocus."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="n2">Environment noise <input type="range" id="n2" min="0" max="100" step="1" value="45"><output id="n2o">—</output></label>
+        </div>
+        <div class="controls">
+          <label class="check" for="e2"><input type="checkbox" id="e2"> Spin echo halfway</label>
+          <button class="btn solo" type="button" id="go2">Prepare superposition</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Time</b><span id="r2t">—</span></div>
+          <div class="ro"><b>Coherence left</b><span id="r2c" class="eg">—</span></div>
+          <div class="ro"><b>What it means</b><span id="r2m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A qubit in superposition is an arrow on the equator of its sphere. Its direction, the <strong>phase</strong>, holds the quantum information. Here are 200 copies, all prepared identically.</p>
+        <p>Each copy sits in a slightly different, slightly noisy environment, so each one’s phase drifts at its own rate. The copies fan out. Any single copy is still a perfectly good superposition, but the <span class="a">average</span>, which is what any experiment actually measures, shrinks towards nothing. The quantum coherence has gone.</p>
+        <p>Part of the fan-out is static: each copy just runs slightly fast or slow. That part can be undone. Erwin Hahn found in 1950 that flipping every arrow halfway through makes the fast ones fall behind by exactly as much as they had gained, so they all come back together. This <strong>spin echo</strong> is used in every MRI scanner. What it can’t undo is the truly random part, and that sets the qubit’s real lifetime.</p>
+        <div class="task"><b>Try this</b>Watch the coherence collapse. Then tick Spin echo and prepare again: the arrows refocus at the end, but never quite all the way. Raise the noise to see the irreversible part grow.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">|<var>ψ</var>⟩ = (|0⟩ + <var>e</var><sup><var>iφ</var></sup>|1⟩)/√2,&nbsp; |⟨<var>e</var><sup><var>iφ</var></sup>⟩| → <var>e</var><sup>−<var>t</var>/<var>T</var>₂</sup></div>
+          <p>The off-diagonal element of the density matrix, the coherence, decays as phases spread. Each copy here gets a fixed random frequency offset (inhomogeneous, reversible) plus a random walk (homogeneous, irreversible). The echo reverses phases at the halfway time <var>τ</var>, cancelling the fixed part at 2<var>τ</var>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="race">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Engineering</span><h2>The race to keep qubits coherent</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A log-scale chart of the coherence times of superconducting qubits from 1999 to the mid-2020s, rising about a million-fold, with the number of operations that fit in that time."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="y3">Year <input type="range" id="y3" min="0" max="7" step="1" value="7"><output id="y3o">—</output></label>
+          <label class="scrub" for="op3">Time per operation <input type="range" id="op3" min="10" max="200" step="5" value="40"><output id="op3o">40 ns</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Coherence time</b><span id="r3t" class="eg">—</span></div>
+          <div class="ro"><b>Operations before it fades</b><span id="r3o">—</span></div>
+          <div class="ro"><b>Milestone</b><span id="r3m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A quantum computer is a machine for holding superpositions long enough to calculate with them. Decoherence is its main enemy.</p>
+        <p>The first superconducting qubit (1999) stayed coherent for about a nanosecond, barely long enough for anything. Better circuit designs, purer materials and 3D cavities pushed that up roughly a million-fold, to around a millisecond in the best devices today.</p>
+        <p>What matters is how many operations fit inside that window. Divide the coherence time by the time per operation and you get a rough budget of steps before the quantum information blurs away. Even that isn’t enough for the biggest algorithms, which is why error correction, in Φ 015, matters so much.</p>
+        <p>A note of honesty: decoherence explains why superpositions become impossible to observe. It doesn’t by itself explain why one particular outcome happens. That question, the measurement problem, is still debated.</p>
+        <div class="task"><b>Try this</b>Step through the years and watch the operation budget grow from almost none to tens of thousands.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>N</var><sub>ops</sub> ≈ <var>T</var>₂ / <var>t</var><sub>gate</sub></div>
+          <p>A rough count of operations before coherence is lost. Values are approximate best-reported coherence times for superconducting qubits, rounded to show the trend. Individual devices vary widely, and <var>T</var>₁ (energy loss) and <var>T</var>₂ (phase loss) differ.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Decoherence everywhere</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Theory</div><h3>Quantum Darwinism</h3><p>Wojciech Zurek’s idea: the environment keeps many redundant copies of only certain properties, like position. Those “fittest” properties are the ones every observer agrees on, which may be why the world looks objectively classical.</p></div>
+      <div class="g"><div class="where">Biology</div><h3>Quantum effects in warm, wet life?</h3><p>Coherence is fragile in warm, noisy cells. Researchers still debate whether quantum effects help photosynthesis or birds’ magnetic compasses, and decoherence times are at the centre of that debate.</p></div>
+      <div class="g"><div class="where">Medicine</div><h3>Echoes in MRI</h3><p>Spin echoes, and the rates at which signals fade, are how MRI scanners tell tissues apart. Different tissues dephase at different speeds, and that difference becomes contrast in the image.</p></div>
+      <div class="g"><div class="where">Shielding</div><h3>Colder, darker, quieter</h3><p>Quantum computers sit in dilution refrigerators at around 10 millikelvin, inside metal shields, to starve their qubits of the heat and stray radiation that cause decoherence.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Superpositions don’t vanish. They <span class="a">leak</span> into the environment, and once the world holds a record of which way things went, the quantum overlap is gone from sight.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><span class="chip here">012 · Decoherence</span><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 012 · Decoherence · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: collisional decoherence ---------- */
+(function () {
+  const cv = $('#c1'), gS = $('#g1'), gO = $('#g1o');
+  const rP = $('#r1p'), rV = $('#r1v'), rN = $('#r1n');
+  const NB = 300, sinc = x => Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
+  const prof = V => { const P = new Float64Array(NB); for (let i = 0; i < NB; i++) { const u = -1 + 2 * (i + 0.5) / NB, p1 = sinc(3 * (u - 0.1)) ** 2, p2 = sinc(3 * (u + 0.1)) ** 2; P[i] = 0.5 * (p1 + p2) + V * Math.sqrt(p1 * p2) * Math.cos(26 * u); } return P; };
+  const cdf = P => { const c = new Float64Array(NB); let s = 0; for (let i = 0; i < NB; i++) { s += Math.max(0, P[i]); c[i] = s; } return c.map(v => v / s); };
+  const CQ = cdf(prof(1)), CC = cdf(prof(0));
+  const samp = c => { const r = Math.random(); let lo = 0, hi = NB - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (c[m] < r) lo = m + 1; else hi = m; } return -1 + 2 * (lo + Math.random()) / NB; };
+  const st = { g: 0, hits: [], mols: [], gas: [], acc: 0, flashes: [] };
+  for (let k = 0; k < 120; k++) st.gas.push({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 });
+  const pColl = () => 1 - Math.exp(-st.g / 30);
+  function upd() { st.g = +gS.value; gO.value = st.g === 0 ? 'vacuum' : `${st.g}%`; setText(rP, `${Math.round(pColl() * 100)}% per molecule`); setText(rV, `${Math.round((1 - pColl()) * 100)}%`); }
+  gS.addEventListener('input', () => { upd(); st.hits = []; });
+  $('#clr1').addEventListener('click', () => { st.hits = []; });
+  upd();
+  if (REDUCE) for (let k = 0; k < 2500; k++) st.hits.push([samp(Math.random() < pColl() ? CC : CQ), Math.random(), false]);
+  function frame(dt) {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cx0 = 14, cy0 = 22, cw = w - 28, ch = h * 0.36, sy = cy0 + ch + 34, sh = h - sy - 14;
+    // chamber
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(cx0 + 0.5, cy0 + 0.5, cw - 1, ch - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('CHAMBER · SOURCE → TWO SLITS → SCREEN', cx0, cy0 - 8);
+    const slitX = cx0 + cw * 0.12;
+    const SY = [0.435, 0.565];
+    ctx.fillStyle = COL['ink-3']; ctx.fillRect(slitX - 2, cy0, 4, ch * 0.4); ctx.fillRect(slitX - 2, cy0 + ch * 0.47, 4, ch * 0.06); ctx.fillRect(slitX - 2, cy0 + ch * 0.6, 4, ch * 0.4);
+    // gas
+    const nGas = Math.round(st.g / 100 * st.gas.length);
+    for (let k = 0; k < nGas; k++) { const g = st.gas[k]; if (!REDUCE) { g.x += g.vx * dt; g.y += g.vy * dt; if (g.x < 0.15 || g.x > 1) g.vx *= -1; if (g.y < 0 || g.y > 1) g.vy *= -1; g.x = clamp(g.x, 0.15, 1); g.y = clamp(g.y, 0, 1); } ctx.fillStyle = rgba(COL.ice, 0.55); ctx.beginPath(); ctx.arc(cx0 + g.x * cw, cy0 + g.y * ch, 2, 0, Math.PI * 2); ctx.fill(); }
+    // molecules in flight
+    if (!REDUCE) { st.acc += dt * 70; while (st.acc >= 1) { const coll = Math.random() < pColl(); st.mols.push({ t: 0, u: samp(coll ? CC : CQ), coll, at: 0.25 + Math.random() * 0.65, y0: 0.5 }); st.acc -= 1; } }
+    for (let k = st.mols.length - 1; k >= 0; k--) {
+      const m = st.mols[k]; m.t += dt * 1.6;
+      if (m.t >= 1) { st.hits.push([m.u, Math.random(), m.coll]); st.mols.splice(k, 1); continue; }
+      const x = cx0 + m.t * cw;
+      if (m.t < 0.12) { ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(x, cy0 + ch * 0.5, 2, 0, Math.PI * 2); ctx.fill(); continue; }
+      const frac = (m.t - 0.12) / 0.88, tgt = 0.5 + m.u * 0.45, yk = k2 => cy0 + ch * (SY[k2] + (tgt - SY[k2]) * frac);
+      if (m.coll && m.t > m.at) {
+        if (m.slit == null) m.slit = Math.random() < 0.5 ? 0 : 1;
+        if (!m.flashed) { m.flashed = true; st.flashes.push({ x, y: yk(m.slit), life: 1 }); }
+        ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(x, yk(m.slit), 2.2, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillStyle = rgba(COL.eigen, 0.55); [0, 1].forEach(k2 => { ctx.beginPath(); ctx.arc(x, yk(k2), 1.8, 0, Math.PI * 2); ctx.fill(); });
+      }
+    }
+    for (let k = st.flashes.length - 1; k >= 0; k--) { const f = st.flashes[k]; f.life -= dt * 2.5; if (f.life <= 0) { st.flashes.splice(k, 1); continue; } ctx.strokeStyle = rgba(COL.violet, f.life); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(f.x, f.y, 4 + (1 - f.life) * 12, 0, Math.PI * 2); ctx.stroke(); }
+    // screen
+    if (st.hits.length > 15000) st.hits.splice(0, st.hits.length - 15000);
+    ctx.fillStyle = COL['bay-2']; ctx.fillRect(cx0, sy, cw, sh); ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(cx0 + 0.5, sy + 0.5, cw - 1, sh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SCREEN · PINK = NO COLLISION, VIOLET = COLLIDED', cx0, sy - 8);
+    for (const [u, v, c] of st.hits) { ctx.fillStyle = c ? rgba(COL.violet, 0.7) : rgba(COL.eigen, 0.7); ctx.fillRect(cx0 + (u + 1) / 2 * cw, sy + v * sh, 1.6, 1.6); }
+    setText(rN, st.hits.length.toLocaleString('en-US'));
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: dephasing and spin echo ---------- */
+(function () {
+  const cv = $('#c2'), nS = $('#n2'), nO = $('#n2o'), echo = $('#e2');
+  const rT = $('#r2t'), rC = $('#r2c'), rM = $('#r2m');
+  const N = 200, TEND = 6;
+  const st = { t: 0, ph: new Float64Array(N), df: new Float64Array(N), echoed: false, hist: [], done: false, hold: 0 };
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
+  function prep() { const n = +nS.value / 100; for (let i = 0; i < N; i++) { st.ph[i] = 0; st.df[i] = gauss() * 1.2; } st.t = 0; st.echoed = false; st.hist = [[0, 1]]; st.done = false; st.hold = 0; nO.value = `${Math.round(n * 100)}%`; }
+  nS.addEventListener('input', prep); echo.addEventListener('change', prep); $('#go2').addEventListener('click', prep);
+  prep();
+  const coh = () => { let x = 0, y = 0; for (let i = 0; i < N; i++) { x += Math.cos(st.ph[i]); y += Math.sin(st.ph[i]); } return [x / N, y / N]; };
+  function advance(dt) {
+    const walk = (+nS.value / 100) * 1.1, sub = 4, h = dt / sub;
+    for (let s = 0; s < sub; s++) {
+      for (let i = 0; i < N; i++) st.ph[i] += st.df[i] * h + walk * Math.sqrt(h) * gauss();
+      st.t += h;
+      if (echo.checked && !st.echoed && st.t >= TEND / 2) { for (let i = 0; i < N; i++) st.ph[i] = -st.ph[i]; st.echoed = true; }
+    }
+    const [x, y] = coh(); st.hist.push([st.t, Math.hypot(x, y)]);
+  }
+  if (REDUCE) { while (st.t < TEND) advance(0.05); }
+  function frame(dt) {
+    if (!REDUCE) { if (st.t < TEND) advance(dt * 1.2); else { st.hold += dt; if (st.hold > 2.5) prep(); } }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const R = narrow ? Math.min(w * 0.3, h * 0.24) : Math.min(w * 0.2, h * 0.38), cx = narrow ? w / 2 : 24 + R, cy = narrow ? 24 + R : h / 2;
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('200 COPIES · TOP VIEW OF THE EQUATOR', 14, 16);
+    for (let i = 0; i < N; i++) { ctx.strokeStyle = rgba(COL.ice, 0.22); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(st.ph[i] - Math.PI / 2), cy + R * Math.sin(st.ph[i] - Math.PI / 2)); ctx.stroke(); }
+    const [x, y] = coh(), c = Math.hypot(x, y);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 4; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 10; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * (x * Math.cos(-Math.PI / 2) - y * Math.sin(-Math.PI / 2)), cy + R * (x * Math.sin(-Math.PI / 2) + y * Math.cos(-Math.PI / 2))); ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = COL.eigen; ctx.fillText('average', cx + 8, cy + 16);
+    if (echo.checked && st.echoed && st.t - TEND / 2 < 0.35) { ctx.fillStyle = COL.eigen; ctx.font = `14px ${MONO}`; ctx.fillText('ECHO · ALL FLIPPED', cx - 70, cy + R + 22); ctx.font = `10.5px ${MONO}`; }
+    // coherence chart
+    const gx = narrow ? 30 : cx + R + 46, gy = narrow ? cy + R + 40 : 30, gw = narrow ? w - 44 : w - gx - 16, gh = narrow ? h - gy - 24 : h - 64;
+    const X = t => gx + t / TEND * gw, Y = v => gy + (1 - v) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('COHERENCE OVER TIME', gx, gy - 10);
+    ctx.textAlign = 'right'; ctx.fillText('100%', gx - 4, gy + 8); ctx.fillText('0', gx - 4, gy + gh); ctx.textAlign = 'left';
+    if (echo.checked) { ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.eigen, 0.6); ctx.beginPath(); ctx.moveTo(X(TEND / 2), gy); ctx.lineTo(X(TEND / 2), gy + gh); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL.eigen; ctx.fillText('echo', X(TEND / 2) + 4, gy + 12); }
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach(([t, v], k) => { k ? ctx.lineTo(X(t), Y(v)) : ctx.moveTo(X(t), Y(v)); }); ctx.stroke();
+    setText(rT, `${st.t.toFixed(1)} of ${TEND}`);
+    setText(rC, `${Math.round(c * 100)}%`);
+    setText(rM, c > 0.7 ? 'still a clear superposition' : c > 0.25 ? 'blurring' : 'looks like a random mix');
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: coherence records ---------- */
+(function () {
+  const cv = $('#c3'), yS = $('#y3'), oS = $('#op3'), yO = $('#y3o'), oO = $('#op3o');
+  const rT = $('#r3t'), rO = $('#r3o'), rM = $('#r3m');
+  const D = [
+    [1999, 1e-9, 'first superconducting qubit'],
+    [2002, 5e-7, 'improved charge qubits'],
+    [2007, 2e-6, 'the transmon design'],
+    [2011, 6e-5, 'qubits in 3D cavities'],
+    [2015, 1e-4, 'better materials and fabrication'],
+    [2019, 2e-4, 'multi-qubit processors'],
+    [2021, 3e-4, 'tantalum transmons'],
+    [2025, 1e-3, 'about a millisecond']
+  ];
+  function fmtT(s) { if (s < 1e-6) return `${(s * 1e9).toFixed(0)} ns`; if (s < 1e-3) return `${(s * 1e6).toFixed(0)} µs`; return `${(s * 1e3).toFixed(1)} ms`; }
+  function upd() {
+    const [yr, t, m] = D[+yS.value], g = +oS.value * 1e-9;
+    yO.value = `~${yr}`; oO.value = `${oS.value} ns`;
+    setText(rT, `~${fmtT(t)}`); const n = t / g; setText(rO, n < 1 ? 'less than one' : `~${Math.round(n).toLocaleString('en-US')}`); setText(rM, m);
+  }
+  yS.addEventListener('input', upd); oS.addEventListener('input', upd); upd();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 56, gy = 28, gw = w - gx - 18, gh = h - gy - 40;
+    const X = y => gx + (y - 1997) / (2027 - 1997) * gw, Y = t => gy + (1 - (Math.log10(t) + 9.5) / 7) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('BEST COHERENCE TIMES · SUPERCONDUCTING QUBITS · APPROXIMATE · LOG SCALE', gx, gy - 10);
+    ctx.textAlign = 'right';
+    [[1e-9, '1 ns'], [1e-6, '1 µs'], [1e-3, '1 ms']].forEach(([t, l]) => { ctx.strokeStyle = rgba(COL['rule-hi'], 0.6); ctx.beginPath(); ctx.moveTo(gx, Y(t)); ctx.lineTo(gx + gw, Y(t)); ctx.stroke(); ctx.fillStyle = COL['ink-3']; ctx.fillText(l, gx - 6, Y(t) + 4); });
+    ctx.textAlign = 'center'; [2000, 2005, 2010, 2015, 2020, 2025].forEach(y => ctx.fillText(String(y), X(y), gy + gh + 14)); ctx.textAlign = 'left';
+    // operation-time line
+    const g = +oS.value * 1e-9; ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(gx, Y(g)); ctx.lineTo(gx + gw, Y(g)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.violet; ctx.fillText('one operation', gx + 6, Y(g) - 5);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); D.forEach(([y, t], k) => { k ? ctx.lineTo(X(y), Y(t)) : ctx.moveTo(X(y), Y(t)); }); ctx.stroke();
+    D.forEach(([y, t], k) => { const on = k === +yS.value; ctx.fillStyle = on ? '#d2d1d5' : COL.eigen; ctx.beginPath(); ctx.arc(X(y), Y(t), on ? 6 : 4, 0, Math.PI * 2); ctx.fill(); });
+    const [yr, t] = D[+yS.value];
+    if (t > g) { ctx.strokeStyle = rgba(COL.eigen, 0.5); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(yr), Y(t)); ctx.lineTo(X(yr), Y(g)); ctx.stroke(); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

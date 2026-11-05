@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Neutrino Oscillations</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 037 colour code: pink = electron neutrino, ice = muon neutrino, violet = tau neutrino. */
+#vp1{aspect-ratio:16/9}
+#vp2{aspect-ratio:16/10.5}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1{aspect-ratio:4/3.8}#vp2,#vp3{aspect-ratio:4/4.8}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 037 · Particles & forces · 3 of 6</div>
+    <a class="navlink" href="036.html">← Φ 036</a>
+    <a class="navlink" href="038.html">Φ 038 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 037 · Particles &amp; forces · 3 of 6</p>
+    <h1>neutrino <span class="eig">oscillations</span></h1>
+    <p class="gloss">PARTICLES &amp; FORCES · the ghost particle — <em>particles that pass through the Earth untouched, and change identity as they fly</em></p>
+    <p class="thesis">Every second, about 65 billion neutrinos from the Sun pass through your thumbnail. Almost none of them touch anything. For thirty years, the few that were caught didn’t add up: only a third of the Sun’s neutrinos seemed to arrive. The answer was that neutrinos shapeshift in flight, which means they must have mass, something the Standard Model said they didn’t.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Particle physics, astrophysics</dd></div>
+    <div><dt>Models</dt><dd>Ghosts through the Earth, the flavour oscillation, the missing solar neutrinos</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 3 of 6. Uses superposition from the quantum series.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>electron ν</span><span class="key"><i style="background:var(--ice)"></i>muon ν</span><span class="key"><i style="background:var(--violet)"></i>tau ν</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="ghost">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Ghost particles</span><h2>A light-year of lead</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A stream of neutrinos from the Sun passing straight through the Earth. Almost none interact; a counter shows how rare a collision is, and a slider adds a wall of lead to show how thick it must be to stop half of them."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="L1">Lead wall thickness <input type="range" id="L1" min="0" max="1000" step="1" value="0"><output id="L1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Through your thumbnail</b><span id="r1t" class="eg">—</span></div>
+          <div class="ro"><b>Stopped by the wall</b><span id="r1s">—</span></div>
+          <div class="ro"><b>Stopped by the whole Earth</b><span id="r1e">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Neutrinos are made in vast numbers by nuclear reactions: in the Sun’s core, in reactors, in supernovae and in cosmic-ray showers. They have no electric charge and don’t feel the strong force. They interact only through the <strong>weak force</strong>, which, as the name says, is very weak.</p>
+        <p>A typical solar neutrino would sail through about <strong>a light-year of solid lead</strong> before it had an even chance of being stopped. The whole Earth stops roughly one in a billion. Night-time sunlight is blocked by the planet; night-time solar neutrinos come up through it, and you are bathed in them day and night.</p>
+        <p>Catching them takes enormous detectors. Super-Kamiokande in Japan is a tank of 50,000 tonnes of ultra-pure water a kilometre underground, lined with 11,000 light sensors, and catches a few dozen solar neutrinos a day.</p>
+        <div class="task"><b>Try this</b>Add a lead wall. How thick must it be before it stops even one neutrino in a hundred?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>P</var>(stop) = 1 − <var>e</var><sup>−<var>x</var>/λ</sup>,&nbsp; λ = 1/(<var>n</var>σ) ≈ 1 light-year of lead</div>
+          <p>For neutrinos of around 1 MeV, the cross-section σ is about 10⁻⁴⁴ cm² per nucleon; the exact length depends steeply on energy. The solar neutrino flux at Earth is about 6.5 × 10¹⁰ per cm² per second. The Earth is treated as about half as dense as lead, averaged over its diameter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="osc">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Shapeshifting</span><h2>A neutrino that changes flavour in flight</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A neutrino flying from a source to a detector, its colour shifting between electron and muon flavours. A graph shows the probability of detecting each flavour against distance, rising and falling like a wave."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Experiment">
+            <button class="btn" type="button" data-ex="t2k" aria-pressed="true">T2K · accelerator</button>
+            <button class="btn" type="button" data-ex="kam">KamLAND · reactors</button>
+            <button class="btn" type="button" data-ex="free">Free play</button>
+          </div>
+          <label class="scrub" for="E2">Energy <input type="range" id="E2" min="0" max="1000" step="1" value="500"><output id="E2o">—</output></label>
+          <label class="scrub" for="M2">Mass difference <input type="range" id="M2" min="0" max="1000" step="1" value="500"><output id="M2o">—</output></label>
+          <label class="scrub" for="T2">Mixing angle <input type="range" id="T2" min="0" max="45" step="1" value="45"><output id="T2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Detector distance</b><span id="r2d">—</span></div>
+          <div class="ro"><b>Chance it has changed flavour</b><span id="r2p" class="eg">—</span></div>
+          <div class="ro"><b>One full oscillation every</b><span id="r2l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A neutrino is born in one <strong>flavour</strong>: electron, muon or tau, set by the particle it was made with. But the flavours are not the states with definite mass. Each flavour is a quantum <span class="i">superposition</span> of three mass states, like a chord made of three notes.</p>
+        <p>If the masses differ, the three parts travel with slightly different wave rhythms. As the neutrino flies they drift in and out of step, and the mix that makes “electron” turns into the mix that makes “muon” and back again. Catch it at the right distance and it has changed identity.</p>
+        <p>How far it travels before switching depends on its energy divided by the <strong>difference in the squares of the masses</strong>. The amplitude depends on the <strong>mixing angle</strong>. If neutrinos were massless, nothing would ever change: seeing oscillations proves they have mass.</p>
+        <div class="task"><b>Try this</b>In Free play, set the mass difference to zero: the oscillation vanishes. Then try the real experiments and see why each detector was placed where it is.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>P</var>(ν<sub><var>α</var></sub>→ν<sub><var>β</var></sub>) = sin²2θ · sin²(1.27 Δ<var>m</var>² <var>L</var>/<var>E</var>)</div>
+          <p>The two-flavour approximation, with Δ<var>m</var>² in eV², <var>L</var> in km and <var>E</var> in GeV. T2K: muon neutrinos at about 0.6 GeV over 295 km, Δ<var>m</var>² ≈ 2.5 × 10⁻³ eV², near-maximal mixing; most of the missing muon neutrinos have become tau neutrinos, with a few per cent turning into electron neutrinos. KamLAND: reactor antineutrinos at a few MeV, average distance about 180 km, Δ<var>m</var>² ≈ 7.5 × 10⁻⁵ eV², sin²2θ ≈ 0.85. Real beams have a spread of energies, which blurs the wiggles at large distances.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="solar">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">A 30-year mystery</span><h2>The missing solar neutrinos</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Neutrinos streaming from the Sun to Earth, changing flavour on the way. Bars compare the predicted and measured counts in a detector that sees only electron neutrinos and one that sees all flavours."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Oscillations">
+            <button class="btn" type="button" data-os="0">No oscillations (the 1960s theory)</button>
+            <button class="btn" type="button" data-os="1" aria-pressed="true">With oscillations</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Electron-flavour detector sees</b><span id="r3e" class="eg">—</span></div>
+          <div class="ro"><b>All-flavour detector sees</b><span id="r3a">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r3v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1968 Ray Davis filled a tank with 600 tonnes of dry-cleaning fluid at the bottom of the Homestake gold mine. Every few weeks he extracted the handful of argon atoms made when a solar <span class="a">electron neutrino</span> hit a chlorine atom. He found only about <strong>a third</strong> of what John Bahcall’s model of the Sun predicted.</p>
+        <p>Either the Sun was misunderstood or neutrinos were. For three decades physicists argued. In 1998 Super-Kamiokande found that muon neutrinos from cosmic rays coming up through the Earth were missing compared with those coming down: they were changing flavour over the longer path.</p>
+        <p>In 2001 the Sudbury Neutrino Observatory in Canada settled it with heavy water, which could count electron neutrinos alone <em>and</em> all flavours together. The total matched Bahcall’s prediction exactly; only a third arrived as electron neutrinos. The Sun was fine. The rest had changed on the way (helped by an effect of the Sun’s dense matter, the MSW effect).</p>
+        <div class="task"><b>Try this</b>Toggle oscillations off and on, and compare each detector with the prediction. This is the 2001 result in one picture.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">SNO: φ<sub>e</sub> / φ<sub>total</sub> ≈ 0.34,&nbsp; φ<sub>total</sub> ≈ 5 × 10⁶ cm⁻² s⁻¹ (boron-8 neutrinos)</div>
+          <p>Measured fractions for the high-energy boron-8 solar neutrinos that SNO could see; Davis’s chlorine experiment found about 2.6 of a predicted 7.6 units. Over the Sun–Earth distance the fast oscillations average out, and inside the Sun the MSW effect converts higher-energy neutrinos more completely, so the surviving fraction depends on energy.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1930</div><h3>Pauli’s “desperate remedy”</h3><p>Wolfgang Pauli proposed an invisible particle to save energy conservation in radioactive decay, and worried he had predicted something that could never be detected.</p></div>
+      <div class="g"><div class="where">1956</div><h3>First detection</h3><p>Clyde Cowan and Frederick Reines caught antineutrinos from the Savannah River nuclear reactor and telegraphed Pauli the news.</p></div>
+      <div class="g"><div class="where">1987</div><h3>Supernova 1987A</h3><p>Detectors in Japan and the US caught about two dozen neutrinos from a star that exploded in a neighbouring galaxy (Φ 017).</p></div>
+      <div class="g"><div class="where">2002 · 2015</div><h3>Nobel Prizes</h3><p>Raymond Davis and Masatoshi Koshiba (2002) for detecting cosmic neutrinos; Takaaki Kajita and Arthur McDonald (2015) for showing that neutrinos oscillate, so have mass.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Neutrinos barely interact, yet they <span class="a">change flavour as they fly</span>, which proves they have mass; the Standard Model must be extended to explain it.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><span class="chip here">037 · Neutrino oscillations</span><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 037 · The shapeshifters · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const LY_M = 9.461e15;
+
+/* ---------- BAY 01: ghosts through the Earth ---------- */
+(function () {
+  const cv = $('#c1'), LS = $('#L1'), LO = $('#L1o');
+  const rT = $('#r1t'), rS = $('#r1s'), rE = $('#r1e');
+  const st = { nu: [], acc: 0, hits: [] };
+  const fmtLen = m => m >= 0.1 * LY_M ? `${(m / LY_M).toFixed(2)} light-years` : m >= 1.496e11 ? `${(m / 1.496e11).toFixed(0)} AU` : m >= 1e3 ? `${(m / 1e3).toLocaleString('en-US', { maximumFractionDigits: 0 })} km` : `${m.toFixed(m < 10 ? 1 : 0)} m`;
+  function frame(dt) {
+    const x = LS.value > 0 ? Math.pow(10, -1 + 17.3 * +LS.value / 1000) : 0; LO.value = x ? fmtLen(x) : 'none';
+    const p = 1 - Math.exp(-x / LY_M), pe = 1 - Math.exp(-1.2742e7 * 0.49 / LY_M);
+    setText(rT, '65 billion every second'); setText(rS, x ? (p < 1e-6 ? `${(p * 1e9).toPrecision(2)} in a billion` : p < 0.01 ? `${(p * 100).toPrecision(2)}%` : `${(p * 100).toFixed(1)}%`) : '—'); setText(rE, `about ${(pe * 1e9).toFixed(1)} in a billion`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    if (!REDUCE) { st.acc += dt * 60; while (st.acc > 1) { st.acc--; st.nu.push({ x: -10, y: Math.random() * h, v: w * (0.5 + Math.random() * 0.3) }); } }
+    const ex = w * 0.42, ey = h / 2, er = Math.min(h * 0.38, w * 0.2), wx = w * 0.72, ww = x ? Math.max(3, Math.min(w * 0.2, Math.log10(1 + x) * 8)) : 0;
+    const sun = ctx.createRadialGradient(-h * 0.2, h / 2, 0, -h * 0.2, h / 2, h * 0.7); sun.addColorStop(0, 'rgba(255,240,200,0.6)'); sun.addColorStop(1, 'rgba(255,200,120,0)'); ctx.fillStyle = sun; ctx.fillRect(0, 0, w * 0.25, h);
+    const eg = ctx.createRadialGradient(ex - er * 0.3, ey - er * 0.3, 0, ex, ey, er); eg.addColorStop(0, '#9fabf3'); eg.addColorStop(1, '#3c4c68'); ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('Earth', ex - 16, ey + er + 16);
+    if (ww) { ctx.fillStyle = 'rgba(140,150,170,0.55)'; ctx.fillRect(wx, 20, ww, h - 40); ctx.fillStyle = COL['ink-2']; ctx.fillText('lead', wx, 14); }
+    st.nu.forEach(n => { if (!REDUCE) n.x += n.v * dt; ctx.fillStyle = rgba(COL.eigen, 0.75); ctx.fillRect(n.x, n.y, 5, 1.4); if (!n.hit && ww && n.x > wx && n.x < wx + ww && Math.random() < p * 40 * dt) { n.hit = true; st.hits.push({ x: n.x, y: n.y, t: 0.6 }); } });
+    st.nu = st.nu.filter(n => n.x < w + 10 && !n.hit);
+    st.hits = st.hits.filter(k => (k.t -= dt) > 0); st.hits.forEach(k => { ctx.fillStyle = `rgba(255,255,255,${k.t})`; ctx.beginPath(); ctx.arc(k.x, k.y, 6 * (1.6 - k.t), 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SOLAR NEUTRINOS · EACH STREAK STANDS FOR BILLIONS', 14, 18);
+    if (ww && p > 0.02) { ctx.fillStyle = COL.ink; ctx.fillText('flash = a neutrino stopped (rate exaggerated for small walls)', 14, h - 10); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: flavour oscillation ---------- */
+(function () {
+  const cv = $('#c2'), ES = $('#E2'), EO = $('#E2o'), MS = $('#M2'), MO = $('#M2o'), TS = $('#T2'), TO = $('#T2o');
+  const rD = $('#r2d'), rP = $('#r2p'), rL = $('#r2l');
+  const EX = { t2k: { L: 295, E: 0.6, dm: 2.5e-3, th: 45, name: 'Super-Kamiokande', Lmax: 1500, from: 'muon', to: 'tau' }, kam: { L: 180, E: 0.004, dm: 7.5e-5, th: 33.4, name: 'KamLAND', Lmax: 600, from: 'electron', to: 'muon or tau' } };
+  const st = { ex: 't2k', t: 0 };
+  const setEx = k => { st.ex = k; $$('[data-ex]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.ex === k))); if (k !== 'free') { const e = EX[k]; ES.value = Math.round((Math.log10(e.E) + 3) / 4 * 1000); MS.value = Math.round((Math.log10(e.dm) + 5) / 3 * 1000); TS.value = Math.round(e.th); } };
+  $$('[data-ex]').forEach(b => b.addEventListener('click', () => setEx(b.dataset.ex)));
+  [ES, MS, TS].forEach(s => s.addEventListener('input', () => { st.ex = 'free'; $$('[data-ex]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.ex === 'free'))); }));
+  setEx('t2k');
+  function frame(dt) {
+    const E = Math.pow(10, -3 + 4 * +ES.value / 1000), dm = +MS.value === 0 ? 0 : Math.pow(10, -5 + 3 * +MS.value / 1000), th = +TS.value * Math.PI / 180;
+    EO.value = E < 0.01 ? `${(E * 1000).toFixed(1)} MeV` : E < 1 ? `${(E * 1000).toFixed(0)} MeV` : `${E.toFixed(1)} GeV`;
+    MO.value = dm === 0 ? 'zero: massless' : `${dm.toExponential(1)} eV²`; TO.value = `${TS.value}°`;
+    const ex = EX[st.ex], L = ex ? ex.L : 295, Lmax = ex ? ex.Lmax : Math.max(400, Math.min(20000, dm ? 3 * Math.PI / (1.27 * dm / E) : 1000));
+    const P = l => Math.sin(2 * th) ** 2 * Math.sin(1.27 * dm * l / E) ** 2;
+    setText(rD, ex ? `${L} km (${ex.name})` : `${L} km`); setText(rP, `${Math.round(P(L) * 100)}%`); setText(rL, dm ? `${Math.round(Math.PI / (1.27 * dm / E)).toLocaleString('en-US')} km` : 'never');
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const fromC = ex && ex.from === 'muon' ? COL.ice : COL.eigen, toC = ex && ex.from === 'muon' ? COL.violet : COL.ice;
+    // flight path
+    const py = h * 0.24, x0 = 40, x1 = w - 40, X = l => x0 + l / Lmax * (x1 - x0);
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(x0, py); ctx.lineTo(x1, py); ctx.stroke();
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('source', x0 - 20, py + 22);
+    ctx.fillStyle = COL.ink; ctx.fillRect(X(L) - 4, py - 16, 8, 32); ctx.fillText('detector', X(L) - 26, py + 30);
+    for (let i = 0; i <= 300; i++) { const l = i / 300 * Lmax, p = P(l); ctx.fillStyle = p > 0.5 ? rgba(toC, 0.25 + 0.6 * (p - 0.5) * 2) : rgba(fromC, 0.25 + 0.6 * (0.5 - p) * 2); ctx.fillRect(X(l), py - 3, (x1 - x0) / 300 + 1, 6); }
+    const lp = (st.t * 0.12 % 1) * Lmax, pp = P(lp), c = pp > 0.5 ? toC : fromC; ctx.fillStyle = '#d2d1d5'; ctx.shadowColor = c; ctx.shadowBlur = 14; ctx.beginPath(); ctx.arc(X(lp), py, 6, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(ex ? `${ex.from.toUpperCase()} NEUTRINO AT BIRTH → TURNS ${ex.to.toUpperCase()}` : 'FLAVOUR ALONG THE PATH', 14, 18);
+    // probability plot
+    const gx = 50, gy = h * 0.42, gw = w - gx - 20, gh = h - gy - 36;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    const PX = l => gx + l / Lmax * gw, PY = p => gy + gh - p * gh;
+    ctx.strokeStyle = toC; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 500; i++) { const l = i / 500 * Lmax; i ? ctx.lineTo(PX(l), PY(P(l))) : ctx.moveTo(PX(l), PY(P(l))); } ctx.stroke();
+    ctx.strokeStyle = fromC; ctx.beginPath(); for (let i = 0; i <= 500; i++) { const l = i / 500 * Lmax; i ? ctx.lineTo(PX(l), PY(1 - P(l))) : ctx.moveTo(PX(l), PY(1 - P(l))); } ctx.stroke(); ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(PX(L), gy); ctx.lineTo(PX(L), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0, 0.5, 1].forEach(f => ctx.fillText(`${Math.round(Lmax * f).toLocaleString('en-US')} km`, PX(Lmax * f) + (f === 0 ? 16 : f === 1 ? -28 : 0), gy + gh + 14)); ctx.textAlign = 'right'; ctx.fillText('100%', gx - 4, gy + 8); ctx.fillText('0', gx - 4, gy + gh); ctx.textAlign = 'left';
+    ctx.fillStyle = fromC; ctx.fillText('stays the same', gx + 6, gy + 14); ctx.fillStyle = toC; ctx.fillText('has changed', gx + 6, gy + 28);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the solar neutrino problem ---------- */
+(function () {
+  const cv = $('#c3'), rE = $('#r3e'), rA = $('#r3a'), rV = $('#r3v');
+  const st = { os: 1, nu: [], acc: 0 };
+  $$('[data-os]').forEach(b => b.addEventListener('click', () => { st.os = +b.dataset.os; $$('[data-os]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  const MEAS = 0.34;
+  function frame(dt) {
+    const e = st.os ? MEAS : 1;
+    setText(rE, `${Math.round(e * 100)}% of prediction${st.os ? '' : ' (but the real one saw 34%)'}`); setText(rA, '100% of prediction');
+    setText(rV, st.os ? 'matches both measurements: the Sun is fine' : 'contradicts the measurements');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, top = narrow ? h * 0.5 : h, sx = 30, ex = narrow ? w - 30 : w * 0.6, cy = top / 2;
+    const sun = ctx.createRadialGradient(sx, cy, 0, sx, cy, 60); sun.addColorStop(0, 'rgba(255,240,200,1)'); sun.addColorStop(1, 'rgba(255,190,110,0)'); ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(sx, cy, 60, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#9fabf3'; ctx.beginPath(); ctx.arc(ex, cy, 12, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL['ink-2']; ctx.fillText('Earth', ex - 16, cy + 28); ctx.fillText('Sun', sx - 10, cy + 74 > top - 4 ? top - 6 : cy + 74);
+    if (!REDUCE) { st.acc += dt * 40; while (st.acc > 1) { st.acc--; st.nu.push({ x: sx + 20, y: cy + (Math.random() - 0.5) * 60, ph: Math.random() * 6.28, f: Math.random() }); } }
+    st.nu.forEach(n => { if (!REDUCE) n.x += dt * (ex - sx) * 0.35; const prog = (n.x - sx) / (ex - sx); let c = COL.eigen; if (st.os && prog > 0.15) { c = n.f < MEAS ? COL.eigen : n.f < MEAS + (1 - MEAS) / 2 ? COL.ice : COL.violet; } ctx.fillStyle = c; ctx.beginPath(); ctx.arc(n.x, n.y + Math.sin(n.ph + prog * 6) * 6 * (1 - prog), 2.4, 0, Math.PI * 2); ctx.fill(); });
+    st.nu = st.nu.filter(n => n.x < ex - 10);
+    // bars
+    const bx = narrow ? 30 : w * 0.66, bw = narrow ? w - 60 : w * 0.3, by = narrow ? top + 30 : 50, bh = narrow ? h - top - 50 : h - 100;
+    const bar = (i, lab, v, comp) => { const x = bx + i * bw / 2 + 10, bwid = bw / 2 - 24, hh = bh - 30; ctx.strokeStyle = rgba(COL.ink, 0.5); ctx.setLineDash([4, 3]); ctx.strokeRect(x, by + 0.5, bwid, hh); ctx.setLineDash([]); let y = by + hh; comp.forEach(([f, c]) => { const hgt = f * hh; ctx.fillStyle = c; ctx.fillRect(x, y - hgt, bwid, hgt); y -= hgt; }); ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(lab, x + bwid / 2, by + bh - 12); ctx.fillText(`${Math.round(v * 100)}%`, x + bwid / 2, by + hh - v * hh - 6); ctx.textAlign = 'left'; };
+    bar(0, 'electron ν only', e, [[e, COL.eigen]]);
+    bar(1, 'all flavours', 1, st.os ? [[MEAS, COL.eigen], [(1 - MEAS) / 2, COL.ice], [(1 - MEAS) / 2, COL.violet]] : [[1, COL.eigen]]);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('DASHED = SUN MODEL PREDICTION', bx + 10, by - 12);
+    ctx.fillText(st.os ? 'NEUTRINOS CHANGE FLAVOUR ON THE WAY' : 'NO OSCILLATION: ALL ARRIVE AS ELECTRON ν', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

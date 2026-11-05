@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Quark Confinement</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 039 colour code: red, green and blue = quark colour charges; pink = the gluon field; ice = hadrons that escape. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 039 · Particles & forces · 5 of 6</div>
+    <a class="navlink" href="038.html">← Φ 038</a>
+    <a class="navlink" href="040.html">Φ 040 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 039 · Particles &amp; forces · 5 of 6</p>
+    <h1>quark <span class="eig">confinement</span></h1>
+    <p class="gloss">PARTICLES &amp; FORCES · the strong force — <em>a force that grows stronger the further you pull, so quarks can never be set free</em></p>
+    <p class="thesis">Nobody has ever seen a single quark on its own, and nobody ever will. Pull two quarks apart and the force between them does not weaken like gravity or magnetism: it stays as strong as a sixteen-tonne weight, until the energy you’ve put in snaps the bond and creates new quarks. Only by heating matter to trillions of degrees do quarks briefly roam free.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum chromodynamics (QCD)</dd></div>
+    <div><dt>Models</dt><dd>The unbreakable string, jets from collisions, melting protons into quark–gluon plasma</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 5 of 6. Builds on Φ 035 (quarks, colour and the running of the strong force).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:#f0287a"></i>red</span><span class="key"><i style="background:#0a8ee8"></i>green</span><span class="key"><i style="background:#2c4bff"></i>blue</span><span class="key"><i style="background:var(--eigen)"></i>gluon field</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="string">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The unbreakable string</span><h2>Pull two quarks apart</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A quark and an antiquark joined by a narrow tube of gluon field. As they are pulled apart the energy stored rises steadily, unlike the spreading field between electric charges, until the tube snaps and a new quark-antiquark pair appears, leaving two separate particles."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Compare">
+            <button class="btn" type="button" data-fd="q" aria-pressed="true">Quark and antiquark</button>
+            <button class="btn" type="button" data-fd="e">Electric charges</button>
+          </div>
+          <label class="scrub" for="r1">Separation <input type="range" id="r1" min="10" max="200" step="1" value="40"><output id="r1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Energy stored</b><span id="r1e" class="eg">—</span></div>
+          <div class="ro"><b>Force pulling back</b><span id="r1f">—</span></div>
+          <div class="ro"><b>State</b><span id="r1s">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Between two electric charges, field lines spread out through all of space, so the force weakens with distance. Gluons are different: they carry colour charge themselves, so they attract each other. The field between two quarks squeezes into a narrow <span class="a">flux tube</span>, like a string.</p>
+        <p>A string of constant thickness pulls with a <strong>constant force</strong>, however far you stretch it: about 1 GeV per femtometre, the weight of roughly <strong>sixteen tonnes</strong>, acting across a distance smaller than a proton. The energy stored grows steadily as you pull.</p>
+        <p>At about a femtometre and a bit, there is enough energy in the string to make a new quark and antiquark from nothing (<var>E</var> = <var>mc</var>²). The string snaps, and each broken end is capped by a new quark. You don’t get a free quark; you get <strong>two</strong> particles where there was one.</p>
+        <div class="task"><b>Try this</b>Stretch the electric pair, then the quark pair, and compare the energy curves. Keep pulling the quarks until the string snaps.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>V</var>(<var>r</var>) = −(4/3) α<sub>s</sub> ħ<var>c</var>/<var>r</var> + σ<var>r</var>,&nbsp; σ ≈ 0.9 GeV/fm ≈ 1.4 × 10⁵ N</div>
+          <p>The Cornell potential, which fits the measured masses of charm–anticharm mesons well; α<sub>s</sub> ≈ 0.3 here. The string breaks when the stored energy can pay for a new pair of light mesons, around 1.2–1.4 fm in lattice calculations; here it breaks once about 1 GeV has been stored beyond a normal meson’s size. The electric comparison is a Coulomb potential scaled to the same short-range strength. 1 fm = 10⁻¹⁵ m.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="jets">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Jets</span><h2>Collide, and the strings shatter into sprays</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="An electron and positron annihilate, producing a quark and antiquark flying apart. The string between them breaks again and again, and the pieces become a spray of particles in two back-to-back jets, or three jets if a gluon is radiated."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="E2">Collision energy <input type="range" id="E2" min="0" max="1000" step="1" value="600"><output id="E2o">—</output></label>
+          <button class="btn solo" type="button" id="g2" aria-pressed="false">Radiate a gluon: off</button>
+          <button class="btn solo" type="button" id="go2">Collide</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Jets</b><span id="r2j" class="eg">—</span></div>
+          <div class="ro"><b>Charged particles (typical)</b><span id="r2n">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In a collider, an electron and a positron annihilate and their energy creates a quark and an antiquark flying apart at nearly the speed of light. The string between them stretches, snaps, the new ends fly apart and snap again, over and over.</p>
+        <p>Within about 10⁻²³ seconds the original pair has become a dozen or more ordinary particles, mostly pions, travelling in two tight sprays: <span class="i">jets</span>. Detectors never see the quarks themselves, only the jets pointing back along their paths.</p>
+        <p>Sometimes a quark shakes off a high-energy gluon, which makes its own jet. In 1979 the PETRA collider in Hamburg saw these <strong>three-jet</strong> events, the first direct evidence that gluons exist.</p>
+        <div class="task"><b>Try this</b>Collide at low and high energy and count the particles. Then turn on gluon radiation and watch a third jet appear.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">⟨<var>n</var><sub>ch</sub>⟩ ≈ 0.85 ln²(<var>E</var>/GeV) + 3.5</div>
+          <p>A simple fit to measured average numbers of charged particles in electron–positron collisions (about 8 at 10 GeV, 21 at the Z mass of 91 GeV). The animation follows the spirit of the Lund string model: the string breaks at random points, and each piece becomes a hadron moving roughly along the jet axis.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="qgp">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Melting the proton</span><h2>Quark–gluon plasma</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A box of nuclear matter heated from ordinary temperatures to trillions of degrees. Below about two trillion kelvin, quarks are bound in threes and pairs; above it the boundaries dissolve and quarks and gluons move freely as a hot liquid."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="T3">Temperature <input type="range" id="T3" min="0" max="100" step="1" value="30"><output id="T3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Temperature</b><span id="r3t" class="eg">—</span></div>
+          <div class="ro"><b>State</b><span id="r3s">—</span></div>
+          <div class="ro"><b>Where this happens</b><span id="r3w">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The strong force weakens at short distances and high energies (Φ 035). Heat nuclear matter enough and the particles crowd so close and move so fast that the strings dissolve. Protons and neutrons <strong>melt</strong> into a soup of free quarks and gluons: the <span class="v">quark–gluon plasma</span>.</p>
+        <p>The changeover happens at about 155 MeV, roughly <strong>two trillion degrees</strong>, a hundred thousand times hotter than the Sun’s core. The whole universe was this hot for its first few microseconds, before quarks condensed into protons and neutrons.</p>
+        <p>Colliders recreate it by smashing gold or lead nuclei together. In 2005 Brookhaven’s RHIC found the plasma behaves not like a gas but like an almost <strong>perfect liquid</strong>, flowing with less friction than any other known substance.</p>
+        <div class="task"><b>Try this</b>Heat the box past the transition and watch the hadrons dissolve. Then cool it: quarks find partners again, never alone.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>T</var><sub>c</sub> ≈ 155 MeV ≈ 1.8 × 10¹² K,&nbsp; η/<var>s</var> ≈ 1/4π (near the lower bound)</div>
+          <p>Lattice QCD shows that at near-zero density the change is a smooth crossover, not a sharp boiling point. η/<var>s</var> is the ratio of viscosity to entropy density, which in the plasma comes close to a theoretical lower limit. The animation is schematic: quarks drift and rebind with a probability that falls as temperature rises.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1973</div><h3>Asymptotic freedom</h3><p>David Gross, Frank Wilczek and David Politzer showed that the strong force weakens at high energy, making QCD calculable there. Nobel Prize, 2004.</p></div>
+      <div class="g"><div class="where">1979</div><h3>The gluon</h3><p>Experiments at DESY’s PETRA collider in Hamburg recorded three-jet events, the first direct sight of gluons.</p></div>
+      <div class="g"><div class="where">2005</div><h3>The perfect liquid</h3><p>Brookhaven’s Relativistic Heavy Ion Collider reported that quark–gluon plasma flows like a near-frictionless liquid; the LHC confirmed it with lead nuclei.</p></div>
+      <div class="g"><div class="where">Open</div><h3>The Millennium Prize</h3><p>Proving mathematically that confinement follows from the theory (the Yang–Mills mass gap) is one of the Clay Institute’s seven $1 million problems, still unsolved.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">The strong force acts like an <span class="a">unbreakable string</span>: pull quarks apart and you make new quarks instead of freeing old ones; only trillions of degrees melt them loose.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><span class="chip here">039 · Quark confinement</span><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 039 · The unbreakable string · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const QC = ['#e393b4', '#5a8fb3', '#9fabf3'];
+/* ---------- BAY 01: the string ---------- */
+(function () {
+  const cv = $('#c1'), rS = $('#r1'), rO = $('#r1o');
+  const rE = $('#r1e'), rF = $('#r1f'), rSt = $('#r1s');
+  const K = 4 / 3 * 0.3 * 0.1973, SIG = 0.9, R0 = 0.4;
+  const Vq = r => -K / r + SIG * r, Ve = r => -K / r, EB = Vq(1.3) - Vq(R0);
+  const st = { fd: 'q', t: 0 };
+  $$('[data-fd]').forEach(b => b.addEventListener('click', () => { st.fd = b.dataset.fd; $$('[data-fd]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame(dt) {
+    const r = +rS.value / 100; rO.value = `${r.toFixed(2)} fm`;
+    if (!REDUCE) st.t += dt;
+    const q = st.fd === 'q', V = q ? Vq : Ve, E = V(r) - V(R0), broken = q && E >= EB, F = q ? K / (r * r) + SIG : K / (r * r);
+    setText(rE, broken ? `${EB.toFixed(2)} GeV: spent on a new pair` : `${E >= 0 ? '' : '−'}${Math.abs(E).toFixed(2)} GeV`);
+    setText(rF, broken ? 'the string has snapped' : `${F.toFixed(2)} GeV/fm · ${(F * 1.602e5 / 9.81 / 1000).toFixed(1)} tonnes-weight`);
+    setText(rSt, !q ? 'field spreads out; force fades with distance' : broken ? 'two separate mesons: still no free quark' : 'one meson, string stretching');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sy = h * 0.28, cx = w / 2, sc = Math.min(w * 0.42, 340) / 2.0, half = r * sc / 2;
+    const xa = cx - half, xb = cx + half;
+    if (q) {
+      if (!broken) { const th = 10; const g = ctx.createLinearGradient(0, sy - th, 0, sy + th); g.addColorStop(0, rgba(COL.eigen, 0)); g.addColorStop(0.5, rgba(COL.eigen, 0.8)); g.addColorStop(1, rgba(COL.eigen, 0)); ctx.fillStyle = g; ctx.fillRect(xa, sy - th, xb - xa, 2 * th); for (let k = 0; k < (xb - xa) / 6; k++) { ctx.fillStyle = rgba('#d2d1d5', 0.25 + 0.25 * Math.sin(st.t * 10 + k)); ctx.fillRect(xa + k * 6, sy - 1, 3, 2); } }
+      else { const gap = 26; [[xa, cx - gap], [cx + gap, xb]].forEach(([a, b]) => { const g = ctx.createLinearGradient(0, sy - 8, 0, sy + 8); g.addColorStop(0, rgba(COL.eigen, 0)); g.addColorStop(0.5, rgba(COL.eigen, 0.7)); g.addColorStop(1, rgba(COL.eigen, 0)); ctx.fillStyle = g; ctx.fillRect(a, sy - 8, b - a, 16); }); [[cx - gap, QC[0]], [cx + gap, QC[0]]].forEach(([x, c], i) => { ctx.fillStyle = c; ctx.globalAlpha = i ? 0.55 : 1; ctx.beginPath(); ctx.arc(x, sy, 9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }); ctx.fillStyle = COL.ink; ctx.fillText('new pair', cx - 26, sy - 18); }
+      ctx.fillStyle = QC[0]; ctx.beginPath(); ctx.arc(xa, sy, 11, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.arc(xb, sy, 11, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = '#080907'; ctx.font = `bold 11px ${MONO}`; ctx.textAlign = 'center'; ctx.fillText('q', xa, sy + 4); ctx.fillText('q̄', xb, sy + 4); ctx.textAlign = 'left'; ctx.font = `10.5px ${MONO}`;
+    } else {
+      for (let k = -6; k <= 6; k++) { ctx.strokeStyle = rgba(COL.ice, 0.35); ctx.beginPath(); for (let i = 0; i <= 40; i++) { const f = i / 40, x = xa + (xb - xa) * f, y = sy + k * 9 * Math.sin(f * Math.PI) * (1 + Math.abs(k) * 0.4) * (r * 0.8 + 0.4); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }
+      ctx.fillStyle = '#e393b4'; ctx.beginPath(); ctx.arc(xa, sy, 10, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(xb, sy, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#080907'; ctx.textAlign = 'center'; ctx.fillText('+', xa, sy + 4); ctx.fillText('−', xb, sy + 4); ctx.textAlign = 'left';
+    }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(q ? 'GLUON FIELD SQUEEZED INTO A TUBE' : 'ELECTRIC FIELD SPREADS THROUGH SPACE', 14, 18);
+    // energy plot
+    const gx = 50, gy = h * 0.5, gw = w - gx - 20, gh = h - gy - 34, X = rr => gx + (rr - 0.1) / 1.9 * gw, Y = e => gy + gh - (e + 0.6) / 2.2 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.strokeStyle = rgba(COL.ink, 0.2); ctx.beginPath(); ctx.moveTo(gx, Y(0)); ctx.lineTo(gx + gw, Y(0)); ctx.stroke();
+    const curve = (fn, c, cut) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); let started = false; for (let i = 0; i <= 200; i++) { const rr = 0.1 + 1.9 * i / 200; let e = fn(rr) - fn(R0); if (cut && e > EB) e = EB; const y = Y(e); if (y < gy || y > gy + gh) { started = false; continue; } started ? ctx.lineTo(X(rr), y) : ctx.moveTo(X(rr), y); started = true; } ctx.stroke(); ctx.lineWidth = 1; };
+    curve(Ve, rgba(COL.ice, q ? 0.45 : 1)); curve(Vq, rgba(COL.eigen, q ? 1 : 0.45), true);
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = rgba(COL.violet, 0.8); ctx.beginPath(); ctx.moveTo(gx, Y(EB)); ctx.lineTo(gx + gw, Y(EB)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.violet; ctx.fillText('enough to make a new quark pair', gx + 6, Y(EB) - 5);
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(r), Y(Math.min(EB, V(r) - V(R0))), 4.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0.5, 1, 1.5, 2].forEach(rr => ctx.fillText(`${rr} fm`, X(rr), gy + gh + 14)); ctx.textAlign = 'left'; ctx.fillText('ENERGY STORED (GeV)', gx + 6, gy + 14);
+    ctx.fillStyle = COL.eigen; ctx.fillText('quarks', X(1.6), Y(Vq(1.6) - Vq(R0) > EB ? EB : Vq(1.6) - Vq(R0)) + 16); ctx.fillStyle = COL.ice; ctx.fillText('electric', X(1.6), Y(Ve(1.6) - Ve(R0)) - 6);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: jets ---------- */
+(function () {
+  const cv = $('#c2'), ES = $('#E2'), EO = $('#E2o'), gB = $('#g2'), goB = $('#go2');
+  const rJ = $('#r2j'), rN = $('#r2n');
+  const st = { glu: false, t: 0, H: [] };
+  const Eof = v => Math.pow(10, 1 + 1.5 * v / 1000);
+  function collide() {
+    const E = Eof(+ES.value), n = Math.round(0.85 * Math.log(E) ** 2 + 3.5), spread = 0.5 / Math.sqrt(Math.log(E));
+    const axes = st.glu ? [0, 2 * Math.PI / 3 + 0.25, -2 * Math.PI / 3 - 0.25] : [0, Math.PI];
+    const share = st.glu ? [0.4, 0.3, 0.3] : [0.5, 0.5];
+    st.H = []; axes.forEach((a, j) => { const m = Math.round(n * share[j] * 1.5); for (let i = 0; i < m; i++) { const ang = a + (Math.random() - 0.5) * 2 * spread * (1 + (i / m)), sp = 0.4 + Math.random() * 0.6, ch = Math.random() < 0.66; st.H.push({ ang, sp, ch, born: 0.15 + i / m * 0.6, axis: j }); } });
+    st.t = 0;
+  }
+  gB.addEventListener('click', () => { st.glu = !st.glu; gB.setAttribute('aria-pressed', String(st.glu)); gB.textContent = st.glu ? 'Radiate a gluon: on' : 'Radiate a gluon: off'; collide(); });
+  goB.addEventListener('click', collide); ES.addEventListener('input', collide);
+  collide(); if (REDUCE) st.t = 3;
+  function frame(dt) {
+    const E = Eof(+ES.value); EO.value = `${E.toFixed(0)} GeV`;
+    setText(rJ, st.glu ? '3: quark, antiquark and gluon' : '2: quark and antiquark'); setText(rN, String(Math.round(0.85 * Math.log(E) ** 2 + 3.5)));
+    if (!REDUCE) st.t += dt; if (st.t > 4.5) collide();
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.46;
+    [R * 0.25, R * 0.55, R * 0.95].forEach((r, k) => { ctx.strokeStyle = rgba(COL.ink, 0.08 + k * 0.04); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); });
+    if (st.t < 0.2) { const f = st.t / 0.2; ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(cx - (1 - f) * R, cy, 4, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(cx + (1 - f) * R, cy, 4, 0, Math.PI * 2); ctx.fill(); }
+    else { const f = Math.min(1, (st.t - 0.2) * 1.5); ctx.fillStyle = `rgba(255,255,255,${Math.max(0, 1 - f * 2)})`; ctx.beginPath(); ctx.arc(cx, cy, 8 + f * 20, 0, Math.PI * 2); ctx.fill(); }
+    st.H.forEach(p => { const age = st.t - 0.2 - p.born * 0.4; if (age <= 0) return; const d = Math.min(R, age * R * 0.9 * p.sp + 4), x = cx + Math.cos(p.ang) * d, y = cy + Math.sin(p.ang) * d; ctx.strokeStyle = p.ch ? rgba(COL.ice, 0.7) : rgba(COL.eigen, 0.35); ctx.setLineDash(p.ch ? [] : [2, 3]); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('END-ON VIEW OF A DETECTOR · SOLID = CHARGED · DASHED = NEUTRAL', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: quark-gluon plasma ---------- */
+(function () {
+  const cv = $('#c3'), TS = $('#T3'), TO = $('#T3o');
+  const rT = $('#r3t'), rS = $('#r3s'), rW = $('#r3w');
+  const TC = 155, G = [], Q = [];
+  for (let i = 0; i < 24; i++) { const n = i % 3 === 2 ? 2 : 3, gx = Math.random(), gy = Math.random(), g = { x: gx, y: gy, vx: (Math.random() - 0.5) * 0.06, vy: (Math.random() - 0.5) * 0.06, n, bound: 1, m: [] }; for (let k = 0; k < n; k++) { const q = { x: gx, y: gy, vx: 0, vy: 0, c: n === 3 ? k : (k === 0 ? 0 : 0), anti: n === 2 && k === 1, g, k }; g.m.push(q); Q.push(q); } G.push(g); }
+  const glu = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 }));
+  function frame(dt) {
+    const T = 10 + 3.9 * +TS.value, pb = 1 / (1 + Math.exp((T - TC) / 8)); TO.value = `${Math.round(T)} MeV`;
+    setText(rT, `${(T * 0.0116).toFixed(2)} trillion K`); setText(rS, T < TC - 10 ? 'protons, neutrons and mesons' : T < TC + 10 ? 'at the crossover: hadrons melting' : 'quark–gluon plasma');
+    setText(rW, T < 20 ? 'inside every atomic nucleus' : T < 70 ? 'supernovae and neutron-star mergers' : T < TC - 10 ? 'hot hadron gas in heavy-ion collisions' : 'first microseconds of the universe · RHIC and LHC');
+    const step = REDUCE ? 0 : dt, sp = 0.3 + T / 150;
+    G.forEach(g => { if (Math.random() < step * 2) g.bound = Math.random() < pb ? 1 : 0; g.x = (g.x + g.vx * step * sp + 1) % 1; g.y = (g.y + g.vy * step * sp + 1) % 1; });
+    Q.forEach(q => { const g = q.g; if (g.bound) { const a = q.k / g.n * Math.PI * 2 + performance.now() / 600, tx = g.x + Math.cos(a) * 0.022, ty = g.y + Math.sin(a) * 0.03; q.x += (tx - q.x) * Math.min(1, step * 6); q.y += (ty - q.y) * Math.min(1, step * 6); q.vx = q.vy = 0; } else { q.vx += (Math.random() - 0.5) * step * 2; q.vy += (Math.random() - 0.5) * step * 2; q.vx = clamp(q.vx, -0.3, 0.3) * 0.99; q.vy = clamp(q.vy, -0.3, 0.3) * 0.99; q.x = (q.x + q.vx * step * sp + 1) % 1; q.y = (q.y + q.vy * step * sp + 1) % 1; if (Math.random() < step * 0.5) { g.x = q.x; g.y = q.y; } } });
+    glu.forEach(p => { p.x = (p.x + p.vx * step + 1) % 1; p.y = (p.y + p.vy * step + 1) % 1; });
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const X = x => 10 + x * (w - 20), Y = y => 26 + y * (h - 36);
+    ctx.fillStyle = rgba(COL.eigen, 0.04 + 0.16 * (1 - pb)); ctx.fillRect(0, 0, w, h);
+    const ng = Math.round(glu.length * (1 - pb)); for (let i = 0; i < ng; i++) { const p = glu[i]; ctx.fillStyle = rgba(COL.eigen, 0.7); ctx.fillRect(X(p.x), Y(p.y), 2.5, 2.5); }
+    G.forEach(g => { if (!g.bound) return; ctx.strokeStyle = rgba(COL.eigen, 0.7); ctx.lineWidth = 2; ctx.beginPath(); g.m.forEach((q, i) => i ? ctx.lineTo(X(q.x), Y(q.y)) : ctx.moveTo(X(q.x), Y(q.y))); if (g.n === 3) ctx.closePath(); ctx.stroke(); ctx.lineWidth = 1; });
+    Q.forEach(q => { ctx.fillStyle = QC[q.g.n === 3 ? q.c : (q.g.m.indexOf(q) === 0 ? Q.indexOf(q) % 3 : Q.indexOf(q.g.m[0]) % 3)]; ctx.globalAlpha = q.anti ? 0.55 : 1; ctx.beginPath(); ctx.arc(X(q.x), Y(q.y), 4.5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(pb > 0.5 ? 'QUARKS LOCKED IN HADRONS · LINES = FLUX TUBES' : 'FREE QUARKS AND GLUONS (PINK SPECKS)', 14, 16);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

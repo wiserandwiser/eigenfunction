@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Symmetry & Noether</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 040 colour code: pink = quantities that are conserved, ice = matter and particles, violet = the mirror world and predictions. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 040 · Particles & forces · 6 of 6</div>
+    <a class="navlink" href="039.html">← Φ 039</a>
+    <a class="navlink" href="041.html">Φ 041 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 040 · Particles &amp; forces · 6 of 6</p>
+    <h1>noether’s <span class="eig">symmetry</span></h1>
+    <p class="gloss">PARTICLES &amp; FORCES · symmetry and conservation — <em>every symmetry of the laws of nature comes with something that can never be created or destroyed</em></p>
+    <p class="thesis">In 1918 Emmy Noether proved what may be the most important theorem in physics. If the laws are the same everywhere, momentum is conserved. If they are the same in every direction, angular momentum is conserved. If they are the same at all times, energy is conserved. A century of particle physics has been a hunt for symmetries, and for the places where they break.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Mathematical physics, particle physics</dd></div>
+    <div><dt>Models</dt><dd>Four worlds and what they conserve, the mirror that nature fails, predicting a particle from a pattern</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 6 of 6. Ties together Φ 035–039.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>conserved</span><span class="key"><i style="background:var(--ice)"></i>matter</span><span class="key"><i style="background:var(--violet)"></i>mirror &amp; prediction</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="noether">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Noether’s theorem</span><h2>Change the world, change what’s conserved</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Two balls joined by a spring tumble through one of four worlds: empty space, a round bowl, a tilted floor or a bowl that pulses in time. Traces below show which of momentum, angular momentum and energy stay constant in each world."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="World">
+            <button class="btn" type="button" data-w="empty" aria-pressed="true">Empty space</button>
+            <button class="btn" type="button" data-w="bowl">Round bowl</button>
+            <button class="btn" type="button" data-w="tilt">Tilted floor</button>
+            <button class="btn" type="button" data-w="pulse">Pulsing bowl</button>
+          </div>
+          <button class="btn solo" type="button" id="rst1">Restart</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Momentum</b><span id="r1p" class="eg">—</span></div>
+          <div class="ro"><b>Angular momentum</b><span id="r1l">—</span></div>
+          <div class="ro"><b>Energy</b><span id="r1e">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A <strong>symmetry</strong> is something you can do to a situation that leaves its laws unchanged. Slide the whole experiment a metre to the left, turn it to face north, run it tomorrow instead of today: if nothing about the physics changes, that is a symmetry.</p>
+        <p>Noether showed that each continuous symmetry guarantees a conserved quantity. Empty space looks the same everywhere, so <span class="a">momentum</span> is conserved. A round bowl looks the same from every angle around its centre, so <span class="a">angular momentum</span> is conserved, but momentum is not: the bowl pushes things around. A tilted floor is the same if you slide sideways, so only sideways momentum survives.</p>
+        <p>Energy is the conserved quantity that comes from <strong>time</strong>. Make the bowl pulse, so the laws change from moment to moment, and energy is no longer conserved. On the largest scales the expanding universe is not the same at all times, which is why light loses energy as it stretches (Φ 026).</p>
+        <div class="task"><b>Try this</b>Try each world and watch which traces stay flat. Predict before you click: what should the pulsing bowl still conserve?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">∂<var>L</var>/∂<var>q</var> = 0 &nbsp;⇒&nbsp; <var>p</var> = ∂<var>L</var>/∂<var>q̇</var> is constant</div>
+          <p>If the Lagrangian <var>L</var> (kinetic minus potential energy) does not change when a coordinate <var>q</var> shifts, the matching momentum is conserved. Position gives momentum, angle gives angular momentum, time gives energy. The simulation integrates the motion directly with small time steps, so the flat traces are a result, not something built in; tiny wobbles are numerical error.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="mirror">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Broken symmetry</span><h2>Nature fails the mirror test</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Left: cobalt-60 nuclei with their spins lined up by a magnetic coil, emitting electrons mostly in the direction opposite to the spin. Right: the same experiment seen in a mirror, where the current runs the other way so the spin flips, and the electrons now go mostly along the spin."></canvas></div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="flip2">Reverse the coil current</button>
+          <button class="btn solo" type="button" id="fair2" aria-pressed="false">Mirror-fair law: off</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Real world</b><span id="r2r" class="eg">—</span></div>
+          <div class="ro"><b>Mirror world</b><span id="r2m">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r2v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Physicists long assumed nature can’t tell left from right: the mirror image of any experiment should be an experiment that could really happen. In 1956 Tsung-Dao Lee and Chen-Ning Yang pointed out that nobody had checked this for the <span class="i">weak force</span>.</p>
+        <p>Chien-Shiung Wu checked within months. She chilled cobalt-60 to a hundredth of a degree above absolute zero and lined up its nuclear spins with a magnetic coil. The electrons from its radioactive decay came out <strong>mostly opposite</strong> to the spin.</p>
+        <p>Now look in a mirror. The coil’s current runs the other way round, so the spin points the other way, but the electrons still head the same way. In the mirror world, electrons go <strong>along</strong> the spin. That world would contradict what Wu saw: the weak force is <span class="v">left-handed</span>, and the mirror is not a symmetry of nature.</p>
+        <div class="task"><b>Try this</b>Watch the counts build up on both sides, then reverse the coil. Switch on the mirror-fair law to see what physicists had expected.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>W</var>(θ) ∝ 1 + <var>A</var> cos θ,&nbsp; <var>A</var> ≈ −0.4 here</div>
+          <p>θ is the angle between the electron and the nuclear spin. Spin behaves like rotation, so a mirror reverses it while leaving the electron’s direction alone, turning <var>A</var> into −<var>A</var>. Wu measured an asymmetry of this size, smaller than the full theoretical value because her nuclei were only partly aligned. Mirror symmetry is a flip, not a smooth change, so it has no Noether quantity, but its breaking is just as telling.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="pattern">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Prediction</span><h2>A particle found by symmetry</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Ten heavy particles arranged in an upside-down triangle by charge and strangeness, with the bottom corner empty. Their masses rise in nearly equal steps from row to row, which lets you predict the mass of the missing particle, later discovered as the omega-minus."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="g3">Your guess <input type="range" id="g3" min="1500" max="1900" step="1" value="1600"><output id="g3o">—</output></label>
+          <button class="btn solo" type="button" id="pr3">Predict by symmetry</button>
+          <button class="btn solo" type="button" id="rv3">Reveal the 1964 discovery</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Step between rows</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Symmetry predicts</b><span id="r3p">—</span></div>
+          <div class="ro"><b>Measured</b><span id="r3m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>By 1960 accelerators had found dozens of new particles, a confusing “zoo”. Murray Gell-Mann and Yuval Ne’eman noticed that, sorted by charge and strangeness, they fell into neat geometric patterns, the <strong>Eightfold Way</strong>. The pattern came from a symmetry among three kinds of quark, though quarks themselves were not proposed until 1964.</p>
+        <p>One pattern, a triangle of ten, had nine known members and an empty corner. Each row down was heavier by almost the same step, about 150 MeV, the extra mass of one more strange quark. In 1962 Gell-Mann predicted the missing particle: charge −1, strangeness −3, mass about <strong>1685 MeV</strong>.</p>
+        <p>In 1964 a bubble-chamber photograph at Brookhaven showed it: the <span class="v">omega-minus</span>, at 1672 MeV. Symmetry had found a particle before anyone saw it, just as it would later point to the W, Z and Higgs.</p>
+        <div class="task"><b>Try this</b>Set your guess for the empty corner, then press Predict and see how the symmetry does it. Reveal the real measurement last.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>m</var>(Ω) ≈ <var>m</var>(Ξ*) + [<var>m</var>(Ξ*) − <var>m</var>(Δ)]/2</div>
+          <p>The Gell-Mann–Okubo rule predicts equal spacing in this triangle. Masses here are today’s values averaged over each row: Δ 1232, Σ* 1385, Ξ* 1533, Ω⁻ 1672 MeV. The symmetry is only approximate because the strange quark is heavier than the up and down quarks; that same mass difference produces the steps.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1918</div><h3>Noether’s theorem</h3><p>Emmy Noether, working in Göttingen without pay because she was a woman, proved the link between symmetry and conservation.</p></div>
+      <div class="g"><div class="where">1956–57</div><h3>The mirror breaks</h3><p>Chien-Shiung Wu’s cobalt-60 experiment showed the weak force tells left from right. Lee and Yang won the 1957 Nobel Prize; Wu did not.</p></div>
+      <div class="g"><div class="where">1964</div><h3>The omega-minus</h3><p>Brookhaven’s bubble chamber caught the particle the Eightfold Way had predicted, convincing physicists that symmetry was the key to the particle zoo.</p></div>
+      <div class="g"><div class="where">1964</div><h3>CP violation</h3><p>James Cronin and Val Fitch found that even mirror-plus-antimatter symmetry fails slightly, one ingredient for the survival of matter (Φ 038).</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Every <span class="a">symmetry</span> of the laws gives something conserved: space gives momentum, direction gives angular momentum, time gives energy, and broken symmetries tell us just as much.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><span class="chip here">040 · Symmetry & Noether</span><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 040 · Symmetry and conservation · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---------- BAY 01: Noether worlds ---------- */
+(function () {
+  const cv = $('#c1'), rP = $('#r1p'), rL = $('#r1l'), rE = $('#r1e');
+  const M = [1, 2], KS = 8, L0 = 1.1, G = 0.7, KB = 0.9;
+  const st = { w: 'empty', t: 0, b: [], hist: [], trail: [[], []] };
+  const kb = t => st.w === 'bowl' ? KB : st.w === 'pulse' ? KB * (1 + 0.6 * Math.sin(2.2 * t)) : 0;
+  function reset() {
+    st.t = 0; st.hist = []; st.trail = [[], []];
+    const y0 = st.w === 'tilt' ? 0.4 : 0.6, vy0 = st.w === 'tilt' ? 1.6 : 0.05, vx0 = st.w === 'tilt' ? 0.35 : 0.12;
+    const om = 1.8; // spin about the centre of mass
+    const P = [[-0.9, y0 + 0.3], [0.45, y0 - 0.15]], cmx = (P[0][0] * 1 + P[1][0] * 2) / 3, cmy = (P[0][1] + 2 * P[1][1]) / 3;
+    st.b = P.map((p, i) => { const dx = p[0] - cmx, dy = p[1] - cmy; return { x: p[0], y: p[1], vx: vx0 - om * dy, vy: vy0 + om * dx }; });
+    if (st.w === 'empty') st.b.forEach(b => { b.x -= 1.4; b.y -= 0.9; });
+  }
+  function acc(t) {
+    const [a, b] = st.b, dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), f = KS * (d - L0) / d, k = kb(t);
+    const A = st.b.map((p, i) => ({ x: (i ? -1 : 1) * f * dx / M[i] - k * p.x, y: (i ? -1 : 1) * f * dy / M[i] - k * p.y - (st.w === 'tilt' ? G : 0) }));
+    return A;
+  }
+  function step(h) {
+    let A = acc(st.t); st.b.forEach((p, i) => { p.vx += A[i].x * h / 2; p.vy += A[i].y * h / 2; p.x += p.vx * h; p.y += p.vy * h; });
+    st.t += h; A = acc(st.t); st.b.forEach((p, i) => { p.vx += A[i].x * h / 2; p.vy += A[i].y * h / 2; });
+  }
+  function q() {
+    const [a, b] = st.b; let px = 0, py = 0, L = 0, K = 0, V = 0; const k = kb(st.t);
+    st.b.forEach((p, i) => { px += M[i] * p.vx; py += M[i] * p.vy; L += M[i] * (p.x * p.vy - p.y * p.vx); K += 0.5 * M[i] * (p.vx ** 2 + p.vy ** 2); V += 0.5 * k * M[i] * (p.x ** 2 + p.y ** 2) + (st.w === 'tilt' ? M[i] * G * p.y : 0); });
+    V += 0.5 * KS * (Math.hypot(b.x - a.x, b.y - a.y) - L0) ** 2; return { px, py, L, E: K + V };
+  }
+  $$('[data-w]').forEach(btn => btn.addEventListener('click', () => { st.w = btn.dataset.w; $$('[data-w]').forEach(x => x.setAttribute('aria-pressed', String(x === btn))); reset(); }));
+  $('#rst1').addEventListener('click', reset);
+  reset();
+  const spread = (arr, f) => { let lo = Infinity, hi = -Infinity; arr.forEach(s => { const v = f(s); lo = Math.min(lo, v); hi = Math.max(hi, v); }); return hi - lo; };
+  function frame(dt) {
+    const run = REDUCE ? 0.6 : Math.min(dt, 0.05);
+    if (REDUCE && st.t < 6) { for (let i = 0; i < 6 / 0.002 && st.t < 6; i++) { step(0.002); if (i % 25 === 0) st.hist.push({ t: st.t, ...q() }); } }
+    else { const n = Math.ceil(run / 0.002); for (let i = 0; i < n; i++) step(run / n); st.hist.push({ t: st.t, ...q() }); }
+    while (st.hist.length && st.hist[0].t < st.t - 8) st.hist.shift();
+    const cmx = (st.b[0].x + 2 * st.b[1].x) / 3, cmy = (st.b[0].y + 2 * st.b[1].y) / 3;
+    if (Math.abs(cmx) > 3.6 || cmy < -2.6 || cmy > 2.6) reset();
+    // status from measured spread over the window
+    const H = st.hist, ok = H.length > 20;
+    const sP = 3 * 2, sL = 6, sE = Math.max(1, ...H.map(s => Math.abs(s.E)));
+    const cx = ok && spread(H, s => s.px) < 0.01 * sP, cy = ok && spread(H, s => s.py) < 0.01 * sP, cl = ok && spread(H, s => s.L) < 0.01 * sL, ce = ok && spread(H, s => s.E) < 0.01 * sE;
+    setText(rP, !ok ? 'measuring…' : cx && cy ? 'conserved' : cx ? 'only the sideways part is conserved' : 'changing');
+    setText(rL, !ok ? 'measuring…' : cl ? 'conserved' : 'changing'); setText(rE, !ok ? 'measuring…' : ce ? 'conserved' : 'changing');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const top = h * 0.6, S = Math.min(w / 7.6, top / 5.4), ox = w / 2, oy = top / 2 + 4, X = x => ox + x * S, Y = y => oy - y * S;
+    // world background
+    if (st.w === 'bowl' || st.w === 'pulse') { const k = kb(st.t) / KB; for (let r = 0.6; r < 4; r += 0.6) { ctx.strokeStyle = rgba(COL.ink, 0.06 + 0.1 * k * (1 - r / 4)); ctx.beginPath(); ctx.arc(ox, oy, r * S, 0, Math.PI * 2); ctx.stroke(); } ctx.fillStyle = rgba(COL.ink, 0.5); ctx.beginPath(); ctx.arc(ox, oy, 2.5, 0, Math.PI * 2); ctx.fill(); }
+    else if (st.w === 'tilt') { for (let y = -2.4; y < 2.6; y += 0.4) { ctx.strokeStyle = rgba(COL.ink, 0.05 + 0.04 * (2.6 - y) / 5); ctx.beginPath(); ctx.moveTo(0, Y(y)); ctx.lineTo(w, Y(y)); ctx.stroke(); } ctx.fillStyle = COL['ink-3']; ctx.fillText('↓ downhill', w - 90, top - 10); }
+    else { ctx.fillStyle = rgba(COL.ink, 0.12); for (let i = -4; i <= 4; i++) for (let j = -3; j <= 3; j++) ctx.fillRect(X(i) - 1, Y(j * 0.8) - 1, 2, 2); }
+    st.b.forEach((p, i) => { const tr = st.trail[i]; tr.push([p.x, p.y]); if (tr.length > 120) tr.shift(); ctx.strokeStyle = rgba(COL.ice, 0.25); ctx.beginPath(); tr.forEach((s, j) => j ? ctx.lineTo(X(s[0]), Y(s[1])) : ctx.moveTo(X(s[0]), Y(s[1]))); ctx.stroke(); });
+    const [a, b] = st.b; ctx.strokeStyle = rgba(COL.ink, 0.5); ctx.beginPath(); for (let i = 0; i <= 24; i++) { const f = i / 24, x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f, nx = -(b.y - a.y), ny = b.x - a.x, nl = Math.hypot(nx, ny), z = (i % 2 ? 1 : -1) * (i && i < 24 ? 0.07 : 0); i ? ctx.lineTo(X(x + nx / nl * z), Y(y + ny / nl * z)) : ctx.moveTo(X(x), Y(y)); } ctx.stroke();
+    st.b.forEach((p, i) => { ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), i ? 10 : 7, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText({ empty: 'EMPTY SPACE · SAME EVERYWHERE, EVERY WAY, ALWAYS', bowl: 'ROUND BOWL · SAME IN EVERY DIRECTION ABOUT THE CENTRE', tilt: 'TILTED FLOOR · SAME ONLY IF YOU SLIDE SIDEWAYS', pulse: 'PULSING BOWL · ROUND, BUT CHANGING IN TIME' }[st.w], 14, 18);
+    // traces
+    const gx = 14, gy = top + 8, gw = w - 28, gh = h - gy - 10, rows = [['momentum →', s => s.px, sP, cx], ['momentum ↑', s => s.py, sP, cy], ['angular mom.', s => s.L, sL, cl], ['energy', s => s.E, sE, ce]], rh = gh / 4;
+    rows.forEach(([lab, f, sc, good], k) => {
+      const y0 = gy + k * rh, mid = y0 + rh / 2; ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(gx, y0 + rh - 0.5); ctx.lineTo(gx + gw, y0 + rh - 0.5); ctx.stroke();
+      if (H.length > 1) { const base = f(H[H.length - 1]); ctx.strokeStyle = good ? COL.eigen : rgba(COL.ink, 0.6); ctx.lineWidth = good ? 2 : 1.3; ctx.beginPath(); H.forEach((s, j) => { const x = gx + 110 + (s.t - (st.t - 8)) / 8 * (gw - 110), y = clamp(mid - (f(s) - base) / sc * rh * 1.6, y0 + 2, y0 + rh - 2); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.lineWidth = 1; }
+      ctx.fillStyle = good ? COL.eigen : COL['ink-2']; ctx.fillText(lab, gx, mid + 4);
+    });
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: Wu experiment ---------- */
+(function () {
+  const cv = $('#c2'), fB = $('#flip2'), fairB = $('#fair2'), rR = $('#r2r'), rM = $('#r2m'), rV = $('#r2v');
+  const st = { spin: 1, fair: false, e: [], up: 0, dn: 0, acc: 0 };
+  let seed = 7; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const clear = () => { st.e = []; st.up = st.dn = 0; };
+  fB.addEventListener('click', () => { st.spin *= -1; clear(); });
+  fairB.addEventListener('click', () => { st.fair = !st.fair; fairB.setAttribute('aria-pressed', String(st.fair)); fairB.textContent = st.fair ? 'Mirror-fair law: on' : 'Mirror-fair law: off'; clear(); });
+  function emit() { const A = st.fair ? 0 : -0.4; let c; do { c = rnd() * 2 - 1; } while (rnd() * (1 + Math.abs(A)) > 1 + A * c); const s = Math.sqrt(1 - c * c) * (rnd() < 0.5 ? -1 : 1); const dy = c * st.spin; st.e.push({ r: 0, dx: s, dy }); if (dy > 0.5) st.up++; else if (dy < -0.5) st.dn++; }
+  if (REDUCE) for (let i = 0; i < 400; i++) emit();
+  function side(ctx, cx, cy, R, spinUp, mirror) {
+    ctx.strokeStyle = mirror ? rgba(COL.violet, 0.8) : rgba(COL.ice, 0.8); ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(cx, cy, R * 0.55, R * 0.16, 0, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
+    // current arrow on front of coil: real current runs left-to-right on front when spin is up (right-hand rule, viewer in front)
+    const dir = (spinUp ? 1 : -1); const ax = cx, ay = cy + R * 0.16; ctx.fillStyle = mirror ? COL.violet : COL.ice; ctx.beginPath(); ctx.moveTo(ax + dir * 9, ay); ctx.lineTo(ax - dir * 3, ay - 5); ctx.lineTo(ax - dir * 3, ay + 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('current', ax + 14, ay + 14);
+    ctx.strokeStyle = COL.eigen; ctx.fillStyle = COL.eigen; ctx.lineWidth = 2.5; const s = spinUp ? -1 : 1; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + s * R * 0.42); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx, cy + s * R * 0.5); ctx.lineTo(cx - 6, cy + s * R * 0.4); ctx.lineTo(cx + 6, cy + s * R * 0.4); ctx.closePath(); ctx.fill(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#f3a6d5'; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL.eigen; ctx.fillText('spin', cx + 8, cy + s * R * 0.45);
+  }
+  function frame(dt) {
+    if (!REDUCE) { st.acc += dt * 60; while (st.acc > 1) { st.acc--; if (st.up + st.dn < 4000) emit(); } st.e.forEach(p => p.r += dt * 1.2); st.e = st.e.filter(p => p.r < 1); }
+    const n = st.up + st.dn, fo = n ? (st.spin > 0 ? st.dn : st.up) / n : 0;
+    setText(rR, n < 10 ? 'counting…' : `${Math.round(fo * 100)}% of electrons go against the spin`);
+    setText(rM, n < 10 ? 'counting…' : `${Math.round(fo * 100)}% go along the spin`);
+    setText(rV, n < 60 ? 'counting…' : Math.abs(fo - 0.5) < 0.06 ? 'both worlds agree: mirror symmetry holds' : 'the worlds disagree: nature can tell them apart');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const R = Math.min(w / 4.2, h * 0.42), cyy = h * 0.52, lx = w * 0.25, rx = w * 0.75;
+    ctx.strokeStyle = rgba(COL.violet, 0.5); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(w / 2, 26); ctx.lineTo(w / 2, h - 8); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText('REAL', lx, 18); ctx.fillStyle = COL.violet; ctx.fillText('IN THE MIRROR', rx, 18); ctx.textAlign = 'left';
+    [[lx, 1], [rx, -1]].forEach(([cx, m]) => {
+      st.e.forEach(p => { ctx.fillStyle = rgba(COL.ice, 0.8 * (1 - p.r)); ctx.fillRect(cx + m * p.dx * p.r * R - 1.2, cyy - p.dy * p.r * R - 1.2, 2.4, 2.4); });
+      // detectors and counts
+      ctx.fillStyle = rgba(COL.ice, 0.18); ctx.fillRect(cx - R * 0.35, cyy - R - 6, R * 0.7, 6); ctx.fillRect(cx - R * 0.35, cyy + R, R * 0.7, 6);
+      ctx.fillStyle = COL.ink; ctx.textAlign = 'center'; ctx.fillText(String(st.up), cx, cyy - R - 10); ctx.fillText(String(st.dn), cx, cyy + R + 18); ctx.textAlign = 'left';
+    });
+    side(ctx, lx, cyy, R, st.spin > 0, false); side(ctx, rx, cyy, R, st.spin < 0, true);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the omega-minus ---------- */
+(function () {
+  const cv = $('#c3'), gS = $('#g3'), gO = $('#g3o'), pB = $('#pr3'), vB = $('#rv3'), rS = $('#r3s'), rP = $('#r3p'), rM = $('#r3m');
+  const ROWS = [{ m: 1232, n: ['Δ⁻', 'Δ⁰', 'Δ⁺', 'Δ⁺⁺'] }, { m: 1385, n: ['Σ*⁻', 'Σ*⁰', 'Σ*⁺'] }, { m: 1533, n: ['Ξ*⁻', 'Ξ*⁰'] }, { m: 1672, n: ['Ω⁻'] }];
+  const PRED = Math.round(1533 + (1533 - 1232) / 2);
+  const st = { pred: false, rev: false, t: 0 };
+  pB.addEventListener('click', () => { st.pred = true; }); vB.addEventListener('click', () => { st.rev = true; st.pred = true; });
+  function frame(dt) {
+    if (!REDUCE) st.t += dt; const g = +gS.value; gO.value = `${g} MeV`;
+    setText(rS, st.pred ? '153, 148 MeV: about 150 each' : 'press Predict');
+    setText(rP, st.pred ? `≈ ${PRED} MeV (Gell-Mann, 1962: 1685)` : '—');
+    setText(rM, st.rev ? `1672 MeV · your guess was ${Math.abs(g - 1672)} MeV off` : 'not yet found');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, tw = narrow ? w - 28 : w * 0.56, th = narrow ? h * 0.5 : h - 60, tx = 14, ty = 34, rowH = th / 4, colW = (tw - 50) / 4.3;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(narrow ? 'DECUPLET · → CHARGE · ↓ +1 STRANGE QUARK' : 'THE DECUPLET · ACROSS: CHARGE · DOWN: ONE MORE STRANGE QUARK', 14, 18);
+    ROWS.forEach((row, r) => {
+      const y = ty + r * rowH + rowH / 2, x0 = tx + (tw - 50) / 2 - (row.n.length - 1) * colW / 2;
+      row.n.forEach((nm, j) => {
+        const x = x0 + j * colW, missing = r === 3 && !st.rev;
+        ctx.strokeStyle = missing ? rgba(COL.violet, 0.5 + 0.3 * Math.sin(st.t * 3)) : rgba(COL.ice, 0.7); ctx.setLineDash(missing ? [4, 3] : []); ctx.beginPath(); ctx.arc(x, y, Math.min(20, rowH * 0.36), 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+        if (!missing) { ctx.fillStyle = rgba(COL.ice, 0.15); ctx.fill(); }
+        ctx.fillStyle = missing ? COL.violet : COL.ink; ctx.textAlign = 'center'; ctx.fillText(missing ? '?' : nm, x, y + 4); ctx.textAlign = 'left';
+      });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText(r === 3 && !st.rev ? '? MeV' : `${row.m}`, tx + tw - 40, y + 4);
+    });
+    // mass ladder
+    const lx = narrow ? 50 : tx + tw + 50, ly = narrow ? ty + th + 18 : ty, lw = narrow ? w - lx - 20 : w - lx - 20, lh = narrow ? h - ly - 26 : th;
+    const Y = m => ly + lh - (m - 1150) / 800 * lh, X = s => lx + s / 3 * lw;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(lx + 0.5, ly + 0.5, lw, lh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [1200, 1400, 1600, 1800].forEach(m => ctx.fillText(m, lx - 4, Y(m) + 4)); ctx.textAlign = 'center'; ['0', '1', '2', '3'].forEach((s, i) => ctx.fillText(s, X(i), ly + lh + 13)); ctx.textAlign = 'left';
+    ctx.fillText('MASS (MeV) vs STRANGE QUARKS', lx + 6, ly + 13);
+    ctx.strokeStyle = rgba(COL.violet, 0.8); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(lx, Y(g)); ctx.lineTo(lx + lw, Y(g)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL.violet; ctx.fillText('your guess', lx + 6, Y(g) - 4);
+    if (st.pred) { ctx.strokeStyle = rgba(COL.eigen, 0.9); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(0), Y(1232)); ctx.lineTo(X(3), Y(1232 + 3 * (1533 - 1232) / 2)); ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(X(3), Y(PRED), 5, 0, Math.PI * 2); ctx.fill(); ctx.fillText('predicted', X(3) - 66, Y(PRED) - 8); }
+    ROWS.forEach((row, r) => { if (r === 3 && !st.rev) return; ctx.fillStyle = r === 3 ? '#d2d1d5' : COL.ice; ctx.beginPath(); ctx.arc(X(r), Y(row.m), r === 3 ? 4 : 5, 0, Math.PI * 2); ctx.fill(); });
+    if (st.rev) { ctx.fillStyle = '#d2d1d5'; ctx.fillText('Ω⁻ found', X(3) - 66, Y(1672) + 16); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Where Gold Comes From</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 018 colour code: pink = energy released / the rapid process, ice = stable nuclei / the slow process, violet = neutron-star mergers. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/11}
+#vp3{aspect-ratio:16/9}
+@media (max-width:640px){#vp1,#vp2{aspect-ratio:4/4.4}#vp3{aspect-ratio:4/2.5}}
+h1 .eig{transform:none}
+.leg3{display:flex;flex-wrap:wrap;gap:6px}
+.leg3 .btn{font-size:11px;padding:5px 9px}
+.leg3 .btn i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 018 · Astrophysics series · 2 of 10</div>
+    <a class="navlink" href="017.html">← Φ 017</a>
+    <a class="navlink" href="019.html">Φ 019 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 018 · Astrophysics series · 2 of 10</p>
+    <h1>where gold <span class="eig">comes from</span></h1>
+    <p class="gloss">ASTROPHYSICS · cosmic chemistry — <em>every atom heavier than helium was cooked somewhere, and the ring on your finger came from a collision of dead stars</em></p>
+    <p class="thesis">The Big Bang made hydrogen, helium and a trace of lithium. Everything else, the carbon in you, the iron in your blood, the gold in a wedding ring, was made later inside stars or in the violence of their deaths. Each element has a birthplace, and astronomers can now map them.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Nuclear astrophysics, stellar chemistry</dd></div>
+    <div><dt>Models</dt><dd>The stellar fuel ledger, the slow and rapid neutron roads, the cosmic periodic table</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 2 of 10. Follows Φ 017.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>energy · rapid road</span><span class="key"><i style="background:var(--ice)"></i>stable · slow road</span><span class="key"><i style="background:var(--violet)"></i>mergers</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="ledger">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The fuel ledger</span><h2>Why a star’s forge stops at iron</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A star's core burning one fuel after another. Each fusion flashes with brightness proportional to the energy it releases, and a bar chart shows each fuel paying out less than the one before, down to nothing at iron."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="s1">Fuel <input type="range" id="s1" min="0" max="6" step="1" value="0"><output id="s1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Burning</b><span id="r1f" class="eg">—</span></div>
+          <div class="ro"><b>Pays out (vs hydrogen)</b><span id="r1y">—</span></div>
+          <div class="ro"><b>Burns needed to stay up</b><span id="r1n">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A star shines by turning light nuclei into heavier ones. Each step releases a little energy, because the new nucleus is bound together more tightly than its ingredients, and the difference escapes as heat and light.</p>
+        <p>The first step is by far the best deal. Hydrogen to helium releases about <strong>ten times</strong> more energy per kilogram than any later stage. Every stage after that, helium, carbon, neon, oxygen, silicon, pays out less, so the core has to burn its fuel faster just to keep holding the star up. That is why the last stages in Φ 017 last months, then days.</p>
+        <p>The nuclei around <strong>iron</strong> are the most tightly bound of all. There is no more energy to win by building with them: making anything heavier costs energy overall. So the stellar forge stops at iron, and the iron core collapses. Every element heavier than iron had to be made a different way.</p>
+        <div class="task"><b>Try this</b>Step from hydrogen to iron and watch the flashes dim while the burning speeds up. At iron, the flashes stop.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">energy released ≈ Δ(binding energy) per nucleon:&nbsp; H→He 6.7 MeV, He→C,O ~0.7, C ~0.4, Ne ~0.1, O ~0.3, Si→Fe ~0.2</div>
+          <p>Approximate values per nucleon from measured nuclear masses. Hydrogen burning turns about 0.7% of the fuel’s mass into energy; all the later stages together add only about a quarter more. “Burns needed” is the rate of fusions required to supply the same power, relative to hydrogen burning; in reality the late stages also lose heavily to neutrinos, which makes the squeeze worse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="roads">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Beyond iron</span><h2>Two roads: the slow and the rapid</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A chart of nuclei, protons up and neutrons across, with the band of stable nuclei. The slow road creeps along the band inside giant stars; the rapid road races far to the right inside a neutron-star merger and then decays back to the band, landing on gold."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Road">
+            <button class="btn" type="button" data-road="s" aria-pressed="true">Slow · giant stars</button>
+            <button class="btn" type="button" data-road="r">Rapid · neutron-star merger</button>
+          </div>
+          <button class="btn solo" type="button" id="go2">Run</button>
+          <label class="scrub" for="a2">Follow mass <input type="range" id="a2" min="70" max="209" step="1" value="197"><output id="a2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Where</b><span id="r2w">—</span></div>
+          <div class="ro"><b>Time between neutron grabs</b><span id="r2t">—</span></div>
+          <div class="ro"><b>Mass <span id="r2a">197</span> settles as</b><span id="r2e" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Beyond iron, nuclei grow by catching <strong>neutrons</strong>. A neutron has no charge, so it is not repelled by the nucleus. Each catch makes the nucleus heavier; when it has too many neutrons, one turns into a proton, and the nucleus becomes the next element up. On this chart that is a step right, then a step diagonally up and left.</p>
+        <p><span class="i">The slow road</span> runs inside ageing giant stars, which leak a gentle trickle of neutrons. A nucleus waits years to thousands of years between catches, so it always has time to settle, and the path creeps along the band of stable nuclei. It makes about half the heavy elements, including barium and lead, and it dead-ends at bismuth.</p>
+        <p><span class="a">The rapid road</span> needs a flood of neutrons, so many that a nucleus catches dozens in under a second, faster than it can decay. When two neutron stars spiral together and merge, they spray out neutron-rich debris that does exactly this. The path races far to the right, stalls at certain extra-stable neutron counts, then, as the debris thins, every nucleus decays back to the stable band. That is how most of the universe’s <strong>gold</strong>, platinum and europium were made.</p>
+        <div class="task"><b>Try this</b>Run the slow road and see where it gets stuck. Then run the rapid road, and use Follow mass to trace mass 197 back home to gold.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>τ</var><sub>capture</sub> ≫ <var>τ</var><sub>β</sub>&nbsp;(slow)&nbsp;&nbsp;&nbsp; <var>τ</var><sub>capture</sub> ≪ <var>τ</var><sub>β</sub>&nbsp;(rapid)</div>
+          <p>The slow process needs about 10⁷–10⁸ free neutrons per cm³; the rapid process needs more than 10²⁰. The rapid path pauses at the “magic” neutron numbers 50, 82 and 126, which is why the universe has abundance peaks near masses 80, 130 and 195. Paths and the stable band here come from a simplified model; real paths depend on measured masses and decay rates of very short-lived nuclei.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="table">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The cosmic periodic table</span><h2>Every element has a birthplace</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A periodic table coloured by where each element was made: the Big Bang, cosmic rays, dying low-mass stars, exploding massive stars, exploding white dwarfs and merging neutron stars. Tap an element to see its origin."></canvas></div>
+        <div class="controls">
+          <div class="leg3" id="leg3" role="group" aria-label="Highlight an origin"></div>
+          <div class="seg" role="group" aria-label="Step through elements">
+            <button class="btn" type="button" id="prev3">‹ prev</button>
+            <button class="btn" type="button" id="next3">next ›</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Element</b><span id="r3n" class="eg">—</span></div>
+          <div class="ro"><b>Made mainly in</b><span id="r3o">—</span></div>
+          <div class="ro"><b>Story</b><span id="r3s">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Put the two lessons together and you can colour the periodic table by origin. The light elements of life, carbon, oxygen and nitrogen, come from ordinary stars: puffed off by dying Sun-like stars or blasted out in supernovae. Much of the iron comes from <strong>white dwarfs</strong> that explode after stealing gas from a companion.</p>
+        <p>Further down the table, the slow road in giant stars and the rapid road in <span class="v">neutron-star mergers</span> share the work. Gold, platinum and europium are almost entirely rapid-road products.</p>
+        <p>On 17 August 2017, gravitational-wave detectors heard two neutron stars merge 130 million light-years away (Φ 019). Telescopes then watched the glow of the debris, a <strong>kilonova</strong>, redden over days as heavy elements formed in it. By some estimates, it made several Earth masses of gold.</p>
+        <div class="task"><b>Try this</b>Tap carbon, iron and gold. Then highlight one origin at a time and see which rows of the table it owns.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">origin shares by element, simplified from Johnson (2019)</div>
+          <p>Each tile shows the main sources, with the largest first. Many elements have several. Whether neutron-star mergers make all of the rapid-road elements is still debated; some may come from rare, fast-spinning supernovae. Elements with no long-lived form, like technetium and promethium, are shown grey.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>How we found out</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1952</div><h3>Technetium in red giants</h3><p>Paul Merrill found technetium in the light of red giant stars. It has no stable form and decays within a few million years, so the stars must be making it right now: the first proof that stars forge elements.</p></div>
+      <div class="g"><div class="where">1957</div><h3>B²FH</h3><p>Margaret and Geoffrey Burbidge, William Fowler and Fred Hoyle wrote the 100-page paper that laid out how stars build the elements, naming the slow and rapid processes still used today.</p></div>
+      <div class="g"><div class="where">2016</div><h3>Reticulum II</h3><p>A faint dwarf galaxy whose old stars are loaded with europium and other rapid-road elements, seeded, it seems, by a single rare event such as a neutron-star merger.</p></div>
+      <div class="g"><div class="where">2017</div><h3>GW170817</h3><p>The first neutron-star merger seen in gravitational waves and light together. Its kilonova was the first time astronomers watched heavy elements being made, and in 2019 strontium was identified in its spectrum.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Stars forge the elements up to <span class="a">iron</span>; beyond that, nuclei grow by catching neutrons, slowly in giant stars or in a flash when neutron stars collide.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><span class="chip here">018 · Where gold comes from</span><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 018 · Cosmic chemistry · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const ELS = 'H Hydrogen,He Helium,Li Lithium,Be Beryllium,B Boron,C Carbon,N Nitrogen,O Oxygen,F Fluorine,Ne Neon,Na Sodium,Mg Magnesium,Al Aluminium,Si Silicon,P Phosphorus,S Sulphur,Cl Chlorine,Ar Argon,K Potassium,Ca Calcium,Sc Scandium,Ti Titanium,V Vanadium,Cr Chromium,Mn Manganese,Fe Iron,Co Cobalt,Ni Nickel,Cu Copper,Zn Zinc,Ga Gallium,Ge Germanium,As Arsenic,Se Selenium,Br Bromine,Kr Krypton,Rb Rubidium,Sr Strontium,Y Yttrium,Zr Zirconium,Nb Niobium,Mo Molybdenum,Tc Technetium,Ru Ruthenium,Rh Rhodium,Pd Palladium,Ag Silver,Cd Cadmium,In Indium,Sn Tin,Sb Antimony,Te Tellurium,I Iodine,Xe Xenon,Cs Caesium,Ba Barium,La Lanthanum,Ce Cerium,Pr Praseodymium,Nd Neodymium,Pm Promethium,Sm Samarium,Eu Europium,Gd Gadolinium,Tb Terbium,Dy Dysprosium,Ho Holmium,Er Erbium,Tm Thulium,Yb Ytterbium,Lu Lutetium,Hf Hafnium,Ta Tantalum,W Tungsten,Re Rhenium,Os Osmium,Ir Iridium,Pt Platinum,Au Gold,Hg Mercury,Tl Thallium,Pb Lead,Bi Bismuth,Po Polonium,At Astatine,Rn Radon,Fr Francium,Ra Radium,Ac Actinium,Th Thorium,Pa Protactinium,U Uranium,Np Neptunium,Pu Plutonium'.split(',').map(s => { const [sym, ...n] = s.split(' '); return { sym, name: n.join(' ') }; });
+const EL = Z => ELS[Z - 1] || { sym: '?', name: '?' };
+/* nuclear valley (simplified): stable Z for mass A, and its inverse */
+const ZST = A => Math.round(A / (1.98 + 0.0155 * Math.pow(A, 2 / 3)));
+const AOF = Z => { let A = 2 * Z; for (let i = 0; i < 40; i++) A = Z * (1.98 + 0.0155 * Math.pow(A, 2 / 3)); return A; };
+const NV = Z => AOF(Z) - Z;
+
+/* ---------- BAY 01: the fuel ledger ---------- */
+(function () {
+  const cv = $('#c1'), sS = $('#s1'), sO = $('#s1o');
+  const rF = $('#r1f'), rY = $('#r1y'), rN = $('#r1n');
+  const F = [
+    ['H', 'hydrogen → helium', 6.7, '#9fabf3'], ['He', 'helium → carbon, oxygen', 0.7, '#9fabf3'], ['C', 'carbon → neon, magnesium', 0.4, '#f3a6d5'],
+    ['Ne', 'neon → oxygen, magnesium', 0.11, '#f3a6d5'], ['O', 'oxygen → silicon, sulphur', 0.3, '#f3a6d5'], ['Si', 'silicon → iron', 0.19, '#c6a6fb'], ['Fe', 'iron: nothing left to win', 0, '#95949d']
+  ];
+  const st = { k: 0, fl: [], acc: 0, dim: 0 };
+  function upd() {
+    st.k = +sS.value; const f = F[st.k]; sO.value = f[0];
+    setText(rF, f[1]);
+    setText(rY, f[2] ? `${f[2] === 6.7 ? 100 : (f[2] / 6.7 * 100).toFixed(f[2] / 6.7 < 0.1 ? 1 : 0)}%` : 'none: building costs energy');
+    setText(rN, f[2] ? (st.k ? `about ${Math.round(6.7 / f[2])}× faster` : '1× (the baseline)') : 'no rate is enough → collapse');
+  }
+  sS.addEventListener('input', upd); upd();
+  function frame(dt) {
+    const f = F[st.k];
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const R = narrow ? Math.min(w * 0.3, h * 0.2) : Math.min(w * 0.22, h * 0.36);
+    const cx = narrow ? w / 2 : 28 + R, cy = narrow ? 24 + R : h / 2;
+    // core
+    st.dim = f[2] ? Math.max(0, st.dim - dt * 2) : Math.min(1, st.dim + dt * 0.7);
+    const rr = R * (1 - 0.55 * st.dim);
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr);
+    g.addColorStop(0, rgba(f[3], 0.35)); g.addColorStop(1, rgba(f[3], 0.05));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = st.dim > 0.3 ? COL.violet : COL['rule-hi']; ctx.lineWidth = 1.2; ctx.stroke();
+    // fusion flashes: rate rises as the payout falls, brightness tracks payout
+    if (f[2] && !REDUCE) {
+      const rate = 5 * Math.pow(6.7 / f[2], 0.75);
+      st.acc += dt * rate;
+      while (st.acc > 1) { st.acc--; const a = Math.random() * Math.PI * 2, d = Math.sqrt(Math.random()) * rr * 0.85; st.fl.push({ x: cx + Math.cos(a) * d, y: cy + Math.sin(a) * d, t: 0, e: f[2] }); }
+    }
+    if (REDUCE && f[2] && st.fl.length < 12) for (let i = 0; i < 12; i++) { const a = i * 2.4, d = rr * 0.7 * ((i % 4) + 1) / 4; st.fl.push({ x: cx + Math.cos(a) * d, y: cy + Math.sin(a) * d, t: 0.1, e: f[2], still: 1 }); }
+    st.fl = st.fl.filter(p => { if (!p.still) p.t += dt; if (p.t > 0.6 || !f[2]) return false; const s = Math.sqrt(p.e / 6.7), life = 1 - p.t / 0.6, rad = 2 + 14 * s * life;
+      const gg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad); gg.addColorStop(0, rgba(COL.eigen, Math.min(1, 0.25 + s) * life)); gg.addColorStop(1, rgba(COL.eigen, 0));
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, Math.PI * 2); ctx.fill(); return true; });
+    ctx.fillStyle = st.dim > 0.3 ? COL.violet : COL['ink-3'];
+    ctx.fillText(f[2] ? 'CORE · EACH FLASH = ONE FUSION' : 'NO FIRE LEFT · CORE COLLAPSES', cx - R, cy + R + 18);
+    // ledger bars
+    const tx = narrow ? 20 : cx + R + 44, ty = narrow ? cy + R + 50 : 34, tw = narrow ? w - 40 : w - tx - 16, th = narrow ? h - ty - 12 : h - 64;
+    const rowH = th / 7, bw = tw - 110;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY PER KILOGRAM OF FUEL · % OF HYDROGEN', tx, ty - 12);
+    F.forEach((q, k) => {
+      const y = ty + k * rowH, v = q[2] / 6.7, wv = Math.max(q[2] ? 2 : 0, v * bw);
+      ctx.fillStyle = k === st.k ? q[3] : k < st.k ? rgba(q[3], 0.45) : rgba(COL['ink-3'], 0.22);
+      ctx.fillRect(tx + 30, y + 4, wv, rowH - 10);
+      if (k === st.k) { ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1; ctx.strokeRect(tx + 29.5, y + 3.5, Math.max(wv, 3) + 1, rowH - 9); }
+      ctx.fillStyle = k === st.k ? COL.ink : COL['ink-2']; ctx.fillText(q[0], tx, y + rowH / 2 + 3);
+      ctx.fillStyle = q[2] ? COL['ink-3'] : COL.violet;
+      ctx.fillText(q[2] ? `${k ? (v * 100).toFixed(v < 0.1 ? 1 : 0) : 100}%` : '0 · stops here', tx + 38 + wv, y + rowH / 2 + 3);
+    });
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the slow and rapid roads ---------- */
+(function () {
+  const cv = $('#c2'), goB = $('#go2'), aS = $('#a2'), aO = $('#a2o');
+  const rW = $('#r2w'), rT = $('#r2t'), rA = $('#r2a'), rE = $('#r2e');
+  const MAG = [50, 82, 126];
+  function target(Z) { const t = NV(Z) + 14 + 0.22 * (Z - 26); for (const m of MAG) if (t >= m && t < m + 16) return m; return t; }
+  const RP = (() => { const P = [[26, 30]]; let Z = 26, N = 30; while (Z < 92) { if (N < Math.floor(target(Z))) N++; else { Z++; N--; } P.push([Z, N]); } return P; })();
+  const SP = (() => { const P = [[26, 30]]; let Z = 26, N = 30; while (!(Z === 83 && N === 126) && P.length < 600) { if (N < Math.round(NV(Z))) N++; else { Z++; N--; } P.push([Z, N]); } return P; })();
+  const parent = A => RP.filter(q => q[0] + q[1] === A).pop();
+  const FREEZE = []; for (let A = 70; A <= 209; A++) { const p = parent(A); if (p) FREEZE.push({ A, z0: p[0], z1: ZST(A) }); }
+  const st = { road: 's', p: 0, run: false, fz: 0, A: 197 };
+  const SPEED = { s: 34, r: 95 };
+  function info() {
+    st.A = +aS.value; aO.value = String(st.A); setText(rA, String(st.A));
+    const z = ZST(st.A), e = EL(z);
+    setText(rE, `${e.name}-${st.A}${z === 79 ? ' ★' : ''}`);
+    setText(rW, st.road === 's' ? 'inside an ageing giant star' : 'debris from a neutron-star merger');
+    setText(rT, st.road === 's' ? 'years to thousands of years' : 'thousandths of a second');
+  }
+  function reset() { st.p = 0; st.fz = 0; st.run = REDUCE ? false : true; if (REDUCE) { st.p = 1e9; st.fz = 1; } goB.textContent = 'Run again'; }
+  $$('[data-road]').forEach(b => b.addEventListener('click', () => { st.road = b.dataset.road; $$('[data-road]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); reset(); info(); }));
+  goB.addEventListener('click', () => { reset(); });
+  aS.addEventListener('input', info); info();
+  st.p = 1e9; st.fz = 1; // start fully drawn so the chart is never empty
+  function frame(dt) {
+    const P = st.road === 's' ? SP : RP;
+    if (st.run) { st.p += dt * SPEED[st.road]; if (st.p >= P.length - 1) { if (st.road === 'r') { st.fz = Math.min(1, st.fz + dt * 0.45); if (st.fz >= 1) st.run = false; } else st.run = false; } }
+    const pi = Math.min(P.length - 1, Math.floor(st.p));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 40, gy = 16, gw = w - gx - 14, gh = h - gy - 34;
+    const N0 = 24, N1 = 172, Z0 = 22, Z1 = 94;
+    const X = n => gx + (n - N0) / (N1 - N0) * gw, Y = z => gy + (Z1 - z) / (Z1 - Z0) * gh;
+    const cs = Math.max(1.6, gw / (N1 - N0) * 0.9);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    // magic numbers
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.eigen, 0.3);
+    MAG.forEach(m => { ctx.beginPath(); ctx.moveTo(X(m), gy); ctx.lineTo(X(m), gy + gh); ctx.stroke(); ctx.fillStyle = rgba(COL.eigen, 0.7); ctx.fillText(`N=${m}`, X(m) + 3, gy + gh - 6); });
+    ctx.setLineDash([]);
+    // stable band
+    for (let Z = 26; Z <= 83; Z++) { const nv = Math.round(NV(Z)); for (let d = -2; d <= 2; d++) { ctx.fillStyle = rgba(COL.ice, d === 0 ? 0.55 : 0.16); ctx.fillRect(X(nv + d) - cs / 2, Y(Z) - cs / 2, cs, cs); } }
+    // axes
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right';
+    [26, 38, 56, 63, 79, 82].forEach(z => { ctx.fillStyle = z === 79 ? COL.eigen : COL['ink-3']; ctx.fillText(EL(z).sym, gx - 6, Y(z) + 4); });
+    ctx.textAlign = 'center'; ctx.fillStyle = COL['ink-3'];
+    [40, 80, 120, 160].forEach(n => ctx.fillText(String(n), X(n), gy + gh + 14));
+    ctx.fillText('NEUTRONS →', gx + gw / 2, gy + gh + 28); ctx.textAlign = 'left';
+    ctx.save(); ctx.translate(12, gy + gh / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('PROTONS (ELEMENT) →', 0, 0); ctx.restore();
+    ctx.fillStyle = rgba(COL.ice, 0.8); ctx.textAlign = 'right'; ctx.fillText('stable nuclei', X(NV(62)) - 12, Y(62) + 4); ctx.textAlign = 'left';
+    // path trail
+    const col = st.road === 's' ? COL.ice : COL.eigen;
+    ctx.strokeStyle = col; ctx.lineWidth = st.road === 's' ? 2 : 1.6; ctx.beginPath();
+    for (let i = 0; i <= pi; i++) { const [z, n] = P[i]; i ? ctx.lineTo(X(n), Y(z)) : ctx.moveTo(X(n), Y(z)); }
+    ctx.stroke();
+    // rapid road: freeze-out decays back to the band
+    if (st.road === 'r' && st.fz > 0) {
+      FREEZE.forEach(q => { const z = q.z0 + (q.z1 - q.z0) * st.fz, n = q.A - z; ctx.strokeStyle = rgba(COL.violet, 0.22); ctx.beginPath(); ctx.moveTo(X(q.A - q.z0), Y(q.z0)); ctx.lineTo(X(n), Y(z)); ctx.stroke(); });
+      const q = FREEZE.find(o => o.A === st.A);
+      if (q) { const z = q.z0 + (q.z1 - q.z0) * st.fz, n = q.A - z; ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(X(q.A - q.z0), Y(q.z0)); ctx.lineTo(X(n), Y(z)); ctx.stroke();
+        ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(n), Y(z), 4, 0, Math.PI * 2); ctx.fill();
+        if (st.fz >= 1) { const e = EL(q.z1); ctx.fillStyle = q.z1 === 79 ? COL.eigen : COL.ink; ctx.fillText(`${e.sym}-${q.A}${q.z1 === 79 ? ' · GOLD' : ''}`, X(n) - 70, Y(z) - 10); }
+        else { ctx.fillStyle = COL['ink-2']; ctx.fillText(`${EL(q.z0).sym}-${q.A}, decaying…`, Math.min(X(q.A - q.z0) + 8, w - 140), Y(q.z0) + 4); } }
+      ctx.lineWidth = 1;
+    }
+    if (st.road === 's') { const z = ZST(st.A), n = st.A - z; ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(X(n), Y(z), 6, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1; }
+    // the travelling nucleus
+    const [z, n] = P[pi], e = EL(z);
+    if (!(st.road === 'r' && st.fz > 0)) {
+      ctx.fillStyle = '#d2d1d5'; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(X(n), Y(z), 4, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.fillStyle = COL.ink; ctx.fillText(`${e.sym}-${z + n}`, Math.min(X(n) + 9, w - 70), Y(z) + 4);
+    }
+    if (st.road === 's' && pi >= P.length - 1) { ctx.fillStyle = COL.ice; ctx.fillText('dead end: bismuth-209', Math.min(X(126) - 40, w - 170), Y(83) - 12); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(st.road === 's' ? 'SLOW ROAD · ONE CATCH, THEN SETTLE' : st.fz > 0 ? 'NEUTRONS RUN OUT · DECAY BACK TO STABILITY' : 'RAPID ROAD · CATCH FASTER THAN DECAY', gx + 8, gy + 14);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the cosmic periodic table ---------- */
+(function () {
+  const cv = $('#c3'), leg = $('#leg3');
+  const rN = $('#r3n'), rO = $('#r3o'), rS = $('#r3s');
+  const ORG = {
+    B: ['Big Bang', '#9fabf3'], C: ['Cosmic rays', '#e393b4'], L: ['Dying low-mass stars', '#9fabf3'], M: ['Exploding massive stars', '#5a8fb3'],
+    W: ['Exploding white dwarfs', '#cd96e5'], N: ['Merging neutron stars', '#8289c4'], X: ['No long-lived form', '#38363d']
+  };
+  // main sources per element, largest first (simplified from Johnson 2019)
+  const SRC = ('B,B,BCL,C,C,LM,LM,M,ML,M,M,M,M,MW,M,MW,M,MW,M,MW,M,MW,WM,WM,WM,WM,WM,WM,M,M,ML,ML,M,M,M,ML,ML,LM,L,L,L,LN,X,NL,NL,NL,NL,LN,LN,LN,NL,N,N,NL,NL,L,LN,L,LN,LN,X,NL,N,N,N,N,N,N,N,NL,N,LN,NL,LN,N,N,N,N,N,LN,L,L,LN,X,X,X,X,X,X,N,X,N,X,X').split(',');
+  const STORY = {
+    1: 'Made in the first three minutes. Most of the atoms in you are hydrogen.', 2: 'About a quarter of all normal matter, made in the first minutes.',
+    3: 'A trace from the Big Bang, topped up by cosmic rays and some giant stars.', 4: 'Too fragile to survive inside stars; chipped off heavier atoms by cosmic rays.',
+    6: 'Puffed out by dying Sun-like stars and by supernovae. The backbone of life.', 7: 'Mostly from dying low-mass stars. 78% of the air you breathe.',
+    8: 'Mostly blasted out by exploding massive stars. Two-thirds of your mass.', 14: 'Built in the last weeks of massive stars. The stuff of rock and chips.',
+    20: 'Made in supernovae of both kinds. Your bones are built from it.', 26: 'Most comes from exploding white dwarfs; the rest from massive stars. The iron in your blood.',
+    43: 'No stable form. Seen in red giants in 1952: proof that stars make elements.', 56: 'A slow-road element, made by ageing giant stars. Its strength in a star’s spectrum tracks the slow process.',
+    63: 'Almost purely rapid-road. Astronomers use it to trace neutron-star mergers in old stars.', 78: 'Rapid-road, from neutron-star mergers. Much of Earth’s was delivered later by meteorites.',
+    79: 'Rapid-road, from neutron-star mergers. Every gold atom on Earth predates the Sun.', 82: 'The end point of the slow road in giant stars, plus decay of heavier elements.',
+    47: 'Shared between the slow and rapid roads.', 61: 'No stable form; any made in stars has long since decayed.',
+    90: 'Rapid-road. Long-lived enough that astronomers use it to date the oldest stars.', 92: 'Rapid-road. Some still survives from before the Sun formed.'
+  };
+  // table layout
+  function pos(Z) {
+    if (Z === 1) return [0, 0]; if (Z === 2) return [17, 0];
+    if (Z <= 10) return Z <= 4 ? [Z - 3, 1] : [Z + 7, 1];
+    if (Z <= 18) return Z <= 12 ? [Z - 11, 2] : [Z - 1, 2];
+    if (Z <= 36) return [Z - 19, 3]; if (Z <= 54) return [Z - 37, 4];
+    if (Z <= 56) return [Z - 55, 5]; if (Z <= 71) return [Z - 54, 7.6]; if (Z <= 86) return [Z - 69, 5];
+    if (Z <= 88) return [Z - 87, 6]; return [Z - 86, 8.6];
+  }
+  const st = { sel: 79, hi: null, hits: [] };
+  Object.entries(ORG).forEach(([k, [name, c]]) => {
+    const b = document.createElement('button'); b.className = 'btn'; b.type = 'button'; b.dataset.o = k; b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = `<i style="background:${c}"></i>${name}`;
+    b.addEventListener('click', () => { st.hi = st.hi === k ? null : k; $$('[data-o]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.o === st.hi))); });
+    leg.appendChild(b);
+  });
+  function info() {
+    const e = EL(st.sel), s = SRC[st.sel - 1];
+    setText(rN, `${st.sel} · ${e.name} (${e.sym})`);
+    setText(rO, s.split('').map(c => ORG[c][0].toLowerCase()).join(' · ').replace(/^./, m => m.toUpperCase()));
+    setText(rS, STORY[st.sel] || (s[0] === 'N' ? 'Mostly from the rapid road in neutron-star mergers.' : s[0] === 'L' && st.sel > 30 ? 'Mostly from the slow road inside ageing giant stars.' : s[0] === 'M' ? 'Mostly made in massive stars and thrown out when they explode.' : s[0] === 'W' ? 'Mostly from white dwarfs that explode after feeding on a companion.' : s[0] === 'X' ? 'No long-lived form; what exists is made in decays or in labs.' : 'Made in several places.'));
+  }
+  $('#prev3').addEventListener('click', () => { st.sel = st.sel > 1 ? st.sel - 1 : 94; info(); });
+  $('#next3').addEventListener('click', () => { st.sel = st.sel < 94 ? st.sel + 1 : 1; info(); });
+  cv.addEventListener('click', ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; const hit = st.hits.find(q => x >= q.x && x <= q.x + q.s && y >= q.y && y <= q.y + q.s); if (hit) { st.sel = hit.Z; info(); } });
+  info();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    const cell = Math.min((w - 16) / 18, (h - 30) / 9.7), gap = Math.max(1, cell * 0.08);
+    const ox = (w - cell * 18) / 2, oy = 20;
+    st.hits = [];
+    ctx.font = `9.5px ${MONO}`; ctx.fillStyle = COL['ink-3']; ctx.fillText('WHERE EACH ELEMENT WAS MADE · TAP A TILE', ox + 16, 13);
+    for (let Z = 1; Z <= 94; Z++) {
+      const [c, r] = pos(Z), x = ox + c * cell, y = oy + r * cell, s = cell - gap, src = SRC[Z - 1];
+      const on = !st.hi || src.includes(st.hi);
+      ctx.globalAlpha = on ? 1 : 0.12;
+      if (src.length === 1) { ctx.fillStyle = ORG[src][1]; ctx.fillRect(x, y, s, s); }
+      else { const main = s * 0.62; ctx.fillStyle = ORG[src[0]][1]; ctx.fillRect(x, y, s, main); const rest = src.slice(1).split(''); rest.forEach((k, i) => { ctx.fillStyle = ORG[k][1]; ctx.fillRect(x + i * s / rest.length, y + main, s / rest.length, s - main); }); }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = on ? (src[0] === 'X' ? COL['ink-2'] : COL.void) : COL['ink-3'];
+      ctx.font = `${cell > 30 ? 'bold 11px' : 'bold 8.5px'} ${MONO}`; ctx.textAlign = 'center';
+      ctx.fillText(EL(Z).sym, x + s / 2, y + s * 0.42 + 4); ctx.textAlign = 'left';
+      if (Z === st.sel) { ctx.strokeStyle = '#d2d1d5'; ctx.lineWidth = 2; ctx.strokeRect(x - 1, y - 1, s + 2, s + 2); ctx.lineWidth = 1; }
+      st.hits.push({ Z, x, y, s });
+    }
+    // markers for the lanthanide / actinide rows
+    ctx.fillStyle = COL['ink-3']; ctx.font = `9px ${MONO}`; const nar = cell < 30; ctx.fillText(nar ? '*' : '57–71', ox + 2 * cell + 2, oy + 5 * cell + cell * 0.55); ctx.fillText(nar ? '**' : '89–94', ox + 2 * cell + 2, oy + 6 * cell + cell * 0.55); if (nar) { ctx.fillText('*', ox + 2 * cell + 2, oy + 7.6 * cell + cell * 0.55); ctx.fillText('**', ox + 1.5 * cell + 2, oy + 8.6 * cell + cell * 0.55); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>How Language Models Think</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 032 colour code: pink = attention and the chosen word, ice = tokens and probabilities, violet = the meaning space. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.8}}
+h1 .eig{transform:none}
+.txtin{font:inherit;font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;background:var(--bay-2,#0b1120);color:var(--ink,#e2e8f4);border:1px solid var(--rule-hi,#26314d);padding:7px 10px;min-width:0;flex:1 1 220px}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 032 · Breakthrough technology · 6 of 8</div>
+    <a class="navlink" href="031.html">← Φ 031</a>
+    <a class="navlink" href="033.html">Φ 033 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 032 · Breakthrough technology · 6 of 8</p>
+    <h1>how language models <span class="eig">think</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · artificial intelligence — <em>predicting the next word, one step at a time, with attention deciding what to look back at</em></p>
+    <p class="thesis">A large language model does one thing: given some text, it estimates the probability of every possible next piece of text, picks one, and repeats. Everything else (answering, translating, writing code) emerges from doing that extremely well. The key mechanism is <em>attention</em>, which lets each word look back at the words that matter to it.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Machine learning, natural language processing</dd></div>
+    <div><dt>Models</dt><dd>Next-word sampling, a tiny two-layer transformer you can poke, words as vectors</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 6 of 8. Builds on Φ 006 (neural networks).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>tokens · probability</span><span class="key"><i style="background:var(--eigen)"></i>attention</span><span class="key"><i style="background:var(--violet)"></i>meaning space</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="next">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The one job</span><h2>Predict the next word, pick one, repeat</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A sentence being written one word at a time. For the next word, a bar chart shows the probability of each candidate; a temperature setting sharpens or flattens the bars before one is drawn at random."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Starting text">
+            <button class="btn" type="button" data-start="the cat" aria-pressed="true">“the cat”</button>
+            <button class="btn" type="button" data-start="the sun">“the sun”</button>
+            <button class="btn" type="button" data-start="in the">“in the”</button>
+          </div>
+          <label class="scrub" for="T1">Temperature <input type="range" id="T1" min="5" max="200" step="1" value="80"><output id="T1o">—</output></label>
+          <button class="btn solo" type="button" id="gen1">Next word</button>
+          <button class="btn solo" type="button" id="auto1">Auto</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Picked</b><span id="r1p" class="eg">—</span></div>
+          <div class="ro"><b>Its probability</b><span id="r1q">—</span></div>
+          <div class="ro"><b>Uncertainty (entropy)</b><span id="r1e">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Text is first chopped into <strong>tokens</strong>, whole words or pieces of words. The model reads all the tokens so far and outputs a score for every token in its vocabulary, often over 100,000 of them. Those scores become probabilities.</p>
+        <p>Then one token is <strong>sampled</strong>: drawn at random, weighted by probability. <span class="i">Temperature</span> controls how adventurous the draw is. Low temperature nearly always takes the top choice and can get repetitive; high temperature flattens the odds and gets creative, then incoherent. The chosen token is added to the text and the whole process runs again, one token at a time.</p>
+        <p>This little demo predicts from simple word-pair statistics of a short text written for this lesson. A real model does the same final step, but its probabilities come from a neural network with billions of parameters that has read a large fraction of the written internet.</p>
+        <div class="task"><b>Try this</b>Generate a sentence at temperature 0.8. Then drop it near zero and watch it repeat itself; push it to 2 and watch it ramble.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>p</var><sub><var>i</var></sub> = <var>e</var><sup><var>z</var><sub><var>i</var></sub>/<var>T</var></sup> / Σ<sub><var>j</var></sub> <var>e</var><sup><var>z</var><sub><var>j</var></sub>/<var>T</var></sup>,&nbsp; <var>H</var> = −Σ <var>p</var><sub><var>i</var></sub> log₂ <var>p</var><sub><var>i</var></sub></div>
+          <p>The softmax turns scores <var>z</var> into probabilities; dividing by <var>T</var> sharpens (<var>T</var> &lt; 1) or flattens (<var>T</var> &gt; 1) them. Here <var>z</var> is the log of how often each word followed the previous two words (a trigram model, falling back to one word) in a corpus of about a hundred sentences. Entropy is measured in bits: 1 bit is a coin toss.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="attn">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Attention</span><h2>A tiny transformer you can poke</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A line of text with arcs showing which earlier characters each position attends to. Layer one looks at the previous character. Layer two finds earlier places where the current character appeared and copies what came next, making a prediction."></canvas></div>
+        <div class="controls">
+          <input class="txtin" id="txt2" type="text" maxlength="48" value="eigen value eigen vector eigen va" aria-label="Text for the transformer">
+          <div class="seg" role="group" aria-label="Layer">
+            <button class="btn" type="button" data-layer="1">Layer 1 · previous</button>
+            <button class="btn" type="button" data-layer="2" aria-pressed="true">Layer 2 · induction</button>
+          </div>
+          <button class="btn solo" type="button" id="add2">Append prediction</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Predicted next character</b><span id="r2p" class="eg">—</span></div>
+          <div class="ro"><b>Confidence</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Copied from</b><span id="r2f">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The breakthrough behind today’s models is the <span class="i">transformer</span> (2017). Each position in the text asks a question (a <em>query</em>), every earlier position advertises what it holds (a <em>key</em>), and a match sends information back (a <em>value</em>). Positions <span class="a">attend</span> to the ones that answer their question. Stack dozens of layers, each with many such heads, and the model can follow grammar, references and arguments across thousands of words.</p>
+        <p>This is a real two-layer attention model running in your browser, small enough to read. In <strong>layer 1</strong>, every character attends to the one just before it (and, in a second head, the one before that) and stores what it saw. In <strong>layer 2</strong>, the last character asks: “where earlier did the same pair of characters as me and my neighbour appear?” It attends there and copies the character that came next.</p>
+        <p>This pattern, the <strong>induction head</strong>, was found inside trained language models in 2022. It is one way models pick up patterns from the text in front of them, part of how they learn “in context”.</p>
+        <div class="task"><b>Try this</b>Press Append prediction a few times and watch it complete the repeated word. Then type your own repeating text.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Attention(<var>Q</var>,<var>K</var>,<var>V</var>) = softmax(<var>QK</var><sup>⊤</sup>/√<var>d</var> + mask) <var>V</var></div>
+          <p>The two heads compute real softmax attention over vectors, with a causal mask so no position sees the future. Unlike a trained model, the weights here were set by hand: layer 1’s two heads match each position to the one and two places before, and layer 2 matches the current character and its predecessor against those stored characters, with a small bonus for recent positions. Real models learn millions of such weights from data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="embed">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Meaning as geometry</span><h2>Words as arrows in space</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Words placed as points in a space of meaning. Similar words cluster together, and the arrow from man to woman is roughly the same as the arrow from king to queen, so word arithmetic works."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Analogy">
+            <button class="btn" type="button" data-an="0" aria-pressed="true">king − man + woman</button>
+            <button class="btn" type="button" data-an="1">uncle − man + woman</button>
+            <button class="btn" type="button" data-an="2">puppy − dog + cat</button>
+            <button class="btn" type="button" data-an="3">Paris − France + Japan</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Result lands nearest</b><span id="r3n" class="eg">—</span></div>
+          <div class="ro"><b>Similarity</b><span id="r3s">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Inside the model, every token becomes a long list of numbers, an <strong>embedding</strong>, a point in a space with thousands of dimensions. Training arranges these points so that words used in similar ways end up close together.</p>
+        <p>Directions in that space come to mean something. The step from “man” to “woman” points roughly the same way as the step from “king” to “queen”, so arithmetic on meanings works: <span class="v">king − man + woman ≈ queen</span>. This was a famous finding of word2vec in 2013.</p>
+        <p>In a modern model the vectors are refined layer by layer as attention mixes in context, so “bank” near “river” ends up somewhere different from “bank” near “money”.</p>
+        <div class="task"><b>Try this</b>Try each analogy and follow the arrows. Which ones land exactly, and which only nearly?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">sim(<strong>a</strong>, <strong>b</strong>) = <strong>a</strong>·<strong>b</strong> / (|<strong>a</strong>||<strong>b</strong>|)</div>
+          <p>A toy: 22 words with hand-made vectors in eleven dimensions (royal, male, adult, young, animal, city, country, plus one for each of four nations) and a little noise. For each analogy the picture is a flat slice through that space, chosen to contain both arrows, so other words can appear oddly placed. Real embeddings are learned, not designed, and their dimensions rarely line up with neat human labels.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1948</div><h3>Shannon’s n-grams</h3><p>Claude Shannon generated English-like text by sampling each word from the words that followed the previous ones, the same trick as Bay 01, and used it to measure the information in language.</p></div>
+      <div class="g"><div class="where">2013</div><h3>word2vec</h3><p>Tomas Mikolov’s team at Google showed that simple networks learn word vectors where analogies become arithmetic.</p></div>
+      <div class="g"><div class="where">2017</div><h3>“Attention Is All You Need”</h3><p>Eight Google researchers introduced the transformer, dropping older recurrent designs. It trains in parallel on huge amounts of text and underlies almost every modern language model.</p></div>
+      <div class="g"><div class="where">2020</div><h3>Scaling laws</h3><p>Researchers found that a model’s prediction error falls smoothly and predictably as model size, data and computing power grow, which drove the race to ever larger models.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A language model <span class="a">predicts one token at a time</span>; attention lets each position look back at what matters, and meaning lives as directions in a space of numbers.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><span class="chip here">032 · How LLMs think</span><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 032 · One token at a time · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* A short corpus written for this lesson. */
+const CORPUS = `the cat sat on the warm mat by the fire . the cat slept in the sun all afternoon . the cat chased a moth across the room . the cat watched the birds in the garden . the cat jumped onto the table and knocked over a glass . the cat purred when the girl came home . the cat ignored the dog . the dog barked at the cat . the dog ran into the garden . the dog slept by the door . the sun rose over the hills . the sun warmed the cold stones . the sun set behind the sea . the sun is a star in the middle of the solar system . the sun is made mostly of hydrogen . the sun shines on the garden . the moon rose over the sea . the moon pulls on the sea and makes the tides . the stars came out over the hills . in the morning the cat sat in the sun . in the garden the birds sang . in the evening the sun set behind the hills . in the middle of the night the cat woke up . in the sea there are fish and whales . in the sky the stars shone . in the end the cat came home . the girl read a book in the garden . the girl walked to the sea . the girl watched the stars over the hills . the boy ran to the sea . the boy found a shell on the beach . the light from the sun takes eight minutes to reach the earth . the earth goes around the sun once a year . the earth spins once a day . the sea was calm and blue . the sea was cold in the morning . the birds flew over the sea . the birds sang in the morning . the fire was warm . the room was dark and quiet . the cat sat by the window and watched the rain . the rain fell on the garden . the rain stopped in the evening . a star is a ball of hot gas . a planet goes around a star . the stars are very far away . the light from the stars is very old . the cat sat on the mat . the dog sat on the mat . the cat sat in the garden .`;
+const W = CORPUS.split(/\s+/).filter(Boolean);
+const BI = {}, TRI = {};
+for (let i = 0; i < W.length - 1; i++) { (BI[W[i]] ||= {})[W[i + 1]] = (BI[W[i]][W[i + 1]] || 0) + 1; if (i < W.length - 2) { const k = W[i] + ' ' + W[i + 1]; (TRI[k] ||= {})[W[i + 2]] = (TRI[k][W[i + 2]] || 0) + 1; } }
+
+/* ---------- BAY 01: next-word sampling ---------- */
+(function () {
+  const cv = $('#c1'), TS = $('#T1'), TO = $('#T1o'), genB = $('#gen1'), autoB = $('#auto1');
+  const rP = $('#r1p'), rQ = $('#r1q'), rE = $('#r1e');
+  const st = { words: ['the', 'cat'], last: null, lastP: 0, auto: false, acc: 0, flash: 0 };
+  function dist() {
+    const n = st.words.length, k3 = st.words.slice(-2).join(' '), c = TRI[k3] || BI[st.words[n - 1]] || BI['the'];
+    const T = +TS.value / 100, ent = Object.entries(c), z = ent.map(([w, v]) => Math.log(v) / T), m = Math.max(...z), ex = z.map(v => Math.exp(v - m)), s = ex.reduce((a, b) => a + b, 0);
+    return ent.map(([w], i) => [w, ex[i] / s]).sort((a, b) => b[1] - a[1]);
+  }
+  function step() {
+    const d = dist(); let r = Math.random(), pick = d[d.length - 1]; for (const e of d) { r -= e[1]; if (r <= 0) { pick = e; break; } }
+    st.words.push(pick[0]); st.last = pick[0]; st.lastP = pick[1]; st.flash = 1;
+    if (st.words.length > 28 || (pick[0] === '.' && st.words.length > 14)) { st.words = st.words.slice(-2); if (st.words[1] === '.') st.words = ['the', 'cat']; }
+  }
+  $$('[data-start]').forEach(b => b.addEventListener('click', () => { st.words = b.dataset.start.split(' '); st.last = null; $$('[data-start]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  genB.addEventListener('click', step);
+  autoB.addEventListener('click', () => { st.auto = !st.auto; autoB.textContent = st.auto ? 'Stop' : 'Auto'; });
+  function frame(dt) {
+    const T = +TS.value / 100; TO.value = T.toFixed(2);
+    if (st.auto && !REDUCE) { st.acc += dt; if (st.acc > 0.7) { st.acc = 0; step(); } }
+    st.flash = Math.max(0, st.flash - dt * 1.5);
+    const d = dist(), H = -d.reduce((s, [, p]) => s + (p > 0 ? p * Math.log2(p) : 0), 0);
+    setText(rP, st.last ? `“${st.last}”` : '—'); setText(rQ, st.last ? `${Math.round(st.lastP * 100)}%` : '—'); setText(rE, `${H.toFixed(2)} bits over ${d.length} options`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    // the text so far, wrapped
+    ctx.font = `15px ${MONO}`; let x = 16, y = 34; const lh = 22;
+    st.words.forEach((wd, i) => { const ww = ctx.measureText(wd + ' ').width; if (x + ww > w - 16) { x = 16; y += lh; } ctx.fillStyle = i === st.words.length - 1 && st.flash > 0 ? COL.eigen : COL.ink; ctx.fillText(wd, x, y); x += ww; });
+    ctx.fillStyle = COL.ice; ctx.fillText('▌', x, y);
+    // probability bars
+    ctx.font = `10.5px ${MONO}`;
+    const top = Math.max(y + 30, h * 0.36), bh = h - top - 16, n = Math.min(8, d.length), rowH = bh / 8, lx = 120, bw = w - lx - 70;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`NEXT WORD AFTER “${st.words.slice(-2).join(' ')}”`, 16, top - 8);
+    d.slice(0, n).forEach(([wd, p], i) => { const yy = top + i * rowH; ctx.fillStyle = rgba(COL.ice, 0.85); ctx.fillRect(lx, yy + 3, Math.max(1, p * bw), rowH - 7); ctx.fillStyle = COL.ink; ctx.textAlign = 'right'; ctx.fillText(wd, lx - 8, yy + rowH / 2 + 3); ctx.textAlign = 'left'; ctx.fillStyle = COL['ink-2']; ctx.fillText(`${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`, lx + p * bw + 6, yy + rowH / 2 + 3); });
+    if (d.length > n) { ctx.fillStyle = COL['ink-3']; ctx.fillText(`+ ${d.length - n} more`, lx, top + n * rowH + 2); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: a hand-built two-layer attention model ---------- */
+(function () {
+  const cv = $('#c2'), inp = $('#txt2'), addB = $('#add2');
+  const rP = $('#r2p'), rC = $('#r2c'), rF = $('#r2f');
+  const VOC = 'abcdefghijklmnopqrstuvwxyz .,'.split(''), V = VOC.length;
+  const st = { layer: 2, out: null };
+  const softmax = a => { const m = Math.max(...a), e = a.map(v => Math.exp(v - m)), s = e.reduce((x, y) => x + y, 0); return e.map(v => v / s); };
+  function run(text) {
+    const toks = text.toLowerCase().split('').map(c => Math.max(0, VOC.indexOf(c) < 0 ? VOC.indexOf(' ') : VOC.indexOf(c))), n = toks.length;
+    const onehot = t => { const v = new Float64Array(V); v[t] = 1; return v; };
+    // residual stream: token part and a "previous token" part written by layer 1
+    const tokv = toks.map(onehot), prev = toks.map(() => new Float64Array(V)), prev2 = toks.map(() => new Float64Array(V));
+    // layer 1, two heads: query = position i, key = position j; head A scores j = i − 1, head B scores j = i − 2
+    const A1 = [];
+    for (let i = 0; i < n; i++) { const sa = [], sb = []; for (let j = 0; j <= i; j++) { sa.push(j === i - 1 ? 12 : 0); sb.push(j === i - 2 ? 12 : 0); } const a = softmax(sa), b = softmax(sb); A1.push(a); for (let j = 0; j <= i; j++) for (let k = 0; k < V; k++) { prev[i][k] += a[j] * (i < 1 ? 0 : tokv[j][k]); prev2[i][k] += b[j] * (i < 2 ? 0 : tokv[j][k]); } }
+    // layer 2: query = current token, key = stored previous token, plus a small recency bonus
+    const A2 = [];
+    for (let i = 0; i < n; i++) { const sc = []; for (let j = 0; j <= i; j++) { let d1 = 0, d2 = 0; for (let k = 0; k < V; k++) { d1 += tokv[i][k] * prev[j][k]; d2 += prev[i][k] * prev2[j][k]; } sc.push(10 * d1 + 5 * d2 + 1.5 * j / Math.max(1, i)); } A2.push(softmax(sc)); }
+    // output: the attended tokens, read out as logits for the next character
+    const last = n - 1, logits = new Float64Array(V); for (let j = 0; j <= last; j++) for (let k = 0; k < V; k++) logits[k] += 9 * A2[last][j] * tokv[j][k];
+    const probs = softmax(Array.from(logits));
+    const matched = A2[last].map((a, j) => [a, j]).filter(([a, j]) => j > 0 && toks[j - 1] === toks[last] && j !== last);
+    return { toks, n, A1, A2, probs, matched };
+  }
+  function recompute() { st.out = run(inp.value || ' '); const o = st.out, best = o.probs.map((p, k) => [p, k]).sort((a, b) => b[0] - a[0]); const ch = VOC[best[0][1]];
+    setText(rP, o.matched.length ? `“${ch === ' ' ? '␣' : ch}”` : `no earlier match: guessing`); setText(rC, `${Math.round(best[0][0] * 100)}%`);
+    const top = o.A2[o.n - 1].map((a, j) => [a, j]).sort((a, b) => b[0] - a[0])[0]; setText(rF, o.matched.length ? `position ${top[1] + 1}, after an earlier “${VOC[o.toks[o.n - 1]] === ' ' ? '␣' : VOC[o.toks[o.n - 1]]}”` : '—'); st.best = ch; }
+  inp.addEventListener('input', recompute);
+  $$('[data-layer]').forEach(b => b.addEventListener('click', () => { st.layer = +b.dataset.layer; $$('[data-layer]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  addB.addEventListener('click', () => { if (!st.out.matched.length) return; let t = inp.value + st.best; if (t.length > 48) t = t.slice(t.length - 48); inp.value = t; recompute(); });
+  recompute();
+  function frame() {
+    const o = st.out, { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    const n = o.n, cw = Math.min(15, (w - 32) / n), x0 = (w - cw * n) / 2, ty = h * 0.3;
+    ctx.font = `${Math.max(9, Math.min(14, cw * 1.05))}px ${MONO}`; ctx.textAlign = 'center';
+    const A = st.layer === 1 ? o.A1 : o.A2;
+    // arcs
+    if (st.layer === 1) { for (let i = 1; i < n; i++) { const a = A[i][i - 1]; ctx.strokeStyle = rgba(COL.eigen, 0.25 + 0.5 * a); ctx.beginPath(); const xa = x0 + (i + 0.5) * cw, xb = x0 + (i - 0.5) * cw; ctx.moveTo(xa, ty - 14); ctx.quadraticCurveTo((xa + xb) / 2, ty - 14 - cw * 1.2, xb, ty - 14); ctx.stroke(); } }
+    else { const i = n - 1; A[i].forEach((a, j) => { if (a < 0.02 || j === i) return; const xa = x0 + (i + 0.5) * cw, xb = x0 + (j + 0.5) * cw; ctx.strokeStyle = rgba(COL.eigen, Math.min(1, 0.15 + a * 1.2)); ctx.lineWidth = 1 + 3 * a; ctx.beginPath(); ctx.moveTo(xa, ty - 14); ctx.quadraticCurveTo((xa + xb) / 2, ty - 14 - Math.min(ty - 30, Math.abs(xa - xb) * 0.45), xb, ty - 14); ctx.stroke(); ctx.lineWidth = 1; if (j > 0) { ctx.fillStyle = rgba(COL.ice, Math.min(0.8, a * 2)); ctx.fillRect(x0 + (j - 1) * cw + 1, ty + 6, cw - 2, 3); } }); }
+    o.toks.forEach((t, i) => { const c = VOC[t]; ctx.fillStyle = i === n - 1 ? COL.eigen : COL.ink; ctx.fillText(c === ' ' ? '·' : c, x0 + (i + 0.5) * cw, ty); });
+    ctx.fillStyle = COL.ice; ctx.fillText(st.out.matched.length ? (st.best === ' ' ? '␣' : st.best) : '?', x0 + (n + 0.5) * cw > w - 8 ? w - 10 : x0 + (n + 0.5) * cw, ty);
+    ctx.textAlign = 'left'; ctx.font = `10.5px ${MONO}`;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(w < 560 ? (st.layer === 1 ? 'LAYER 1 · LOOK ONE BACK' : 'LAYER 2 · FIND EARLIER MATCHES') : (st.layer === 1 ? 'LAYER 1 · EACH CHARACTER LOOKS AT THE ONE BEFORE' : 'LAYER 2 · THE LAST CHARACTER LOOKS FOR EARLIER MATCHES'), 14, 18);
+    if (st.layer === 2) { ctx.fillStyle = COL.ice; ctx.fillText('underline = the matching earlier character', 14, 34); }
+    // attention matrix
+    const my = ty + 34, mh = h - my - 24, cs = Math.min(mh / n, (w * 0.62) / n), mx = 40;
+    for (let i = 0; i < n; i++) for (let j = 0; j <= i; j++) { const a = A[i][j]; if (a < 0.005) continue; ctx.fillStyle = rgba(COL.eigen, Math.min(1, a)); ctx.fillRect(mx + j * cs, my + i * cs, cs, cs); }
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(mx + 0.5, my + 0.5, n * cs, n * cs);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(w < 560 ? 'row = from · column = to' : 'attention: row = looking from, column = looking at', mx, my + n * cs + 14);
+    // predictions
+    const px = mx + n * cs + 30, pw = w - px - 40;
+    if (pw > 80) { const best = o.probs.map((p, k) => [p, k]).sort((a, b) => b[0] - a[0]).slice(0, 5); ctx.fillText('NEXT-CHARACTER ODDS', px, my + 8); best.forEach(([p, k], r) => { const yy = my + 18 + r * 20; ctx.fillStyle = rgba(COL.ice, 0.85); ctx.fillRect(px + 22, yy, p * pw * 0.8, 14); ctx.fillStyle = COL.ink; ctx.fillText(VOC[k] === ' ' ? '␣' : VOC[k], px + 4, yy + 11); ctx.fillStyle = COL['ink-2']; ctx.fillText(`${Math.round(p * 100)}%`, px + 26 + p * pw * 0.8, yy + 11); }); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: words as vectors ---------- */
+(function () {
+  const cv = $('#c3');
+  const rN = $('#r3n'), rS = $('#r3s');
+  // dimensions: royal, male, adult, young, animal, place, country, + identity dims for the places
+  const base = {
+    king: [1, 1, 1, 0, 0, 0, 0], queen: [1, -1, 1, 0, 0, 0, 0], prince: [1, 1, 0, 1, 0, 0, 0], princess: [1, -1, 0, 1, 0, 0, 0],
+    man: [0, 1, 1, 0, 0, 0, 0], woman: [0, -1, 1, 0, 0, 0, 0], boy: [0, 1, 0, 1, 0, 0, 0], girl: [0, -1, 0, 1, 0, 0, 0],
+    uncle: [0, 1, 1, 0, 0, 0, 0.0], aunt: [0, -1, 1, 0, 0, 0, 0.0],
+    dog: [0, 0, 1, 0, 1, 0, 0], puppy: [0, 0, 0, 1, 1, 0, 0], cat: [0, 0, 1, 0, 1.1, 0, 0], kitten: [0, 0, 0, 1, 1.1, 0, 0],
+    Paris: [0, 0, 0, 0, 0, 1, 0], France: [0, 0, 0, 0, 0, 0, 1], Tokyo: [0, 0, 0, 0, 0, 1, 0], Japan: [0, 0, 0, 0, 0, 0, 1], Rome: [0, 0, 0, 0, 0, 1, 0], Italy: [0, 0, 0, 0, 0, 0, 1], Cairo: [0, 0, 0, 0, 0, 1, 0], Egypt: [0, 0, 0, 0, 0, 0, 1]
+  };
+  const NAT = { Paris: 0, France: 0, Tokyo: 1, Japan: 1, Rome: 2, Italy: 2, Cairo: 3, Egypt: 3 };
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5;
+  const VEC = {}; Object.entries(base).forEach(([wd, v]) => { const x = v.concat([0, 0, 0, 0]); if (wd in NAT) x[7 + NAT[wd]] = 1; if (wd === 'uncle' || wd === 'aunt') { x[2] = 1.1; x[3] = 0.15; } VEC[wd] = x.map(c => c + rnd() * 0.12); });
+  const words = Object.keys(VEC), D = 11;
+  const add = (a, b, s = 1) => a.map((v, i) => v + s * b[i]), dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0), nrm = a => Math.sqrt(dot(a, a)), cos = (a, b) => dot(a, b) / (nrm(a) * nrm(b));
+  // projection: two principal directions of the word cloud (power iteration)
+  const mean = new Array(D).fill(0); words.forEach(w => VEC[w].forEach((v, i) => mean[i] += v / words.length));
+  const Xc = words.map(w => VEC[w].map((v, i) => v - mean[i]));
+  const cov = Array.from({ length: D }, (_, i) => Array.from({ length: D }, (_, j) => Xc.reduce((s, r) => s + r[i] * r[j], 0)));
+  const pc = defl => { let v = Array.from({ length: D }, (_, i) => Math.sin(i + 1 + defl.length)); for (let it = 0; it < 200; it++) { let u = cov.map(r => dot(r, v)); defl.forEach(d => { const p = dot(u, d); u = u.map((x, i) => x - p * d[i]); }); const n = nrm(u); v = u.map(x => x / n); } return v; };
+  const P1 = pc([]), P2 = pc([P1]);
+  const proj = v => { const c = v.map((x, i) => x - mean[i]); return [dot(c, P1), dot(c, P2)]; };
+  const AN = [['king', 'man', 'woman'], ['uncle', 'man', 'woman'], ['puppy', 'dog', 'cat'], ['Paris', 'France', 'Japan']];
+  const st = { k: 0 };
+  $$('[data-an]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.an; $$('[data-an]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame() {
+    const [a, b, c] = AN[st.k], res = add(add(VEC[a], VEC[b], -1), VEC[c]);
+    const ranked = words.filter(w => w !== a && w !== b && w !== c).map(w => [w, cos(res, VEC[w])]).sort((x, y) => y[1] - x[1]);
+    setText(rN, `${ranked[0][0]}`); setText(rS, `${ranked[0][1].toFixed(2)} (1 = identical direction)`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `11px ${MONO}`;
+    // project onto the plane spanned by the analogy itself: e1 along (c − b), e2 along (a − b) made perpendicular
+    const d1 = add(VEC[c], VEC[b], -1), e1 = d1.map(v => v / nrm(d1)); let d2 = add(VEC[a], VEC[b], -1); const pr2 = dot(d2, e1); d2 = d2.map((v, i) => v - pr2 * e1[i]); const e2 = d2.map(v => v / (nrm(d2) || 1));
+    const proj = v => { const q = add(v, VEC[b], -1); return [dot(q, e1), dot(q, e2)]; };
+    const pts = words.map(wd => proj(VEC[wd])), xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), pad = 50;
+    const X = v => pad + (v - x0) / (x1 - x0) * (w - 2 * pad), Y = v => h - pad - (v - y0) / (y1 - y0) * (h - 2 * pad);
+    const pa = proj(VEC[a]), pb = proj(VEC[b]), pcv = proj(VEC[c]), pr = proj(res);
+    const arrow = (p, q, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(p[0]), Y(p[1])); ctx.lineTo(X(q[0]), Y(q[1])); ctx.stroke(); const an = Math.atan2(Y(q[1]) - Y(p[1]), X(q[0]) - X(p[0])); ctx.beginPath(); ctx.moveTo(X(q[0]), Y(q[1])); ctx.lineTo(X(q[0]) - 8 * Math.cos(an - 0.4), Y(q[1]) - 8 * Math.sin(an - 0.4)); ctx.moveTo(X(q[0]), Y(q[1])); ctx.lineTo(X(q[0]) - 8 * Math.cos(an + 0.4), Y(q[1]) - 8 * Math.sin(an + 0.4)); ctx.stroke(); ctx.lineWidth = 1; };
+    arrow(pb, pcv, rgba(COL.ice, 0.7)); arrow(pa, pr, COL.eigen);
+    words.forEach((wd, i) => { const on = [a, b, c, ranked[0][0]].includes(wd); ctx.fillStyle = on ? COL.violet : rgba(COL.violet, 0.45); ctx.beginPath(); ctx.arc(X(pts[i][0]), Y(pts[i][1]), on ? 4.5 : 3, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = on ? COL.ink : rgba(COL['ink-3'], 0.45); ctx.fillText(wd, X(pts[i][0]) + 6, Y(pts[i][1]) - 5); });
+    ctx.strokeStyle = COL.eigen; ctx.beginPath(); ctx.arc(X(pr[0]), Y(pr[1]), 8, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`ICE: ${b} → ${c} · PINK: the same step taken from ${a}`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

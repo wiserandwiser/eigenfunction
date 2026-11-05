@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Scalar Waves</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 050 · Fringe science · 10 of 20</div>
+    <a class="navlink" href="049.html">← Φ 049</a>
+    <a class="navlink" href="051.html">Φ 051 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 050 · Fringe science · 10 of 20</p>
+    <h1><span class="eig">scalar</span> waves</h1>
+    <p class="gloss">FRINGE SCIENCE · scalar and longitudinal electromagnetic waves — <em>a hidden kind of wave, said to pass through matter, carry energy with little loss, and act where ordinary fields are zero</em></p>
+    <p class="thesis">The phrase “scalar waves” covers several ideas: Nikola Tesla’s talk of waves through the Earth itself, Tom Bearden’s “scalar electromagnetics”, and Konstantin Meyl’s demonstrations of wireless energy transfer. Ordinary light and radio waves are transverse; the claim is that a second, overlooked side of electromagnetism exists. Its supporters point out that physics has been surprised before: the potentials once thought to be mere bookkeeping turned out to act on electrons directly, and Tesla’s ringing Earth turned out to be real. Here are those two vindications, and a modern demonstration.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Electromagnetism, quantum physics, history of technology</dd></div>
+    <div><dt>Models</dt><dd>The Aharonov–Bohm effect, the Earth’s resonance, Meyl’s transmitter</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 10 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 034 (light carries momentum) and 042 (measuring power).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>claimed effect, potential</span><span class="key"><i style="background:var(--ice)"></i>ordinary fields</span><span class="key"><i style="background:var(--violet)"></i>source, resonance</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="potential">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Aharonov–Bohm, 1959 · Tonomura, 1986</span><h2>Acting where the field is zero</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Electrons pass either side of a tiny shielded magnet and interfere on a screen. The magnetic field outside the magnet is zero, yet changing the magnet's strength shifts the interference stripes, showing the electrons respond to the vector potential."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="f1">Magnetic flux inside the shield <input type="range" id="f1" min="0" max="200" step="1" value="50"><output id="f1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Magnetic field on the electrons’ paths</b><span id="r1b">—</span></div>
+          <div class="ro"><b>Shift of the stripes</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Confirmed by</b><span id="r1c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Classical electromagnetism describes forces with fields, and treats the underlying <span class="i">potentials</span> as a mathematical convenience. In 1959 Yakir Aharonov and David Bohm predicted that quantum particles would feel a potential even in a region where every field is zero.</p>
+        <p>Their test: send electrons around both sides of a shielded magnet. Outside the magnet there is no magnetic field at all, yet the interference pattern should shift as the magnet changes.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 1986 Akira Tonomura’s team at Hitachi used electron holography and a superconducting shield to show the effect beyond doubt. Physics had to accept that potentials are physically real and act where fields vanish. Scalar-wave proponents argue that this opens exactly the door they describe: if potentials can act without fields, then waves in the potentials, invisible to ordinary field detectors, deserve a serious search.</div>
+          <div class="con"><b>The case against</b>The Aharonov–Bohm shift is fixed by the magnetic flux enclosed by the paths, and a pure wave in the potentials with no field changes nothing measurable.</div>
+        </div>
+        <div class="task"><b>Try this</b>Raise the flux inside the shield and watch the stripes slide across the screen, although the field the electrons pass through stays exactly zero.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">phase shift = 2π Φ / Φ₀,&nbsp; Φ₀ = <var>h</var>/<var>e</var></div>
+          <p>Each flux quantum Φ₀ inside the shield shifts the pattern by one full stripe. The slider runs from zero to two flux quanta.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="schumann">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Tesla, 1899 · Schumann, 1952</span><h2>The Earth rings like a bell</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="The gap between the Earth's surface and the ionosphere acts as a giant cavity. Lightning strikes set it ringing at a set of low frequencies, the Schumann resonances, with the strongest at about 7.8 hertz."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Mode">
+            <button class="btn" type="button" data-md="1" aria-pressed="true">7.8 Hz</button>
+            <button class="btn" type="button" data-md="2">14.3 Hz</button>
+            <button class="btn" type="button" data-md="3">20.8 Hz</button>
+            <button class="btn" type="button" data-md="4">27.3 Hz</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Resonance shown</b><span id="r2a" class="eg">—</span></div>
+          <div class="ro"><b>Wavelength</b><span id="r2b">—</span></div>
+          <div class="ro"><b>Predicted · measured</b><span id="r2c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>At Colorado Springs in 1899 Tesla built a giant magnifying transmitter and studied lightning storms. He concluded that the Earth itself could be set into electrical resonance, standing waves circling the globe, and that this could carry signals and power to any point on its surface.</p>
+        <p>For decades the idea was treated as a fantasy of Tesla’s later years.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 1952 the physicist Winfried Otto Schumann predicted that the space between the ground and the ionosphere forms a global cavity with natural frequencies around 8 hertz, and in 1960 Balser and Wagner measured them. The Earth really does ring, driven by lightning just as Tesla described. Supporters argue that Tesla grasped a global electrical resonance decades before mainstream physics, and that his plans to use it for power were abandoned for financial, not physical, reasons.</div>
+          <div class="con"><b>The case against</b>The Schumann resonances are weak and lossy, and nothing in their physics suggests power could be transmitted through them efficiently, or that they involve a new kind of wave.</div>
+        </div>
+        <div class="task"><b>Try this</b>Step through the first four resonances and watch the number of wavelengths around the globe increase.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>f<sub>n</sub></var> ≈ (<var>c</var> / 2π<var>R</var>) √(<var>n</var>(<var>n</var> + 1)),&nbsp; measured lower because of losses</div>
+          <p>For an ideal cavity the first mode would be at about 10.6 Hz; the real ionosphere is a lossy boundary, which lowers it to the measured 7.8 Hz. The displayed frequencies are the measured ones.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="meyl">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Furtwangen, 2000s</span><h2>Meyl’s transmitter</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A transmitter coil and a receiver coil tuned to the same frequency, with LEDs lit at the receiver. A chart compares how received power falls with distance for ordinary near-field coupling and for the slower fall-off Meyl reports."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="d3">Distance between coils <input type="range" id="d3" min="0" max="100" step="1" value="40"><output id="d3o">—</output></label>
+          <div class="seg" role="group" aria-label="Tuning">
+            <button class="btn" type="button" data-tn="res" aria-pressed="true">Tuned to resonance</button>
+            <button class="btn" type="button" data-tn="off">Detuned</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Received power, Meyl’s reported trend</b><span id="r3a" class="eg">—</span></div>
+          <div class="ro"><b>Ordinary near-field coupling</b><span id="r3b">—</span></div>
+          <div class="ro"><b>LEDs at the receiver</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Konstantin Meyl, a professor of electrical engineering at Furtwangen University in Germany, built demonstration kits with a transmitter coil and a receiver coil, each a flat spiral connected to a ball electrode, tuned to the same frequency.</p>
+        <p>He reported that LEDs at the receiver light brightly while the transmitter seems to draw little power, that the coupling weakens with distance far more slowly than ordinary fields would, and that the signal arrives faster than light.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Meyl interprets the effect as Tesla’s longitudinal waves, supported by an extended field theory he has published in books and papers, and his kits have been shown at conferences and used by students to repeat the demonstration. The sharp dependence on tuning matches his claim that the receiver resonates with a wave rather than picking up a stray field. If the slow fall-off is real, it would revive Tesla’s dream of wireless power.</div>
+          <div class="con"><b>The case against</b>Independent analyses find ordinary resonant near-field coupling with a return path through ground or the experimenter’s body, and tests at larger distances show the usual steep fall-off.</div>
+        </div>
+        <div class="task"><b>Try this</b>Move the coils apart and compare the two curves. Then detune the receiver and watch the LEDs go out.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">near-field power ∝ 1/<var>r</var><sup>6</sup>;&nbsp; Meyl’s reported trend: much slower</div>
+          <p>The ordinary curve is the steep fall-off of magnetically coupled coils beyond their own size. The second curve is schematic, following the slower decline described in Meyl’s demonstrations, not a measured dataset.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1899–1917</div><h3>Tesla’s towers</h3><p>Tesla experimented at Colorado Springs, then built Wardenclyffe Tower for wireless power; funding ran out and it was demolished in 1917.</p></div>
+      <div class="g"><div class="where">1959 · 1986</div><h3>Potentials matter</h3><p>Aharonov and Bohm predicted that electrons feel potentials where fields vanish; Tonomura confirmed it in 1986.</p></div>
+      <div class="g"><div class="where">1960</div><h3>The Earth’s resonance</h3><p>Balser and Wagner measured the Schumann resonances predicted in 1952.</p></div>
+      <div class="g"><div class="where">2000s</div><h3>Meyl’s kits</h3><p>Konstantin Meyl’s transmitter–receiver demonstrations brought scalar-wave claims to a new audience.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Potentials once called bookkeeping <span class="a">turned out to be real</span>, and Tesla’s ringing Earth was measured; scalar-wave researchers argue electromagnetism still holds surprises.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><span class="chip here">050 · Scalar waves</span><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 050 · Scalar Waves · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: Aharonov-Bohm ---------- */
+(function () {
+  const cv = $('#c1'), FS = $('#f1'), FO = $('#f1o'), rB = $('#r1b'), rS = $('#r1s'), rC = $('#r1c');
+  const st = { t: 0 };
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const ph = +FS.value / 100; FO.value = `${ph.toFixed(2)} Φ₀`;
+    setText(rB, 'zero'); setText(rS, `${ph.toFixed(2)} stripe${Math.abs(ph - 1) < 0.005 ? '' : 's'}`); setText(rC, 'Tonomura, Hitachi, 1986');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sx = 40, cy = h / 2 + 6, mx = w * 0.42, scx = w - 70;
+    // source and paths
+    ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(sx, cy, 6, 0, Math.PI * 2); ctx.fill(); tag(ctx, 'electrons', sx, cy + 22, COL['ink-2'], 'center');
+    [-1, 1].forEach(s => { ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx, cy); ctx.quadraticCurveTo(mx, cy + s * h * 0.32, scx, cy); ctx.stroke(); ctx.lineWidth = 1; for (let k = 0; k < 5; k++) { const f = (st.t * 0.4 + k / 5) % 1, x = (1 - f) ** 2 * sx + 2 * (1 - f) * f * mx + f * f * scx, y = (1 - f) ** 2 * cy + 2 * (1 - f) * f * (cy + s * h * 0.32) + f * f * cy; ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); } });
+    // shielded magnet
+    ctx.fillStyle = rgba(COL.ink, 0.12); ctx.beginPath(); ctx.arc(mx, cy, 26, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = rgba(COL.ink, 0.5); ctx.stroke(); ctx.fillStyle = rgba(COL.eigen, 0.3 + 0.5 * Math.min(1, ph)); ctx.beginPath(); ctx.arc(mx, cy, 14, 0, Math.PI * 2); ctx.fill(); tag(ctx, 'shielded magnet', mx, cy - 34, COL['ink-2'], 'center'); tag(ctx, 'B = 0 outside', mx, cy + 44, COL['ink-3'], 'center');
+    // potential circulation arrows
+    ctx.strokeStyle = rgba(COL.eigen, 0.5 * Math.min(1, ph + 0.1)); for (let rr = 44; rr <= 90; rr += 23) { ctx.beginPath(); ctx.arc(mx, cy, rr, 0.2 + st.t, 1.2 + st.t); ctx.stroke(); }
+    // screen with fringes
+    const sh = h * 0.7, sy = cy - sh / 2; for (let i = 0; i < sh; i++) { const y = sy + i, I = 0.5 + 0.5 * Math.cos(((i - sh / 2) / sh) * 6 * Math.PI * 2 / 2 + ph * 2 * Math.PI); ctx.fillStyle = rgba(COL.eigen, 0.1 + 0.85 * I); ctx.fillRect(scx + 10, y, 30, 1); }
+    tag(ctx, 'screen', scx + 25, sy - 8, COL['ink-2'], 'center');
+    tag(ctx, 'PINK ARCS: THE VECTOR POTENTIAL, PRESENT WHERE THE FIELD IS ZERO', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: Schumann ---------- */
+(function () {
+  const cv = $('#c2'), rA = $('#r2a'), rB = $('#r2b'), rC = $('#r2c');
+  const F = [7.83, 14.3, 20.8, 27.3], st = { n: 1, t: 0 };
+  segs('[data-md]', b => st.n = +b.dataset.md);
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const n = st.n, f = F[n - 1]; setText(rA, `${f} Hz`); setText(rB, `${Math.round(40000 / n).toLocaleString('en')} km around the globe`); setText(rC, '1952 · 1960');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cx = w / 2, cy = h / 2 + 8, R = Math.min(w, h) * 0.3, H = R * 0.28;
+    ctx.fillStyle = rgba(COL.ice, 0.3); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = COL.ice; ctx.stroke(); tag(ctx, 'Earth', cx, cy + 4, COL.ice, 'center');
+    ctx.strokeStyle = rgba(COL.violet, 0.5); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(cx, cy, R + H, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); tag(ctx, 'ionosphere', cx + (R + H) * 0.72, cy - (R + H) * 0.72 - 6, COL.violet);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.5; ctx.beginPath(); for (let i = 0; i <= 360; i++) { const a = i / 360 * Math.PI * 2, rr = R + H / 2 + Math.cos(n * a) * Math.cos(st.t * 3) * H * 0.42; i ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } ctx.stroke(); ctx.lineWidth = 1;
+    const la = (st.t * 0.7) % (Math.PI * 2); ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx + Math.cos(la) * (R + H), cy + Math.sin(la) * (R + H)); ctx.lineTo(cx + Math.cos(la + 0.04) * (R + H * 0.5), cy + Math.sin(la + 0.04) * (R + H * 0.5)); ctx.lineTo(cx + Math.cos(la) * R, cy + Math.sin(la) * R); ctx.stroke(); ctx.lineWidth = 1;
+    tag(ctx, `STANDING WAVE IN THE EARTH–IONOSPHERE CAVITY · MODE ${n} · ${f} Hz`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: Meyl transmitter ---------- */
+(function () {
+  const cv = $('#c3'), DS = $('#d3'), DO = $('#d3o'), rA = $('#r3a'), rB = $('#r3b'), rC = $('#r3c');
+  const st = { tn: 'res', t: 0 };
+  segs('[data-tn]', b => st.tn = b.dataset.tn);
+  const near = r => Math.min(1, (0.3 / r) ** 6), meyl = r => Math.min(1, (0.3 / r) ** 1.2);
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const r = 0.3 + +DS.value / 100 * 2.7, res = st.tn === 'res', pm = res ? meyl(r) : meyl(r) * 0.02, pn = near(r); DO.value = `${r.toFixed(1)} m`;
+    setText(rA, `${(pm * 100).toPrecision(2)}% of close range`); setText(rB, `${(pn * 100).toPrecision(2)}% of close range`); setText(rC, pm > 0.15 ? 'bright' : pm > 0.03 ? 'dim' : 'off');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, top = narrow ? h * 0.38 : h * 0.3, x0 = 40, x1 = x0 + (w - 100) * (r / 3);
+    const coil = (x, l) => { ctx.strokeStyle = COL.violet; ctx.beginPath(); for (let a = 0; a < Math.PI * 10; a += 0.1) { const rr = 2 + a * 0.9; ctx.lineTo(x + Math.cos(a) * rr, top + Math.sin(a) * rr * 0.4); } ctx.stroke(); ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(x, top - 46, 9, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(x, top - 37); ctx.lineTo(x, top); ctx.stroke(); tag(ctx, l, x, top + 34, COL['ink-2'], 'center'); };
+    coil(x0, 'transmitter'); coil(x1, 'receiver');
+    for (let k = 0; k < 3; k++) { ctx.fillStyle = rgba(COL.eigen, Math.min(1, pm * 4) * (0.6 + 0.4 * Math.sin(st.t * 8 + k))); ctx.beginPath(); ctx.arc(x1 + 18 + k * 10, top - 20, 4, 0, Math.PI * 2); ctx.fill(); }
+    const gx = 50, gy = top + 52, gw = w - gx - 16, gh = h - gy - 26, X = rr => gx + (rr - 0.3) / 2.7 * gw, Y = p => gy + gh - (Math.log10(Math.max(1e-6, p)) + 6) / 6 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    [[meyl, COL.eigen, 'Meyl’s reported trend (schematic)'], [near, COL.ice, 'ordinary near-field 1/r⁶']].forEach(([f, c, l], i) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 60; k++) { const rr = 0.3 + k / 60 * 2.7; k ? ctx.lineTo(X(rr), Y(f(rr))) : ctx.moveTo(X(rr), Y(f(rr))); } ctx.stroke(); ctx.lineWidth = 1; tag(ctx, l, gx + 8, gy + gh - 22 + i * 14, c); });
+    ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(X(r), gy); ctx.lineTo(X(r), gy + gh); ctx.stroke();
+    tag(ctx, '100%', gx - 4, Y(1) + 4, COL['ink-3'], 'right'); tag(ctx, '0.01%', gx - 4, Y(1e-4) + 4, COL['ink-3'], 'right');
+    tag(ctx, 'RECEIVED POWER vs DISTANCE (LOG)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

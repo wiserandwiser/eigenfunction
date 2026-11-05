@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Seeing a Black Hole</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 021 colour code: pink = glowing gas, ice = light paths and telescopes, violet = the event horizon. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/9}
+@media (max-width:640px){#vp1,#vp2{aspect-ratio:4/4.6}#vp3{aspect-ratio:4/4}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 021 · Astrophysics series · 5 of 10</div>
+    <a class="navlink" href="020.html">← Φ 020</a>
+    <a class="navlink" href="022.html">Φ 022 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 021 · Astrophysics series · 5 of 10</p>
+    <h1>seeing a <span class="eig">black hole</span></h1>
+    <p class="gloss">ASTROPHYSICS · strong-field gravity, imaging — <em>you can’t photograph darkness, but you can photograph the shadow it casts on light</em></p>
+    <p class="thesis">A black hole gives out no light, yet in 2019 the world saw one. What the picture shows is a <em>shadow</em>: a dark patch, wider than the black hole itself, framed by gas glowing as it swirls in, its light bent into a ring. Taking it needed a telescope as wide as the Earth.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>General relativity, radio interferometry</dd></div>
+    <div><dt>Models</dt><dd>A ray-traced black hole, an Earth-sized telescope, two shadows on our sky</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 5 of 10. Builds on Φ 003 (curved spacetime).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>glowing gas</span><span class="key"><i style="background:var(--ice)"></i>light · telescopes</span><span class="key"><i style="background:var(--violet)"></i>event horizon</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="shadow">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Ray-traced</span><h2>What a black hole with a disk of gas looks like</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A ray-traced image of a black hole surrounded by a thin disk of glowing gas. Tilting the view shows the far side of the disk bent up over the top, one side brightened by its motion, and a thin ring of light around a dark shadow."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="i1">View tilt <input type="range" id="i1" min="2" max="88" step="1" value="78"><output id="i1o">—</output></label>
+          <button class="btn solo" type="button" id="ring1" aria-pressed="true">Photon ring: on</button>
+          <button class="btn solo" type="button" id="hz1" aria-pressed="false">Show horizon size</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Shadow across</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Brighter side</b><span id="r1b">—</span></div>
+          <div class="ro"><b>What you’re seeing</b><span id="r1w">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Gas falling into a black hole forms a flat, spinning disk that heats to millions of degrees and glows. Near the black hole, gravity bends light so strongly that the image is warped. Light from the <strong>far side</strong> of the disk curves over the top and bottom of the black hole, so you see the back of the disk even though the black hole is in the way.</p>
+        <p>The gas orbits at a large fraction of the speed of light, so the side moving towards you is boosted much brighter than the side moving away: <strong>Doppler beaming</strong>.</p>
+        <p>At 1.5 times the horizon radius, light can orbit the black hole. Light that grazes this orbit loops round before escaping, making a thin, sharp <span class="i">photon ring</span>. Inside it, lines of sight end on the horizon, so you see a dark <strong>shadow</strong> about 2.6 times wider than the horizon itself.</p>
+        <div class="task"><b>Try this</b>Tilt from nearly edge-on to face-on and watch the far side of the disk wrap over the top. Turn on the horizon outline to compare it with the shadow.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>b</var><sub>crit</sub> = √27 <var>GM</var>/<var>c</var>² ≈ 2.6 <var>r</var><sub>s</sub>,&nbsp; 1 + <var>z</var> = (1 + Ω <var>b</var> sin <var>i</var> sin α) / √(1 − 3<var>GM</var>/<var>rc</var>²)</div>
+          <p>Each pixel traces a light ray backwards through the Schwarzschild geometry (a non-spinning black hole), integrating d²<var>u</var>/dφ² = 3<var>GM u</var>²/<var>c</var>² − <var>u</var>, with <var>u</var> = 1/<var>r</var>, until it hits the disk, falls in or escapes. The disk runs from the innermost stable orbit (6 <var>GM</var>/<var>c</var>², three horizon radii) outward. Brightness scales as (1 + <var>z</var>)<sup>−4</sup> to include Doppler beaming and gravitational redshift; Ω is the gas’s orbital rate. This follows Jean-Pierre Luminet’s 1979 method.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="eht">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">An Earth-sized telescope</span><h2>Sharpen the picture by spreading out the dishes</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="The simulated M87 black hole as seen by telescopes of increasing size, from a blurred smudge to a ring with a dark centre once the telescope is as wide as the Earth."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="d2">Telescope size <input type="range" id="d2" min="0" max="1000" step="1" value="250"><output id="d2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Sharpest detail</b><span id="r2r" class="eg">—</span></div>
+          <div class="ro"><b>Smallest thing it could see on the Moon</b><span id="r2m">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r2v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The black hole in the galaxy M87 is 6.5 billion times the Sun’s mass, but 55 million light-years away. Its shadow spans about <strong>40 microarcseconds</strong> on the sky, as small as a doughnut on the Moon looks from Earth.</p>
+        <p>A telescope’s sharpness depends on its width compared with the wavelength it observes. To see the shadow at 1.3 mm radio wavelength would take a dish nearly as wide as the planet. The <span class="i">Event Horizon Telescope</span> fakes one: radio dishes from Hawaii to the South Pole record the same waves at the same moment, timed by atomic clocks, and supercomputers combine the recordings. Earth’s rotation sweeps the dishes around, filling in more of the giant virtual mirror.</p>
+        <p>The data from April 2017 filled about 5 petabytes, so much that hard drives were flown to the correlators; the South Pole’s had to wait for the end of the Antarctic winter. The picture was released on 10 April 2019.</p>
+        <div class="task"><b>Try this</b>Grow the telescope from a single dish to the whole Earth. Find the size where the dark centre first appears.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">θ ≈ λ / <var>D</var>,&nbsp; λ = 1.3 mm,&nbsp; <var>D</var> = 10,000 km → θ ≈ 27 μas</div>
+          <p>The image is Bay 01’s model at a 17° tilt (roughly how we view M87’s jet), scaled to M87’s shadow, blurred by a Gaussian of width λ/<var>D</var>. The real EHT reconstructs images from sparse data with careful algorithms and checks them against many simulations; the real M87 ring is thicker because the glowing gas is a hot, puffy flow, not a thin disk.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="two">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Two shadows</span><h2>A giant far away, a small one close by</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="The shadow sizes of several black holes as they appear on our sky, compared with the sharpest detail the Event Horizon Telescope can see."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Black hole">
+            <button class="btn" type="button" data-bh="0" aria-pressed="true">M87*</button>
+            <button class="btn" type="button" data-bh="1">Sagittarius A*</button>
+            <button class="btn" type="button" data-bh="2">Andromeda’s</button>
+            <button class="btn" type="button" data-bh="3">Cygnus X-1</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Mass · distance</b><span id="r3m">—</span></div>
+          <div class="ro"><b>Shadow on our sky</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Gas circles the inner disk in</b><span id="r3t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The shadow’s size is set by the black hole’s mass; how big it looks depends on its distance. M87’s giant and our own galaxy’s central black hole, <span class="i">Sagittarius A*</span>, are about 1,600 times apart in mass and 2,000 times apart in distance, so they look about the same size.</p>
+        <p>Sagittarius A* was much harder. Gas circles the giant in M87 in days, so its image held still over a night of observing. Around Sagittarius A* it circles in minutes, so the target changed while the picture was being taken. Its image took until May 2022 and needed thousands of simulations to understand.</p>
+        <p>Its mass was already known from stars. Astronomers followed stars orbiting the galaxy’s centre for decades; one, S2, swings round every 16 years at up to almost 3% of the speed of light. That work won the 2020 Nobel Prize.</p>
+        <div class="task"><b>Try this</b>Compare M87* and Sagittarius A*, then try a nearer and a smaller black hole. Which could the EHT resolve?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">θ<sub>shadow</sub> = 2√27 <var>GM</var> / (<var>c</var>² <var>D</var>),&nbsp; <var>T</var><sub>ISCO</sub> = 2π · 6<sup>3/2</sup> <var>GM</var>/<var>c</var>³</div>
+          <p>Shadow sizes for a non-spinning black hole: M87* ≈ 40 μas (the observed ring is about 42 μas), Sagittarius A* ≈ 50 μas (observed about 52). Orbit times are at the innermost stable orbit. Masses and distances: M87* 6.5 × 10⁹ Suns, 55 million light-years; Sagittarius A* 4.0 × 10⁶ Suns, 27,000 light-years; Andromeda’s ~1.4 × 10⁸ Suns, 2.5 million light-years; Cygnus X-1 ~21 Suns, 7,200 light-years.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>The road to the picture</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1916</div><h3>Schwarzschild’s solution</h3><p>Weeks after Einstein published general relativity, Karl Schwarzschild, serving on the Eastern Front, found the exact solution for a point mass. It contains the horizon, though no one took it seriously as a real object for decades.</p></div>
+      <div class="g"><div class="where">1979</div><h3>Luminet’s drawing</h3><p>Jean-Pierre Luminet computed the first image of a black hole with a glowing disk on an early computer, then drew the result by hand in ink, dot by dot. It looks remarkably like this lesson’s Bay 01.</p></div>
+      <div class="g"><div class="where">2019</div><h3>M87*</h3><p>The first image of a black hole’s shadow: an orange ring brighter at the bottom, where gas moves towards us. Polarised light images in 2021 traced its magnetic fields.</p></div>
+      <div class="g"><div class="where">2022</div><h3>Sagittarius A*</h3><p>The black hole at the heart of the Milky Way, imaged by the same network. Three bright knots on a ring; the knots are probably artefacts of its fast flicker and sparse data.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A black-hole picture shows a <span class="a">shadow</span>, about 2.6 times wider than the horizon, framed by light bent into a ring, and taking it needed a telescope the size of the Earth.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><span class="chip here">021 · Seeing a black hole</span><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 021 · The shadow · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---- light-ray table for a Schwarzschild black hole (units GM/c² = 1) ----
+   For each impact parameter b, integrate u'' = 3u² − u (u = 1/r) from the observer inward, storing u(φ). */
+const RT = (() => {
+  const H = 0.004, PHMAX = 3.3 * Math.PI, NS = Math.ceil(PHMAX / H), BMAX = 16, DB = 0.02, NB = Math.round(BMAX / DB);
+  const U = [], LEN = new Int32Array(NB + 1), CAP = new Uint8Array(NB + 1);
+  for (let k = 0; k <= NB; k++) {
+    const b = Math.max(0.01, k * DB), arr = new Float32Array(NS + 1);
+    let u = 0, v = 1 / b, n = 0;
+    const f = (u, v) => [v, 3 * u * u - u];
+    arr[0] = 0;
+    for (n = 1; n <= NS; n++) {
+      const k1 = f(u, v), k2 = f(u + H / 2 * k1[0], v + H / 2 * k1[1]), k3 = f(u + H / 2 * k2[0], v + H / 2 * k2[1]), k4 = f(u + H * k3[0], v + H * k3[1]);
+      u += H / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); v += H / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+      if (u < 0) break;                 // escaped back to infinity
+      arr[n] = u;
+      if (u > 0.5) { CAP[k] = 1; break; } // crossed the horizon
+    }
+    LEN[k] = n; U.push(arr);
+  }
+  return { H, DB, NB, U, LEN, CAP };
+})();
+const ISCO = 6, ROUT = 14;
+function renderBH(N, W, incl, ring) {
+  const out = new Float32Array(N * N), si = Math.sin(incl), ci = Math.cos(incl);
+  for (let py = 0; py < N; py++) for (let px = 0; px < N; px++) {
+    const x = ((px + 0.5) / N * 2 - 1) * W, y = -((py + 0.5) / N * 2 - 1) * W, b = Math.hypot(x, y), al = Math.atan2(y, x);
+    const k = Math.min(RT.NB, Math.round(b / RT.DB)), arr = RT.U[k], len = RT.LEN[k];
+    const ph0 = Math.atan2(ci, -Math.sin(al) * si);
+    let I = 0;
+    for (let n = 0; n < (ring ? 3 : 1); n++) {
+      const idx = Math.round((ph0 + n * Math.PI) / RT.H);
+      if (idx >= len) break;
+      const u = arr[idx]; if (u <= 0) continue;
+      const r = 1 / u;
+      if (r >= ISCO && r <= ROUT) {
+        const om = Math.pow(r, -1.5), z1 = (1 + om * b * si * Math.cos(al)) / Math.sqrt(1 - 3 / r);
+        const fade = r < 9 ? 1 : Math.pow(Math.cos((r - 9) / (ROUT - 9) * Math.PI / 2), 2);
+        I = fade * Math.pow(r / ISCO, -2.5) * (1 - 0.6 * Math.pow(ISCO / r, 6)) / Math.pow(z1, 4);
+        break;
+      }
+    }
+    out[py * N + px] = I;
+  }
+  return out;
+}
+function heat(t) {
+  const S = [[0, [0, 0, 0]], [0.18, [70, 12, 0]], [0.42, [190, 60, 20]], [0.7, [255, 170, 80]], [1, [255, 246, 225]]];
+  t = clamp(t, 0, 1);
+  for (let i = 1; i < S.length; i++) if (t <= S[i][0]) { const f = (t - S[i - 1][0]) / (S[i][0] - S[i - 1][0]); return S[i - 1][1].map((v, j) => v + (S[i][1][j] - v) * f); }
+  return S[S.length - 1][1];
+}
+function toImage(arr, N, gamma) {
+  const sorted = Array.from(arr).filter(v => v > 0).sort((a, b) => a - b), mx = sorted.length ? sorted[Math.floor(sorted.length * 0.995)] : 1;
+  const c = document.createElement('canvas'); c.width = c.height = N; const cx = c.getContext('2d'), im = cx.createImageData(N, N);
+  for (let i = 0; i < N * N; i++) { const [r, g, b] = heat(Math.pow(arr[i] / mx, gamma)); im.data[i * 4] = r; im.data[i * 4 + 1] = g; im.data[i * 4 + 2] = b; im.data[i * 4 + 3] = 255; }
+  cx.putImageData(im, 0, 0); return c;
+}
+
+/* ---------- BAY 01: the ray-traced shadow ---------- */
+(function () {
+  const cv = $('#c1'), iS = $('#i1'), iO = $('#i1o'), ringB = $('#ring1'), hzB = $('#hz1');
+  const rS = $('#r1s'), rB = $('#r1b'), rW = $('#r1w');
+  const N = 240, W = 19;
+  const st = { ring: true, hz: false, img: null };
+  function rebuild() {
+    const inc = +iS.value; iO.value = `${inc}°`;
+    st.img = toImage(renderBH(N, W, inc * Math.PI / 180, st.ring), N, 0.55);
+    setText(rS, '5.2 × GM/c² in radius · 2.6× the horizon');
+    setText(rB, inc < 12 ? 'almost even: we look straight down' : 'left: that gas moves towards us');
+    setText(rW, inc > 60 ? 'the far side of the disk, bent over the top' : inc > 25 ? 'a tilted disk, warped near the centre' : 'a nearly face-on ring');
+  }
+  iS.addEventListener('input', rebuild);
+  ringB.addEventListener('click', () => { st.ring = !st.ring; ringB.setAttribute('aria-pressed', String(st.ring)); ringB.textContent = st.ring ? 'Photon ring: on' : 'Photon ring: off'; rebuild(); });
+  hzB.addEventListener('click', () => { st.hz = !st.hz; hzB.setAttribute('aria-pressed', String(st.hz)); });
+  rebuild();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.fillStyle = '#080907'; ctx.fillRect(0, 0, w, h);
+    const s = Math.min(w, h) - 8, ox = (w - s) / 2, oy = (h - s) / 2;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(st.img, ox, oy, s, s);
+    const cx = w / 2, cy = h / 2, px = s / (2 * W);
+    if (st.hz) {
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = COL.violet; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, 2 * px, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = rgba(COL.ice, 0.7); ctx.beginPath(); ctx.arc(cx, cy, Math.sqrt(27) * px, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+      ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL.violet; ctx.fillText('horizon, true size', cx + 2 * px + 6, cy + 4);
+      ctx.fillStyle = COL.ice; ctx.fillText('shadow edge', cx + Math.sqrt(27) * px * 0.72 + 6, cy - Math.sqrt(27) * px * 0.72);
+    }
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL['ink-3']; ctx.fillText('RAY-TRACED · NON-SPINNING BLACK HOLE · THIN DISK', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: an Earth-sized telescope ---------- */
+(function () {
+  const cv = $('#c2'), dS = $('#d2'), dO = $('#d2o');
+  const rR = $('#r2r'), rM = $('#r2m'), rV = $('#r2v');
+  const N = 150, W = 24, UAS_PER_M = 39.6 / (2 * Math.sqrt(27)), UAS_PX = 2 * W * UAS_PER_M / N;
+  const base = renderBH(N, W, 17 * Math.PI / 180, true);
+  const DMAX = 1.27e7;
+  let img = null;
+  function blur(src, sig) {
+    if (sig < 0.3) return src;
+    if (sig > 70) { let m = 0; src.forEach(v => m += v); return new Float32Array(N * N).fill(m / (N * N)); }
+    const R = Math.ceil(3 * sig), K = []; let ks = 0; for (let i = -R; i <= R; i++) { const v = Math.exp(-i * i / (2 * sig * sig)); K.push(v); ks += v; }
+    const tmp = new Float32Array(N * N), out = new Float32Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let i = -R; i <= R; i++) { const xx = x + i; if (xx >= 0 && xx < N) s += src[y * N + xx] * K[i + R]; } tmp[y * N + x] = s / ks; }
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let i = -R; i <= R; i++) { const yy = y + i; if (yy >= 0 && yy < N) s += tmp[yy * N + x] * K[i + R]; } out[y * N + x] = s / ks; }
+    return out;
+  }
+  const fmtD = d => d >= 1000e3 ? `${Math.round(d / 1000).toLocaleString('en-US')} km` : d >= 1000 ? `${(d / 1000).toFixed(d < 1e4 ? 1 : 0)} km` : `${Math.round(d)} m`;
+  function upd() {
+    const D = Math.pow(10, 1 + (Math.log10(DMAX) - 1) * +dS.value / 1000);
+    dO.value = fmtD(D) + (D > 1.2e7 ? ' · Earth' : '');
+    const th = 1.3e-3 / D * 206264.8e6; // μas
+    setText(rR, th > 1e6 ? `${(th / 1e6).toFixed(1)} arcseconds` : th > 1000 ? `${(th / 1000).toFixed(th < 1e4 ? 1 : 0)} milliarcseconds` : `${th.toFixed(0)} microarcseconds`);
+    const s = th / 206264.8e6 * 3.844e8; setText(rM, s >= 1000 ? `${(s / 1000).toLocaleString('en-US', { maximumFractionDigits: 0 })} km across` : s >= 1 ? `${s.toFixed(s < 10 ? 1 : 0)} m across` : `${(s * 100).toFixed(0)} cm across${s < 0.06 ? ' · a golf ball' : s < 0.12 ? ' · a doughnut' : ''}`);
+    setText(rV, th > 200 ? 'a smudge: no detail at all' : th > 45 ? 'a blob, slightly lopsided' : th > 30 ? 'a ring begins to show' : 'ring and dark shadow resolved');
+    img = toImage(blur(base, th / 2.355 / UAS_PX), N, 0.75);
+  }
+  dS.addEventListener('input', upd); upd();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.fillStyle = '#080907'; ctx.fillRect(0, 0, w, h);
+    const s = Math.min(w, h - 40) - 8, ox = (w - s) / 2, oy = 8;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(img, ox, oy, s, s);
+    const vg = ctx.createRadialGradient(ox + s / 2, oy + s / 2, s * 0.36, ox + s / 2, oy + s / 2, s * 0.5); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,1)'); ctx.fillStyle = vg; ctx.fillRect(ox - 1, oy - 1, s + 2, s + 2);
+    // scale bar: 40 microarcseconds
+    const px = s / (2 * W * UAS_PER_M) * 40, by = oy + s + 18;
+    ctx.strokeStyle = COL.ice; ctx.beginPath(); ctx.moveTo(w / 2 - px / 2, by); ctx.lineTo(w / 2 + px / 2, by); ctx.moveTo(w / 2 - px / 2, by - 4); ctx.lineTo(w / 2 - px / 2, by + 4); ctx.moveTo(w / 2 + px / 2, by - 4); ctx.lineTo(w / 2 + px / 2, by + 4); ctx.stroke();
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL.ice; ctx.textAlign = 'center'; ctx.fillText('40 μas', w / 2, by + 15); ctx.textAlign = 'left';
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('MODEL OF M87* · 1.3 MM WAVELENGTH', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: two shadows on our sky ---------- */
+(function () {
+  const cv = $('#c3');
+  const rM = $('#r3m'), rS = $('#r3s'), rT = $('#r3t');
+  const LY = 9.4607e15, GMC2 = 1476.6, GMC3 = 4.9255e-6;
+  const BH = [['M87*', 6.5e9, 55e6], ['Sagittarius A*', 4.0e6, 27e3], ['Andromeda’s black hole', 1.4e8, 2.5e6], ['Cygnus X-1', 21, 7200]];
+  const st = { k: 0 };
+  const theta = ([, M, D]) => 2 * Math.sqrt(27) * M * GMC2 / (D * LY) * 206264.8e6;
+  const fmtM = m => m >= 1e9 ? `${(m / 1e9).toFixed(1)} billion` : m >= 1e6 ? `${(m / 1e6).toFixed(1)} million` : `${m}`;
+  const fmtLy = d => d >= 1e6 ? `${(d / 1e6).toFixed(d < 1e7 ? 1 : 0)} million ly` : `${d.toLocaleString('en-US')} ly`;
+  const fmtT = t => t > 86400 * 2 ? `${(t / 86400).toFixed(0)} days` : t > 3600 * 2 ? `${(t / 3600).toFixed(0)} hours` : t > 120 ? `${(t / 60).toFixed(0)} minutes` : `${(t * 1000).toFixed(0)} milliseconds`;
+  function info() {
+    const b = BH[st.k], th = theta(b);
+    setText(rM, `${fmtM(b[1])} Suns · ${fmtLy(b[2])}`);
+    setText(rS, th >= 1 ? `${th.toFixed(0)} μas` : `${th.toPrecision(2)} μas · far too small`);
+    setText(rT, fmtT(2 * Math.PI * Math.pow(6, 1.5) * b[1] * GMC3));
+  }
+  $$('[data-bh]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.bh; $$('[data-bh]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); info(); }));
+  info();
+  function frame(dt) {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, n = BH.length, cw = narrow ? w / 2 : w / n, rowH = narrow ? (h - 40) / 2 : h - 40;
+    const scale = Math.min(cw * 0.42, rowH * 0.36) / 30; // px per μas (radius)
+    BH.forEach((b, i) => {
+      const col = narrow ? i % 2 : i, row = narrow ? Math.floor(i / 2) : 0;
+      const cx = col * cw + cw / 2, cy = 30 + row * rowH + rowH * 0.45, th = theta(b), r = th / 2 * scale;
+      if (i === st.k) { ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(col * cw + 4.5, 22 + row * rowH, cw - 9, rowH - 6); }
+      // EHT resolution: 25 μas circle
+      ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.ice, 0.5); ctx.beginPath(); ctx.arc(cx, cy, 12.5 * scale, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      if (r > 1.5) {
+        const g = ctx.createRadialGradient(cx, cy, r * 0.75, cx, cy, r * 1.35); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.35, rgba(COL.eigen, 0.95)); g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r * 1.35, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#080907'; ctx.beginPath(); ctx.arc(cx, cy, r * 0.8, 0, Math.PI * 2); ctx.fill();
+      } else { ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(cx, cy, 1.2, 0, Math.PI * 2); ctx.fill(); }
+      ctx.textAlign = 'center'; ctx.fillStyle = i === st.k ? COL.ink : COL['ink-2'];
+      ctx.fillText(b[0], cx, cy + Math.max(r * 1.35, 12.5 * scale) + 18);
+      ctx.fillStyle = COL['ink-3']; ctx.fillText(th >= 1 ? `${th.toFixed(0)} μas` : `${th.toPrecision(1)} μas`, cx, cy + Math.max(r * 1.35, 12.5 * scale) + 32); ctx.textAlign = 'left';
+    });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(narrow ? 'SAME ANGULAR SCALE · DASHED = EHT LIMIT' : 'ALL DRAWN AT THE SAME ANGULAR SCALE · DASHED = SHARPEST EHT DETAIL (~25 μas)', 18, 15);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

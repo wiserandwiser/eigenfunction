@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>How a Neural Net Learns</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 006 colour code: pink = one class (and the learner), ice = the other class, violet = error. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+#c1,#c2{cursor:crosshair;touch-action:none}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:3/4}}
+h1 .eig{transform:none}
+.check{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.check input{accent-color:var(--eigen);width:15px;height:15px}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 006 · Geometry → Calculus → AI</div>
+    <a class="navlink" href="005.html">← Φ 005</a>
+    <a class="navlink" href="007.html">Φ 007 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 006 · Big ideas, seen moving</p>
+    <h1>neural <span class="eig">net</span></h1>
+    <p class="gloss">MACHINE LEARNING · neural network — <em>a stack of simple adjustable functions, tuned by trial and error until they fit the data</em></p>
+    <p class="thesis">Nobody writes the rules inside a neural network. It starts as random numbers and improves by one move, repeated billions of times: work out how wrong it is, work out which way is less wrong, and take a small step. Here you watch that happen.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Geometry → calculus → artificial intelligence</dd></div>
+    <div><dt>Models</dt><dd>3 live learners, trained in your browser</dd></div>
+    <div><dt>Builds on</dt><dd>Nothing. <a href="005.html">Φ 005</a> came before.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>class A, the learner</span><span class="key"><i style="background:var(--ice)"></i>class B</span><span class="key"><i style="background:var(--violet)"></i>error</span></dd></div>
+  </dl>
+</section>
+
+<!-- BAY 01 -->
+<section class="bay" id="neuron">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">One neuron</span><h2>A single neuron draws one straight line</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1">
+          <canvas id="c1" aria-label="Points of two colours on a plane, a neuron's dividing line and confidence shading, and a diagram of the neuron's weights."></canvas>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Data">
+            <button class="btn" type="button" data-d1="line" aria-pressed="true">Two groups</button>
+            <button class="btn" type="button" data-d1="circle" aria-pressed="false">A ring</button>
+          </div>
+          <div class="seg" role="group" aria-label="Click adds">
+            <button class="btn eg" type="button" data-add="1" aria-pressed="true">Click adds pink</button>
+            <button class="btn" type="button" data-add="0" aria-pressed="false">Click adds ice</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="scr1">Scramble weights</button>
+          <button class="btn solo" type="button" id="play1">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Accuracy</b><span id="r1a" class="eg">—</span></div>
+          <div class="ro"><b>Error (loss)</b><span id="r1l" class="vi">—</span></div>
+          <div class="ro"><b>Steps</b><span id="r1s">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r1v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A neuron in a neural network is simple. It takes some numbers, multiplies each by a <strong>weight</strong>, adds them up with a <strong>bias</strong>, and squashes the total into a value between 0 and 1.</p>
+        <p>Feed it the position of a point (<var>x</var>, <var>y</var>) and something geometric happens. The neuron draws a straight line across the plane. On one side it answers “pink”, on the other “ice”, and the further from the line, the more confident it is. The weights set the line’s angle, and the bias shifts it.</p>
+        <p><strong>Learning</strong> means nudging those three numbers to make fewer mistakes. Watch the line swing into place. Click to add points and it adjusts to them.</p>
+        <p>Now choose <strong>A ring</strong>. Pink in the middle, ice all around. No single straight line can separate them, so the neuron gives up and calls everything ice. In 1969 Minsky and Papert proved this limit for one-layer networks. The result helped bring on the first “AI winter”, until people learned to train networks with more layers.</p>
+        <div class="task"><b>Try this</b>Scramble the weights and watch the line find its way back. Click a few pink points deep in ice territory and watch it struggle. Then try the ring.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>ŷ</var> = <var>σ</var>(<var>w</var>₁<var>x</var> + <var>w</var>₂<var>y</var> + <var>b</var>),&nbsp; <var>σ</var>(<var>z</var>) = <span class="frac"><span>1</span><span>1 + <var>e</var><sup>−<var>z</var></sup></span></span></div>
+          <p>The dividing line is where <var>w</var>₁<var>x</var> + <var>w</var>₂<var>y</var> + <var>b</var> = 0. The error is the cross-entropy loss, <var>L</var> = −[<var>y</var> ln <var>ŷ</var> + (1 − <var>y</var>) ln(1 − <var>ŷ</var>)], averaged over the points. Its slope with respect to each weight is simply (<var>ŷ</var> − <var>y</var>) times that weight’s input, which is what makes training cheap.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 02 -->
+<section class="bay" id="descent">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">How it learns</span><h2>Learning is rolling downhill</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2">
+          <canvas id="c2" aria-label="Left: a map of error for every possible slope and intercept, with a ball rolling downhill. Right: the data and the line those numbers draw."></canvas>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="lr2">Step size <input type="range" id="lr2" min="0" max="1000" step="1" value="560"><output id="lr2o">—</output></label>
+          <label class="check" for="mo2"><input type="checkbox" id="mo2"> Momentum</label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Landscape">
+            <button class="btn" type="button" data-land="smooth" aria-pressed="true">Fitting a line</button>
+            <button class="btn" type="button" data-land="bumpy" aria-pressed="false">Bumpy landscape</button>
+          </div>
+          <button class="btn solo" type="button" id="drop2">Start again</button>
+          <button class="btn solo" type="button" id="play2">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Step</b><span id="r2s">—</span></div>
+          <div class="ro"><b>Error (loss)</b><span id="r2l" class="vi">—</span></div>
+          <div class="ro"><b>Slope · intercept</b><span id="r2p" class="eg">—</span></div>
+          <div class="ro"><b>Status</b><span id="r2t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>How does a network know which way to nudge its weights? Take the simplest possible learner: a straight line with two numbers to tune, its slope and its intercept, fitted to some data points.</p>
+        <p>Every pair of numbers gives some error. Draw the error for every possible pair and you get a landscape: high ground where the line fits badly, a valley floor where it fits well. Learning is <strong>rolling downhill</strong>. At each step, measure which way the ground slopes (the <strong>gradient</strong>) and take a step that way. That is gradient descent, and it is how essentially every modern AI is trained.</p>
+        <p>The step size is the art. Too small and the ball creeps. Too big and it overshoots the valley and bounces from wall to wall. Bigger still and it flies off the map entirely.</p>
+        <p>Real networks don’t have two numbers. Large language models have billions, so their landscapes have billions of dimensions, full of ridges and plateaus. The <strong>bumpy landscape</strong> gives a flavour: the ball can get trapped in a small dip, and <strong>momentum</strong>, which lets it carry speed like a heavy ball, can help it roll through.</p>
+        <div class="task"><b>Try this</b>Push the step size up until the ball starts bouncing, then further until it diverges. Then switch to Bumpy, click on the map to drop the ball somewhere new, and compare with and without momentum.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>θ</var> ← <var>θ</var> − <var>η</var> ∇<var>L</var>(<var>θ</var>)</div>
+          <p>Gradient descent: move the parameters <var>θ</var> = (slope, intercept) against the gradient of the loss, scaled by the step size (learning rate) <var>η</var>. Here <var>L</var> is the mean squared error. For this bowl the steepest direction has curvature 2, so the descent becomes unstable once <var>η</var> &gt; 2/2 = 1. That is where you’ll see it diverge.</p>
+          <div class="eq"><var>v</var> ← <var>βv</var> − <var>η</var> ∇<var>L</var>,&nbsp; <var>θ</var> ← <var>θ</var> + <var>v</var></div>
+          <p>Momentum with <var>β</var> = 0.9. The bumpy landscape adds a made-up ripple, 0.12 sin(5<var>m</var>) cos(5<var>b</var>), to illustrate local minima.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 03 -->
+<section class="bay" id="network">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Layers</span><h2>A network learns a shape no line could draw</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3">
+          <canvas id="c3" aria-label="Left: the network's prediction across the plane with the training points. Right: the network diagram, each neuron showing its own view of the plane, connections coloured by sign and weighted by strength."></canvas>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Data">
+            <button class="btn" type="button" data-d3="circle" aria-pressed="false">Ring</button>
+            <button class="btn" type="button" data-d3="xor" aria-pressed="false">Checkerboard</button>
+            <button class="btn" type="button" data-d3="spiral" aria-pressed="true">Spiral</button>
+          </div>
+          <div class="seg" role="group" aria-label="Neurons per layer">
+            <button class="btn" type="button" data-w3="2" aria-pressed="false">2 per layer</button>
+            <button class="btn" type="button" data-w3="4" aria-pressed="false">4</button>
+            <button class="btn" type="button" data-w3="8" aria-pressed="true">8</button>
+          </div>
+          <div class="seg" role="group" aria-label="Hidden layers">
+            <button class="btn" type="button" data-l3="1" aria-pressed="false">1 layer</button>
+            <button class="btn" type="button" data-l3="2" aria-pressed="true">2</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="rst3">Restart from random</button>
+          <button class="btn solo" type="button" id="play3">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Training steps</b><span id="r3s">—</span></div>
+          <div class="ro"><b>Error (loss)</b><span id="r3l" class="vi">—</span></div>
+          <div class="ro"><b>Accuracy</b><span id="r3a" class="eg">—</span></div>
+          <div class="ro"><b>Adjustable numbers</b><span id="r3p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The fix for the ring was to add <strong>layers</strong>. Put a row of neurons between the input and the answer. Each neuron in that hidden layer draws its own line. The next layer combines those lines into corners, curves and pockets. Stack another layer and those curves combine into shapes as intricate as a spiral.</p>
+        <p>The small squares in the diagram show what each neuron “sees”: its own response across the whole plane. The first layer’s are all straight edges at different angles. Deeper ones are bent, built from those edges. Connections are <span class="a">pink</span> when they excite and <span class="i">ice</span> when they inhibit. Thicker means stronger.</p>
+        <p>Training is the downhill roll from Bay 02, now in a landscape with dozens of dimensions instead of two. The trick that makes it possible is <strong>backpropagation</strong>. The error at the output is passed backwards through the layers, telling every weight which way to move. It was popularised by Rumelhart, Hinton and Williams in 1986, and it still trains every large AI model today.</p>
+        <div class="task"><b>Try this</b>Watch the spiral resolve. Then drop to 4 neurons per layer and restart: it often stalls. Too few neurons simply can’t bend that much. Try 1 layer on the checkerboard to see how few neurons a simpler shape needs.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>δ</var><sup>(<var>l</var>)</sup> = <span style="font-size:.8em">(</span><var>W</var><sup>(<var>l</var>+1)⊤</sup> <var>δ</var><sup>(<var>l</var>+1)</sup><span style="font-size:.8em">)</span> ⊙ <var>f</var> ′(<var>z</var><sup>(<var>l</var>)</sup>),&nbsp; <span class="frac"><span>∂<var>L</var></span><span>∂<var>W</var><sup>(<var>l</var>)</sup></span></span> = <var>δ</var><sup>(<var>l</var>)</sup> <var>a</var><sup>(<var>l</var>−1)⊤</sup></div>
+          <p>Backpropagation is the chain rule applied layer by layer, from the output back to the input. The model uses tanh hidden neurons, a sigmoid output, cross-entropy loss and the Adam optimiser (step size 0.03), training on all 240 points at every step. The universal approximation theorem (Cybenko, 1989) says one hidden layer with enough neurons can approximate any reasonable shape. In practice, depth gets there with far fewer neurons.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>From this to today’s AI</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">2012 · ImageNet</div><h3>The deep learning moment</h3><p>A deep network called AlexNet, trained on graphics cards, cut the error rate in a major image-recognition contest by a wide margin. The same ingredients you see here, layers trained by backpropagation, suddenly beat decades of hand-built rules.</p></div>
+      <div class="g"><div class="where">2017 · Transformers</div><h3>Attention is all you need</h3><p>The transformer architecture lets every word in a passage weigh every other word. It is the basis of today’s large language models, which are still trained by gradient descent, just on a vast scale.</p></div>
+      <div class="g"><div class="where">2020 onwards · Scaling</div><h3>Bigger, smoother, better</h3><p>Researchers found that a language model’s error falls along a smooth, predictable curve as you add parameters, data and computing power. That finding has driven the race to train ever-larger models.</p></div>
+      <div class="g"><div class="where">2024 · Nobel Prizes</div><h3>Physics and chemistry honour AI</h3><p>The physics prize went to John Hopfield and Geoffrey Hinton for foundations of neural networks. The chemistry prize went to Demis Hassabis and John Jumper for AlphaFold, which predicts protein structures, and to David Baker for protein design.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A neural network is a stack of simple lines bent into curves, tuned by <span class="a">rolling downhill</span> on its own error, one small step at a time.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><span class="chip here" style="border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)">006 · Neural nets</span><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 006 · Learning machines · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- shared: a tiny multilayer network with backprop and Adam ---------- */
+function makeNet(sizes, seed) {
+  let s = seed || 7;
+  const rnd = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+  const L = sizes.length - 1, W = [], B = [], gW = [], gB = [], mW = [], vW = [], mB = [], vB = [], A = [], D = [];
+  for (let l = 0; l < L; l++) {
+    const n = sizes[l], m = sizes[l + 1], lim = Math.sqrt(6 / (n + m));
+    W.push(Float64Array.from({ length: n * m }, () => (rnd() * 2 - 1) * lim));
+    B.push(new Float64Array(m));
+    gW.push(new Float64Array(n * m)); gB.push(new Float64Array(m));
+    mW.push(new Float64Array(n * m)); vW.push(new Float64Array(n * m)); mB.push(new Float64Array(m)); vB.push(new Float64Array(m));
+  }
+  for (let l = 0; l <= L; l++) { A.push(new Float64Array(sizes[l])); D.push(new Float64Array(sizes[l])); }
+  let t = 0;
+  function forward(x, y) {
+    A[0][0] = x; A[0][1] = y;
+    for (let l = 0; l < L; l++) {
+      const n = sizes[l], m = sizes[l + 1], a = A[l], o = A[l + 1], w = W[l], b = B[l];
+      for (let j = 0; j < m; j++) {
+        let z = b[j]; for (let i = 0; i < n; i++) z += w[j * n + i] * a[i];
+        o[j] = l < L - 1 ? Math.tanh(z) : 1 / (1 + Math.exp(-z));
+      }
+    }
+    return A[L][0];
+  }
+  function train(data, lr) {
+    for (let l = 0; l < L; l++) { gW[l].fill(0); gB[l].fill(0); }
+    let loss = 0, right = 0;
+    for (const [x, y, c] of data) {
+      const p = forward(x, y), pc = Math.min(1 - 1e-9, Math.max(1e-9, p));
+      loss -= c ? Math.log(pc) : Math.log(1 - pc);
+      if ((p > 0.5) === !!c) right++;
+      D[L][0] = p - c;
+      for (let l = L - 1; l >= 0; l--) {
+        const n = sizes[l], m = sizes[l + 1], a = A[l], d = D[l + 1], w = W[l];
+        for (let j = 0; j < m; j++) { gB[l][j] += d[j]; for (let i = 0; i < n; i++) gW[l][j * n + i] += d[j] * a[i]; }
+        if (l > 0) for (let i = 0; i < n; i++) { let sum = 0; for (let j = 0; j < m; j++) sum += w[j * n + i] * d[j]; D[l][i] = sum * (1 - a[i] * a[i]); }
+      }
+    }
+    t++;
+    const N = data.length, b1 = 0.9, b2 = 0.999, c1 = 1 - Math.pow(b1, t), c2 = 1 - Math.pow(b2, t);
+    const upd = (p, g, m, v) => { for (let k = 0; k < p.length; k++) { const gg = g[k] / N; m[k] = b1 * m[k] + (1 - b1) * gg; v[k] = b2 * v[k] + (1 - b2) * gg * gg; p[k] -= lr * (m[k] / c1) / (Math.sqrt(v[k] / c2) + 1e-8); } };
+    for (let l = 0; l < L; l++) { upd(W[l], gW[l], mW[l], vW[l]); upd(B[l], gB[l], mB[l], vB[l]); }
+    return { loss: loss / N, acc: right / N };
+  }
+  const nParams = () => W.reduce((s, w) => s + w.length, 0) + B.reduce((s, b) => s + b.length, 0);
+  return { sizes, W, B, A, forward, train, nParams, steps: () => t };
+}
+function makeData(kind, n, seed) {
+  let s = seed || 3;
+  const rnd = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    let x, y, c;
+    if (kind === 'circle') { x = rnd() * 2 - 1; y = rnd() * 2 - 1; const r = Math.hypot(x, y); if (Math.abs(r - 0.5) < 0.08) { i--; continue; } c = r < 0.5 ? 1 : 0; }
+    else if (kind === 'xor') { x = rnd() * 2 - 1; y = rnd() * 2 - 1; if (Math.abs(x) < 0.08 || Math.abs(y) < 0.08) { i--; continue; } c = x * y > 0 ? 1 : 0; }
+    else if (kind === 'spiral') { c = i % 2; const t = 0.12 + 0.88 * (Math.floor(i / 2) / (n / 2)), a = t * 3.2 * Math.PI + c * Math.PI; x = 0.92 * t * Math.cos(a) + (rnd() - 0.5) * 0.06; y = 0.92 * t * Math.sin(a) + (rnd() - 0.5) * 0.06; }
+    else { x = rnd() * 2 - 1; y = rnd() * 2 - 1; const v = 0.9 * x - 0.6 * y + 0.15; if (Math.abs(v) < 0.1) { i--; continue; } c = v > 0 ? 1 : 0; }
+    pts.push([x, y, c]);
+  }
+  return pts;
+}
+
+
+function heat(ctx, field, gx, gy, x, y, w, h, colFn) {
+  const img = ctx.createImageData(gx, gy);
+  for (let k = 0; k < gx * gy; k++) { const [r, g, b] = colFn(field[k]); img.data[4 * k] = r; img.data[4 * k + 1] = g; img.data[4 * k + 2] = b; img.data[4 * k + 3] = 255; }
+  const off = document.createElement('canvas'); off.width = gx; off.height = gy; off.getContext('2d').putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.drawImage(off, x, y, w, h);
+}
+const CA = rgb(COL.eigen), CI = rgb(COL.ice), CBG = rgb(COL.bay), CV = rgb(COL.violet);
+const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const probCol = p => p >= 0.5 ? mixc(CBG, CA, Math.min(1, (p - 0.5) * 2) * 0.42) : mixc(CBG, CI, Math.min(1, (0.5 - p) * 2) * 0.42);
+function dots(ctx, data, X, Y, r) {
+  for (const [x, y, c] of data) {
+    ctx.fillStyle = c ? COL.eigen : COL.ice; ctx.beginPath(); ctx.arc(X(x), Y(y), r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = COL.void; ctx.lineWidth = 1; ctx.stroke();
+  }
+}
+
+/* ---------- BAY 01: one neuron ---------- */
+(function () {
+  const cv = $('#c1'), playBtn = $('#play1');
+  const rA = $('#r1a'), rL = $('#r1l'), rS = $('#r1s'), rV = $('#r1v');
+  const st = { kind: 'line', data: [], w1: 0, w2: 0, b: 0, steps: 0, playing: !REDUCE, add: 1, loss: 0, acc: 0, geo: null };
+  function scramble() { const a = Math.random() * Math.PI * 2; st.w1 = 3 * Math.cos(a); st.w2 = 3 * Math.sin(a); st.b = (Math.random() - 0.5) * 2; st.steps = 0; }
+  function load(kind) { st.kind = kind; st.data = makeData(kind, 80, 5 + Math.floor(Math.random() * 1000)); scramble(); $$('[data-d1]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.d1 === kind))); }
+  function step() {
+    let g1 = 0, g2 = 0, gb = 0, loss = 0, right = 0;
+    for (const [x, y, c] of st.data) {
+      const p = 1 / (1 + Math.exp(-(st.w1 * x + st.w2 * y + st.b))), pc = Math.min(1 - 1e-9, Math.max(1e-9, p));
+      loss -= c ? Math.log(pc) : Math.log(1 - pc); if ((p > 0.5) === !!c) right++;
+      g1 += (p - c) * x; g2 += (p - c) * y; gb += (p - c);
+    }
+    const n = st.data.length, lr = 1.2;
+    st.w1 -= lr * g1 / n; st.w2 -= lr * g2 / n; st.b -= lr * gb / n; st.steps++;
+    st.loss = loss / n; st.acc = right / n;
+  }
+  $$('[data-d1]').forEach(b => b.addEventListener('click', () => load(b.dataset.d1)));
+  $$('[data-add]').forEach(b => b.addEventListener('click', () => { st.add = +b.dataset.add; $$('[data-add]').forEach(x => { x.setAttribute('aria-pressed', String(x === b)); }); }));
+  $('#scr1').addEventListener('click', () => { scramble(); if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  cv.addEventListener('pointerdown', e => {
+    if (!st.geo) return; const r = cv.getBoundingClientRect(), G = st.geo, px = e.clientX - r.left, py = e.clientY - r.top;
+    if (px < G.x || px > G.x + G.s || py < G.y || py > G.y + G.s) return;
+    st.data.push([(px - G.x) / G.s * 2 - 1, 1 - (py - G.y) / G.s * 2, st.add]);
+    if (!st.playing) { st.playing = true; playLabel(playBtn, true); }
+  });
+  load('line');
+  if (REDUCE) for (let k = 0; k < 300; k++) step(); else step();
+  const GF = 64, field = new Float64Array(GF * GF);
+
+  function frame() {
+    if (st.playing) { step(); step(); }
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const s = narrow ? Math.min(w - 28, h * 0.6) : Math.min(h - 28, w * 0.56), gx = 14, gy = 14;
+    st.geo = { x: gx, y: gy, s };
+    for (let j = 0; j < GF; j++) for (let i = 0; i < GF; i++) { const x = (i + 0.5) / GF * 2 - 1, y = 1 - (j + 0.5) / GF * 2; field[j * GF + i] = 1 / (1 + Math.exp(-(st.w1 * x + st.w2 * y + st.b))); }
+    heat(ctx, field, GF, GF, gx, gy, s, s, probCol);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, s - 1, s - 1);
+    const X = v => gx + (v + 1) / 2 * s, Y = v => gy + (1 - v) / 2 * s;
+    // decision line w1 x + w2 y + b = 0
+    ctx.save(); ctx.beginPath(); ctx.rect(gx, gy, s, s); ctx.clip();
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.beginPath();
+    if (Math.abs(st.w2) > Math.abs(st.w1)) { ctx.moveTo(X(-1), Y((-st.b + st.w1) / st.w2)); ctx.lineTo(X(1), Y((-st.b - st.w1) / st.w2)); }
+    else { ctx.moveTo(X((-st.b + st.w2) / st.w1), Y(-1)); ctx.lineTo(X((-st.b - st.w2) / st.w1), Y(1)); }
+    ctx.stroke(); ctx.restore();
+    dots(ctx, st.data, X, Y, 4);
+    // the neuron diagram
+    const dx = narrow ? 14 : gx + s + 30, dy = narrow ? gy + s + 26 : gy + 10, dw = narrow ? w - 28 : w - dx - 14, dh = narrow ? h - dy - 10 : s - 20;
+    const inX = dx + 20, sumX = dx + dw * 0.55, outX = dx + dw - 26, midY = dy + dh / 2;
+    const ins = [['x', st.w1, midY - dh * 0.28], ['y', st.w2, midY], ['1', st.b, midY + dh * 0.28]];
+    ins.forEach(([lab, wv, yy]) => {
+      ctx.strokeStyle = wv >= 0 ? COL.eigen : COL.ice; ctx.lineWidth = 1 + Math.min(5, Math.abs(wv) * 0.8);
+      ctx.beginPath(); ctx.moveTo(inX + 14, yy); ctx.lineTo(sumX - 22, midY); ctx.stroke();
+      ctx.fillStyle = COL['bay-2']; ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(inX, yy, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = COL.ink; ctx.textAlign = 'center'; ctx.fillText(lab, inX, yy + 4);
+      const wl = (lab === '1' ? 'b ' : 'w ') + wv.toFixed(2), wx = inX + 58, wy = yy + (midY - yy) * (58 - 14) / (sumX - 22 - inX - 14), tw = ctx.measureText(wl).width;
+      ctx.fillStyle = rgba(COL.bay, 0.92); ctx.fillRect(wx - tw / 2 - 5, wy - 9, tw + 10, 16);
+      ctx.fillStyle = wv >= 0 ? COL.eigen : COL.ice; ctx.fillText(wl, wx, wy + 3);
+    });
+    ctx.fillStyle = COL['bay-2']; ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(sumX, midY, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = COL.ink; ctx.font = `16px ${MONO}`; ctx.fillText('Σ', sumX - 6, midY + 6);
+    // squash curve
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (let k = 0; k <= 20; k++) { const z = -5 + k / 2, px = sumX + 6 + k * 0.8, py = midY + 8 - 16 / (1 + Math.exp(-z)); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+    ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = COL['ink-2']; ctx.beginPath(); ctx.moveTo(sumX + 22, midY); ctx.lineTo(outX - 16, midY); ctx.stroke();
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL['ink-3'];
+    ctx.fillText('pink?', outX, midY - 22); ctx.fillText('0 … 1', outX, midY + 28);
+    ctx.fillStyle = COL['bay-2']; ctx.strokeStyle = COL.eigen; ctx.beginPath(); ctx.arc(outX, midY, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ONE NEURON', dx, dy - 2);
+    // readouts
+    setText(rA, `${(st.acc * 100).toFixed(0)}%`); setText(rL, st.loss.toFixed(3)); setText(rS, String(st.steps));
+    const can = st.acc > 0.97;
+    setText(rV, can ? 'one line does it' : st.kind === 'circle' && st.steps > 150 ? 'stuck · no straight line works' : 'learning…');
+    rV.className = can ? 'eg' : st.kind === 'circle' && st.steps > 150 ? 'vi' : '';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: gradient descent on a loss landscape ---------- */
+(function () {
+  const cv = $('#c2'), lrS = $('#lr2'), lrO = $('#lr2o'), mo = $('#mo2'), playBtn = $('#play2');
+  const rS = $('#r2s'), rL = $('#r2l'), rP = $('#r2p'), rT = $('#r2t');
+  const M0 = -1, M1 = 2.5, B0 = -1.6, B1 = 1.6;
+  const data = (() => { let s = 9; const r = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; const d = []; for (let i = 0; i < 30; i++) { const x = r() * 2 - 1; d.push([x, 0.8 * x + 0.3 + (r() - 0.5) * 0.35]); } return d; })();
+  const st = { land: 'smooth', m: -0.6, b: 1.2, vm: 0, vb: 0, path: [], steps: 0, playing: !REDUCE, acc: 0, status: '', start: [-0.6, 1.2], flips: 0, lastG: [0, 0], geo: null };
+  const lrOf = () => Math.pow(10, -2.5 + 2.6 * +lrS.value / 1000);
+  function loss(m, b) {
+    let L = 0; for (const [x, y] of data) { const e = m * x + b - y; L += e * e; } L /= data.length;
+    if (st.land === 'bumpy') L += 0.12 * Math.sin(5 * m) * Math.cos(5 * b) + 0.12;
+    return L;
+  }
+  function grad(m, b) {
+    let gm = 0, gb = 0; for (const [x, y] of data) { const e = m * x + b - y; gm += 2 * e * x; gb += 2 * e; } gm /= data.length; gb /= data.length;
+    if (st.land === 'bumpy') { gm += 0.6 * Math.cos(5 * m) * Math.cos(5 * b); gb += -0.6 * Math.sin(5 * m) * Math.sin(5 * b); }
+    return [gm, gb];
+  }
+  function restart(at) { if (at) st.start = at; [st.m, st.b] = st.start; st.vm = 0; st.vb = 0; st.path = [[st.m, st.b]]; st.steps = 0; st.status = 'rolling'; st.flips = 0; st.lastG = [0, 0]; mapDirty = true; }
+  function step() {
+    if (st.status === 'diverged') return;
+    const [gm, gb] = grad(st.m, st.b), lr = lrOf();
+    if (mo.checked) { st.vm = 0.9 * st.vm - lr * gm; st.vb = 0.9 * st.vb - lr * gb; st.m += st.vm; st.b += st.vb; }
+    else { st.m -= lr * gm; st.b -= lr * gb; }
+    st.steps++; st.path.push([st.m, st.b]); if (st.path.length > 400) st.path.shift();
+    if (gm * st.lastG[0] < 0 || gb * st.lastG[1] < 0) st.flips++; else st.flips = Math.max(0, st.flips - 1);
+    st.lastG = [gm, gb];
+    const L = loss(st.m, st.b);
+    if (!isFinite(L) || Math.abs(st.m) > 60 || Math.abs(st.b) > 60) st.status = 'diverged';
+    else if (Math.hypot(gm, gb) < 2e-3 && Math.hypot(st.vm, st.vb) < 1e-3) st.status = 'settled';
+    else st.status = st.flips > 4 ? 'bouncing' : 'rolling';
+  }
+  let mapDirty = true; const GX = 140, GY = 100, map = new Float64Array(GX * GY); let lo = 0, hi = 1;
+  function buildMap() {
+    lo = Infinity; hi = -Infinity;
+    for (let j = 0; j < GY; j++) for (let i = 0; i < GX; i++) { const m = M0 + (M1 - M0) * (i + 0.5) / GX, b = B1 - (B1 - B0) * (j + 0.5) / GY, v = Math.log10(loss(m, b) + 1e-3); map[j * GX + i] = v; lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    mapDirty = false;
+  }
+  lrS.addEventListener('input', () => { if (st.status === 'diverged' || st.status === 'settled') restart(); });
+  mo.addEventListener('change', () => restart());
+  $$('[data-land]').forEach(b => b.addEventListener('click', () => { st.land = b.dataset.land; $$('[data-land]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); restart(st.land === 'bumpy' ? [-0.6, -1.2] : [-0.6, 1.2]); }));
+  $('#drop2').addEventListener('click', () => { restart(); if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  cv.addEventListener('pointerdown', e => {
+    if (!st.geo) return; const r = cv.getBoundingClientRect(), G = st.geo, px = e.clientX - r.left, py = e.clientY - r.top;
+    if (px < G.x || px > G.x + G.w || py < G.y || py > G.y + G.h) return;
+    restart([M0 + (px - G.x) / G.w * (M1 - M0), B1 - (py - G.y) / G.h * (B1 - B0)]);
+    if (!st.playing) { st.playing = true; playLabel(playBtn, true); }
+  });
+  restart();
+  if (REDUCE) for (let k = 0; k < 60; k++) step();
+
+  function frame(dt) {
+    if (st.playing && st.status !== 'diverged' && st.status !== 'settled') { st.acc += dt * 9; while (st.acc >= 1) { step(); st.acc -= 1; } }
+    if (mapDirty) buildMap();
+    const lr = lrOf(); lrO.value = lr < 0.1 ? lr.toFixed(3) : lr.toFixed(2);
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const mx = 14, my = 26, mw = narrow ? w - 28 : w * 0.6, mh = narrow ? h * 0.5 : h - 54;
+    st.geo = { x: mx, y: my, w: mw, h: mh };
+    heat(ctx, map, GX, GY, mx, my, mw, mh, v => {
+      const t = (v - lo) / (hi - lo), band = (Math.floor(t * 14) % 2) ? 0.92 : 1;
+      const c = mixc(mixc(CBG, CV, Math.pow(t, 0.9) * 0.85), CBG, 0); return c.map(k => k * band);
+    });
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(mx + 0.5, my + 0.5, mw - 1, mh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ERROR FOR EVERY SLOPE AND INTERCEPT · CLICK TO DROP THE BALL', mx, my - 10);
+    ctx.fillText('slope →', mx + mw - 54, my + mh + 14); ctx.fillText('intercept ↑', mx + 4, my + 14);
+    const PX = m => mx + (m - M0) / (M1 - M0) * mw, PY = b => my + (B1 - b) / (B1 - B0) * mh;
+    ctx.save(); ctx.beginPath(); ctx.rect(mx, my, mw, mh); ctx.clip();
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.5; ctx.beginPath();
+    st.path.forEach(([m, b], k) => { k ? ctx.lineTo(PX(m), PY(b)) : ctx.moveTo(PX(m), PY(b)); }); ctx.stroke();
+    ctx.fillStyle = rgba(COL.eigen, 0.5); st.path.forEach(([m, b]) => { ctx.beginPath(); ctx.arc(PX(m), PY(b), 1.8, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL.eigen; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(PX(st.m), PY(st.b), 6, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.restore();
+    // data and the current line
+    const fx = narrow ? 14 : mx + mw + 22, fy = narrow ? my + mh + 34 : my, fw = narrow ? w - 28 : w - fx - 14, fh = narrow ? h - fy - 14 : mh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(fx + 0.5, fy + 0.5, fw - 1, fh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('THE LINE THESE NUMBERS DRAW', fx, fy - 10);
+    const DX = x => fx + (x + 1.1) / 2.2 * fw, DY = y => fy + (1.6 - y) / 3.2 * fh;
+    ctx.save(); ctx.beginPath(); ctx.rect(fx, fy, fw, fh); ctx.clip();
+    for (const [x, y] of data) { const e = st.m * x + st.b - y; ctx.strokeStyle = rgba(COL.violet, 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(DX(x), DY(y)); ctx.lineTo(DX(x), DY(y + e)); ctx.stroke(); }
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(DX(-1.1), DY(st.m * -1.1 + st.b)); ctx.lineTo(DX(1.1), DY(st.m * 1.1 + st.b)); ctx.stroke();
+    ctx.fillStyle = COL.ice; for (const [x, y] of data) { ctx.beginPath(); ctx.arc(DX(x), DY(y), 3.5, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+    // readouts
+    setText(rS, String(st.steps));
+    const L = loss(st.m, st.b); setText(rL, isFinite(L) && L < 1e5 ? L.toFixed(4) : 'off the chart');
+    setText(rP, `${st.m.toFixed(2)} · ${st.b.toFixed(2)}`);
+    setText(rT, { rolling: 'rolling downhill', bouncing: 'bouncing · step too big', settled: 'settled in a valley', diverged: 'diverged · flew off the map' }[st.status]);
+    rT.className = st.status === 'settled' ? 'eg' : st.status === 'rolling' ? '' : 'vi';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: a small network ---------- */
+(function () {
+  const cv = $('#c3'), playBtn = $('#play3');
+  const rS = $('#r3s'), rL = $('#r3l'), rA = $('#r3a'), rP = $('#r3p');
+  const st = { kind: 'spiral', width: 8, layers: 2, net: null, data: [], playing: !REDUCE, res: { loss: 0, acc: 0 }, hist: [], seed: 11, tick: 0 };
+  function rebuild(newSeed) {
+    if (newSeed) st.seed = 1 + Math.floor(Math.random() * 1e6);
+    const sizes = [2]; for (let l = 0; l < st.layers; l++) sizes.push(st.width); sizes.push(1);
+    st.net = makeNet(sizes, st.seed); st.data = makeData(st.kind, 240); st.hist = []; st.res = { loss: 0, acc: 0 };
+    $$('[data-d3]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.d3 === st.kind)));
+    $$('[data-w3]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.w3 === st.width)));
+    $$('[data-l3]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.l3 === st.layers)));
+    setText(rP, String(st.net.nParams()));
+    mini = null;
+  }
+  $$('[data-d3]').forEach(b => b.addEventListener('click', () => { st.kind = b.dataset.d3; rebuild(true); }));
+  $$('[data-w3]').forEach(b => b.addEventListener('click', () => { st.width = +b.dataset.w3; rebuild(true); }));
+  $$('[data-l3]').forEach(b => b.addEventListener('click', () => { st.layers = +b.dataset.l3; rebuild(true); }));
+  $('#rst3').addEventListener('click', () => { rebuild(true); if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  let mini = null;
+  rebuild(false);
+  if (REDUCE) for (let k = 0; k < 2500; k++) st.res = st.net.train(st.data, 0.03);
+  const GF = 56, field = new Float64Array(GF * GF), MG = 18;
+
+  function frame() {
+    if (st.playing && st.net.steps() < 20000) { for (let k = 0; k < 10; k++) st.res = st.net.train(st.data, 0.03); st.hist.push(st.res.loss); if (st.hist.length > 600) st.hist.shift(); }
+    const net = st.net, sizes = net.sizes, L = sizes.length - 1;
+    for (let j = 0; j < GF; j++) for (let i = 0; i < GF; i++) field[j * GF + i] = net.forward((i + 0.5) / GF * 2 - 1, 1 - (j + 0.5) / GF * 2);
+    // each hidden neuron's own view, refreshed every few frames
+    if (!mini || st.tick++ % 4 === 0) {
+      mini = []; for (let l = 1; l < L; l++) { mini.push([]); for (let k = 0; k < sizes[l]; k++) mini[l - 1].push(new Float64Array(MG * MG)); }
+      for (let j = 0; j < MG; j++) for (let i = 0; i < MG; i++) {
+        net.forward((i + 0.5) / MG * 2 - 1, 1 - (j + 0.5) / MG * 2);
+        for (let l = 1; l < L; l++) for (let k = 0; k < sizes[l]; k++) mini[l - 1][k][j * MG + i] = net.A[l][k];
+      }
+    }
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const s = narrow ? Math.min(w - 28, h * 0.52) : Math.min(h - 28, w * 0.5), fx = 14, fy = 14;
+    heat(ctx, field, GF, GF, fx, fy, s, s, probCol);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(fx + 0.5, fy + 0.5, s - 1, s - 1);
+    dots(ctx, st.data, v => fx + (v + 1) / 2 * s, v => fy + (1 - v) / 2 * s, 3);
+    // network diagram
+    const dx = narrow ? 14 : fx + s + 26, dy = narrow ? fy + s + 18 : fy, dw = narrow ? w - 28 : w - dx - 14, dh = narrow ? h - dy - 40 : s - 46;
+    const cols = sizes.length, colX = c => dx + 14 + c * (dw - 28) / (cols - 1);
+    const maxN = Math.max(...sizes), box = Math.max(10, Math.min(30, dh / maxN - 6));
+    const nodeY = (c, k) => dy + dh / 2 + (k - (sizes[c] - 1) / 2) * (box + 6);
+    for (let l = 0; l < L; l++) {
+      const n = sizes[l], m = sizes[l + 1], W = net.W[l];
+      for (let j = 0; j < m; j++) for (let i = 0; i < n; i++) {
+        const wv = W[j * n + i];
+        ctx.strokeStyle = wv >= 0 ? rgba(COL.eigen, 0.18 + Math.min(0.6, Math.abs(wv) * 0.25)) : rgba(COL.ice, 0.18 + Math.min(0.6, Math.abs(wv) * 0.25));
+        ctx.lineWidth = 0.4 + Math.min(3.2, Math.abs(wv) * 0.9);
+        ctx.beginPath(); ctx.moveTo(colX(l) + box / 2, nodeY(l, i)); ctx.lineTo(colX(l + 1) - box / 2, nodeY(l + 1, j)); ctx.stroke();
+      }
+    }
+    for (let c = 0; c < cols; c++) for (let k = 0; k < sizes[c]; k++) {
+      const x = colX(c) - box / 2, y = nodeY(c, k) - box / 2;
+      if (c === 0) { ctx.fillStyle = COL['bay-2']; ctx.fillRect(x, y, box, box); ctx.fillStyle = COL.ink; ctx.textAlign = 'center'; ctx.fillText(k ? 'y' : 'x', x + box / 2, y + box / 2 + 4); ctx.textAlign = 'left'; }
+      else if (c === cols - 1) heat(ctx, field, GF, GF, x, y, box, box, probCol);
+      else heat(ctx, mini[c - 1][k], MG, MG, x, y, box, box, a => a >= 0 ? mixc(CBG, CA, Math.min(1, a) * 0.85) : mixc(CBG, CI, Math.min(1, -a) * 0.85));
+      ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, box - 1, box - 1);
+    }
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center';
+    for (let c = 0; c < cols; c++) ctx.fillText(c === 0 ? 'input' : c === cols - 1 ? 'output' : `layer ${c}`, colX(c), dy + dh + 14);
+    ctx.textAlign = 'left';
+    // loss sparkline
+    const sy = dy + dh + 22, sh = narrow ? 18 : Math.max(18, h - sy - 12), sx = dx, sw = dw;
+    if (st.hist.length > 1 && sh > 10) {
+      const mx = Math.max(...st.hist, 0.7);
+      ctx.strokeStyle = COL.violet; ctx.lineWidth = 1.5; ctx.beginPath();
+      st.hist.forEach((v, k) => { const x = sx + k / 599 * sw, y = sy + sh - Math.min(1, v / mx) * sh; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    }
+    setText(rS, net.steps().toLocaleString('en-US'));
+    setText(rL, st.res.loss ? (st.res.loss < 0.001 ? '< 0.001' : st.res.loss.toFixed(3)) : '—');
+    setText(rA, `${(st.res.acc * 100).toFixed(0)}%`);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

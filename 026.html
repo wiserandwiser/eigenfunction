@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Oldest Light</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 026 colour code: pink = light (photons), ice = electrons and atoms, violet = the theory curve; the sky map uses the conventional blue-to-red temperature scale. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/9}
+#vp3{aspect-ratio:16/11}
+@media (max-width:640px){#vp1{aspect-ratio:4/4}#vp2{aspect-ratio:4/3.4}#vp3{aspect-ratio:4/5}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 026 · Astrophysics series · 10 of 10</div>
+    <a class="navlink" href="025.html">← Φ 025</a>
+    <a class="navlink" href="027.html">Φ 027 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 026 · Astrophysics series · 10 of 10</p>
+    <h1>the oldest <span class="eig">light</span></h1>
+    <p class="gloss">ASTROPHYSICS · the cosmic microwave background — <em>a baby picture of the universe, taken 380,000 years after the Big Bang</em></p>
+    <p class="thesis">Point a radio telescope at any patch of empty sky and you pick up a faint microwave glow, the same in every direction to one part in 100,000. It is light released when the young universe first turned transparent, stretched by 13.8 billion years of expansion. Its tiny ripples record what the universe is made of, and its shape.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Cosmology</dd></div>
+    <div><dt>Models</dt><dd>The fog clears, light stretched to microwaves, reading the ripples</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 10 of 10. Brings together Φ 024 and 025.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>light</span><span class="key"><i style="background:var(--ice)"></i>matter</span><span class="key"><i style="background:linear-gradient(90deg,#2c4bff,#5b6cff,#f0287a)"></i>cooler → hotter</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="fog">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The fog clears</span><h2>When electrons settle into atoms, light flies free</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A box of the early universe: hot plasma where light keeps bouncing off free electrons. As the universe cools, electrons join protons to form hydrogen atoms and the light suddenly streams straight through."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="t1">Temperature <input type="range" id="t1" min="0" max="1000" step="1" value="200"><output id="t1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Universe age</b><span id="r1a">—</span></div>
+          <div class="ro"><b>Electrons still free</b><span id="r1x" class="eg">—</span></div>
+          <div class="ro"><b>Light can travel</b><span id="r1l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>For its first few hundred thousand years the universe was a hot, glowing <strong>plasma</strong>: protons and electrons not yet bound into atoms. Light can’t get far in a plasma, because free electrons scatter it in all directions. The universe was opaque, like the inside of a cloud.</p>
+        <p>As space expanded the plasma cooled. Around <strong>3,000 K</strong>, about 380,000 years after the Big Bang, electrons settled onto protons to make neutral hydrogen. Atoms barely scatter that light, so almost all at once the fog cleared and the light flew free.</p>
+        <p>That light has been travelling ever since. When we look at it, we see the “surface” where the fog lifted, the farthest and oldest thing we can see with light.</p>
+        <div class="task"><b>Try this</b>Cool the universe slowly. Watch the electrons get captured and the light break free over a narrow range of temperature.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>x</var>²/(1 − <var>x</var>) = (1/<var>n</var><sub>b</sub>) (<var>m</var><sub>e</sub><var>kT</var>/2πħ²)<sup>3/2</sup> <var>e</var><sup>−13.6 eV/<var>kT</var></sup></div>
+          <p>The Saha equation gives the fraction <var>x</var> of free electrons at temperature <var>T</var>. It turns over near 3,700 K, even though 13.6 eV corresponds to 158,000 K: there are about 1.6 billion photons for every proton, and enough of them are energetic enough to break atoms apart until it is much cooler. The full calculation (Peebles, 1968) lands near 3,000 K. Ages follow from <var>T</var> = 2.725 K × (1 + <var>z</var>) in a standard model.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="stretch">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Stretched light</span><h2>From an orange glow to a microwave hiss</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="The spectrum of the cosmic background light: a blackbody curve whose peak slides from near-visible wavelengths to millimetre microwaves as the universe expands and cools from 3,000 K to 2.7 K."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="z2">Time since release <input type="range" id="z2" min="0" max="1000" step="1" value="0"><output id="z2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Temperature</b><span id="r2t" class="eg">—</span></div>
+          <div class="ro"><b>Brightest wavelength</b><span id="r2w">—</span></div>
+          <div class="ro"><b>Space has stretched by</b><span id="r2z">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>At release the light had the spectrum of a 3,000 K glowing body, a dull orange-red with most of its energy in the near infrared. As space expanded, every wavelength stretched with it. Space has grown about <strong>1,100 times</strong> since, so the light is now microwaves, peaking at about a millimetre, and the glow has cooled to <strong>2.725 K</strong>.</p>
+        <p>In 1964, Arno Penzias and Robert Wilson found an annoying hiss in a horn antenna at Bell Labs that they couldn’t get rid of, even after cleaning out pigeon droppings. It was this light. A small part of the static on an old analogue television was the Big Bang.</p>
+        <p>In 1990 the COBE satellite measured its spectrum and found the most perfect blackbody curve ever seen in nature, matching theory to better than 1 part in 10,000. That is strong evidence the early universe was hot, dense and in balance.</p>
+        <div class="task"><b>Try this</b>Slide from the moment of release to today. Watch the curve slide out of the visible band and into the microwaves.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>λ</var><sub>obs</sub> = (1 + <var>z</var>) <var>λ</var><sub>emit</sub>,&nbsp; <var>T</var> ∝ 1/(1 + <var>z</var>),&nbsp; <var>λ</var><sub>peak</sub> = 2.898 mm·K / <var>T</var></div>
+          <p>A blackbody stays a blackbody as it stretches, just cooler. The curve is drawn per unit wavelength and scaled to keep its peak height constant; in reality it dims as (1 + <var>z</var>)⁴. Peak per unit frequency today is at 160 GHz (1.9 mm).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="ripples">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Reading the ripples</span><h2>Sound waves frozen into the sky</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A patch of simulated microwave sky with hot and cold spots, and below it the power spectrum: how strong the ripples are at each angular size. Changing the amount of ordinary matter changes the peak heights, and changing the universe's curvature shifts the peaks and the spot size."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="b3">Ordinary matter <input type="range" id="b3" min="20" max="200" step="1" value="100"><output id="b3o">—</output></label>
+          <label class="scrub" for="k3">Total density <input type="range" id="k3" min="60" max="140" step="1" value="100"><output id="k3o">—</output></label>
+          <button class="btn solo" type="button" id="re3">New sky</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>First peak</b><span id="r3p" class="eg">—</span></div>
+          <div class="ro"><b>Shape of space</b><span id="r3s">—</span></div>
+          <div class="ro"><b>Matches Planck?</b><span id="r3m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The glow is not perfectly even. Spots differ by about 1 part in 100,000, set by sound waves that rippled through the plasma. Dark matter clumps pulled the plasma in, the pressure of light pushed it back out, and it rang like a bell. When the fog cleared, the ripples were frozen in place.</p>
+        <p>The waves had only 380,000 years to travel, so there is a <strong>preferred spot size</strong>: about <strong>1°</strong> across, twice the width of the full Moon. That size works as a cosmic ruler. In a flat universe it appears at 1°; in a curved one, the ruler would look bigger or smaller. It looks exactly 1°: <span class="a">space is flat</span> to within a fraction of a percent.</p>
+        <p>The heights of the later peaks weigh the ingredients. More ordinary matter makes the odd-numbered peaks stand taller. Fitting all the peaks gives the universe’s recipe: about <strong>5%</strong> ordinary matter, <strong>27%</strong> dark matter (Φ 024) and <strong>68%</strong> dark energy (Φ 025).</p>
+        <div class="task"><b>Try this</b>Change the ordinary matter and watch the first and third peaks rise relative to the second. Then change the total density and watch the spots grow or shrink.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">ℓ<sub>1</sub> ≈ 220 / √Ω<sub>total</sub>,&nbsp; spot size ≈ 180°/ℓ,&nbsp; Θ ∝ (⅓ + <var>R</var>) cos(<var>k r</var><sub>s</sub>) − <var>R</var></div>
+          <p>A teaching model, not a full calculation: it captures where the peaks fall, the baryon loading <var>R</var> that lifts odd peaks, and damping at small scales, but real spectra come from codes like CAMB and CLASS solving the full physics. The sky patch is about 20° × 10°, built from random waves with this spectrum. The faint curve is the model at Planck’s best-fit values.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Four portraits of the baby universe</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1964–65</div><h3>Penzias and Wilson</h3><p>Two radio engineers at Bell Labs found the background by accident; nearby, Robert Dicke’s team at Princeton was building an experiment to look for it. Nobel Prize, 1978.</p></div>
+      <div class="g"><div class="where">1989–1993</div><h3>COBE</h3><p>Measured the perfect blackbody spectrum and, in 1992, the first ripples. George Smoot called it like seeing the face of God. Nobel Prize for John Mather and Smoot, 2006.</p></div>
+      <div class="g"><div class="where">2001–2010</div><h3>WMAP</h3><p>Mapped the ripples across the whole sky and pinned down the age of the universe, 13.7 billion years, to about 1%.</p></div>
+      <div class="g"><div class="where">2009–2013</div><h3>Planck</h3><p>The sharpest map yet, giving age 13.8 billion years and the 5% / 27% / 68% recipe, with a few puzzling anomalies, like a large cold spot, still under study.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">The microwave background is <span class="a">light from 380,000 years after the Big Bang</span>; its frozen sound waves show that space is flat and that ordinary matter is only 5% of the universe.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><span class="chip here">026 · Oldest light</span><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 026 · The first light · end of the astrophysics series · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const T0 = 2.7255;
+// age of the universe at redshift z (years): matter + radiation early, matter + Λ late
+function ageAt(z) {
+  const a = 1 / (1 + z), H0inv = 14.5e9, om = 0.315, ol = 0.685;
+  if (z > 50) { const aeq = 1 / 3400, y = a / aeq; return 2 * Math.pow(aeq, 1.5) / (3 * Math.sqrt(om)) * ((y - 2) * Math.sqrt(1 + y) + 2) * H0inv; }
+  return 2 / (3 * Math.sqrt(ol)) * Math.asinh(Math.sqrt(ol / om) * Math.pow(a, 1.5)) * H0inv;
+}
+const fmtAge = t => t >= 1e9 ? `${(t / 1e9).toFixed(1)} billion years` : t >= 1e6 ? `${(t / 1e6).toFixed(0)} million years` : `${Math.round(t / 1000).toLocaleString('en-US')},000 years`;
+
+/* ---------- BAY 01: the fog clears ---------- */
+(function () {
+  const cv = $('#c1'), tS = $('#t1'), tO = $('#t1o');
+  const rA = $('#r1a'), rX = $('#r1x'), rL = $('#r1l');
+  const Tof = v => 6000 * Math.pow(1500 / 6000, v / 1000);
+  function saha(T) {
+    const nb = 0.2477 * Math.pow(T / T0, 3), S = 2.415e21 * Math.pow(T, 1.5) * Math.exp(-157800 / T) / nb;
+    return S > 1e8 ? 1 : (-S + Math.sqrt(S * S + 4 * S)) / 2;
+  }
+  const r = rng(380000), N = 46;
+  const P = Array.from({ length: N }, () => ({ x: r(), y: r(), vx: (r() - 0.5) * 0.04, vy: (r() - 0.5) * 0.04 }));
+  const E = Array.from({ length: N }, () => ({ x: r(), y: r(), vx: (r() - 0.5) * 0.25, vy: (r() - 0.5) * 0.25, ph: r() * 6.3 }));
+  const L = Array.from({ length: 70 }, () => { const a = r() * 6.283; return { x: r(), y: r(), a, trail: [] }; });
+  function frame(dt) {
+    const T = Tof(+tS.value), x = saha(T), z = T / T0 - 1;
+    tO.value = `${Math.round(T).toLocaleString('en-US')} K`;
+    setText(rA, fmtAge(ageAt(z)));
+    setText(rX, x > 0.995 ? 'all of them' : x < 1e-4 ? 'almost none' : x > 0.01 ? `${(x * 100).toFixed(0)}%` : `${(x * 100).toFixed(x < 0.001 ? 3 : 2)}%`);
+    const nb = 0.2477 * Math.pow(T / T0, 3), mfp = 1 / (Math.max(x, 1e-12) * nb * 6.652e-29) / 9.461e15;
+    setText(rL, mfp > 3e7 ? 'freely, across the universe' : `${mfp >= 1e6 ? (mfp / 1e6).toFixed(1) + ' million' : Math.round(mfp).toLocaleString('en-US')} light-years before scattering`);
+    const nBound = Math.round((1 - x) * N);
+    const step = REDUCE ? 0 : dt;
+    P.forEach(p => { p.x = (p.x + p.vx * step + 1) % 1; p.y = (p.y + p.vy * step + 1) % 1; });
+    E.forEach((e, i) => { if (i < nBound) { e.ph += step * 6; e.x = P[i].x + Math.cos(e.ph) * 0.012; e.y = P[i].y + Math.sin(e.ph) * 0.02; } else { e.x = (e.x + e.vx * step + 1) % 1; e.y = (e.y + e.vy * step + 1) % 1; } });
+    L.forEach(l => {
+      const sp = 0.5; l.x += Math.cos(l.a) * sp * step; l.y += Math.sin(l.a) * sp * step;
+      if (Math.random() < x * step * 9) { l.a = Math.random() * 6.283; l.flash = 0.25; }
+      if (l.x < 0 || l.x > 1 || l.y < 0 || l.y > 1) { l.x = (l.x + 1) % 1; l.y = (l.y + 1) % 1; l.trail = []; }
+      l.trail.push([l.x, l.y]); if (l.trail.length > 14) l.trail.shift(); l.flash = Math.max(0, (l.flash || 0) - step);
+    });
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // fog: glowing plasma colour, fading as the electrons are captured
+    ctx.fillStyle = `rgba(255,150,70,${(0.22 * x).toFixed(3)})`; ctx.fillRect(0, 0, w, h);
+    const X = v => v * w, Y = v => v * h;
+    L.forEach(l => { ctx.strokeStyle = rgba(COL.eigen, 0.55); ctx.lineWidth = 1.4; ctx.beginPath(); let prev = null; l.trail.forEach(([a, b]) => { if (prev && Math.hypot(a - prev[0], b - prev[1]) > 0.2) { ctx.moveTo(X(a), Y(b)); } else if (prev) ctx.lineTo(X(a), Y(b)); else ctx.moveTo(X(a), Y(b)); prev = [a, b]; }); ctx.stroke(); ctx.lineWidth = 1;
+      ctx.fillStyle = l.flash > 0 ? '#d2d1d5' : COL.eigen; ctx.beginPath(); ctx.arc(X(l.x), Y(l.y), 2.2, 0, Math.PI * 2); ctx.fill(); });
+    P.forEach((p, i) => { ctx.fillStyle = '#e393b4'; ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 3.6, 0, Math.PI * 2); ctx.fill(); if (i < nBound) { ctx.strokeStyle = rgba(COL.ice, 0.5); ctx.beginPath(); ctx.ellipse(X(p.x), Y(p.y), 0.012 * w, 0.02 * h, 0, 0, Math.PI * 2); ctx.stroke(); } });
+    E.forEach(e => { ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(e.x), Y(e.y), 2, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = 'rgba(4,6,12,0.75)'; ctx.fillRect(8, 6, 300, 20);
+    ctx.fillStyle = COL['ink-2']; ctx.fillText(x > 0.5 ? 'OPAQUE PLASMA · LIGHT BOUNCES' : x > 0.02 ? 'ATOMS FORMING · FOG THINNING' : 'NEUTRAL GAS · LIGHT FLIES FREE', 14, 20);
+    ctx.fillStyle = 'rgba(4,6,12,0.75)'; ctx.fillRect(8, h - 24, 330, 18);
+    ctx.fillStyle = '#e393b4'; ctx.fillText('● proton', 14, h - 11); ctx.fillStyle = COL.ice; ctx.fillText('● electron', 90, h - 11); ctx.fillStyle = COL.eigen; ctx.fillText('● light', 180, h - 11); ctx.fillStyle = COL['ink-3']; ctx.fillText('ring = atom', 240, h - 11);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: light stretched to microwaves ---------- */
+(function () {
+  const cv = $('#c2'), zS = $('#z2'), zO = $('#z2o');
+  const rT = $('#r2t'), rW = $('#r2w'), rZ = $('#r2z');
+  const ZD = 1089;
+  const fmtL = m => m >= 1e-3 ? `${(m * 1000).toFixed(m < 1e-2 ? 2 : 1)} mm` : m >= 1e-6 ? `${(m * 1e6).toFixed(m < 1e-5 ? 2 : 0)} μm` : `${Math.round(m * 1e9)} nm`;
+  function frame() {
+    const f = +zS.value / 1000, a = Math.pow(1 / (1 + ZD), 1 - f), z = 1 / a - 1, T = T0 * (1 + z);
+    const age = ageAt(z); zO.value = f >= 0.999 ? 'today' : f <= 0.001 ? 'at release' : `age ${fmtAge(age)}`;
+    setText(rT, T >= 10 ? `${Math.round(T).toLocaleString('en-US')} K` : `${T.toFixed(3)} K`);
+    const lp = 2.898e-3 / T; setText(rW, `${fmtL(lp)}${lp < 7.5e-7 ? ' · visible' : lp < 1e-3 ? ' · infrared' : ' · microwave'}`);
+    setText(rZ, `${(1 + z).toFixed(1 + z < 10 ? 2 : 0)}×`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 20, gy = 30, gw = w - 40, gh = h - gy - 50, L0 = Math.log10(2e-7), L1 = Math.log10(2e-2);
+    const X = l => gx + (Math.log10(l) - L0) / (L1 - L0) * gw;
+    // band labels
+    const bands = [[3.8e-7, 7.5e-7, 'visible'], [7.5e-7, 1e-3, 'infrared'], [1e-3, 2e-2, 'microwave']];
+    bands.forEach(([a0, a1, n], i) => { ctx.fillStyle = rgba(i === 2 ? COL.ice : COL['ink-3'], i === 2 ? 0.08 : 0.05); ctx.fillRect(X(a0), gy, X(a1) - X(a0), gh); ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText(n, (X(a0) + X(a1)) / 2, gy - 10); ctx.textAlign = 'left'; });
+    for (let i = 0; i < X(7.5e-7) - X(3.8e-7); i++) { ctx.fillStyle = `hsl(${270 - i / (X(7.5e-7) - X(3.8e-7)) * 270},80%,55%)`; ctx.fillRect(X(3.8e-7) + i, gy + gh - 6, 1, 6); }
+    // blackbody per unit wavelength, peak-normalised
+    const B = l => 1 / (Math.pow(l, 5) * (Math.exp(0.014388 / (l * T)) - 1)), Bp = B(lp);
+    ctx.beginPath(); ctx.moveTo(X(2e-7), gy + gh);
+    for (let i = 0; i <= 400; i++) { const l = Math.pow(10, L0 + (L1 - L0) * i / 400), v = B(l) / Bp; ctx.lineTo(X(l), gy + gh - Math.min(1, v) * (gh - 10)); }
+    ctx.lineTo(X(2e-2), gy + gh); ctx.closePath();
+    const col = T > 1000 ? '#f3a6d5' : COL.eigen; ctx.fillStyle = rgba(col, 0.25); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+    ctx.strokeStyle = rgba(COL.ink, 0.5); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(lp), gy); ctx.lineTo(X(lp), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [[1e-6, '1 μm'], [1e-5, '10 μm'], [1e-4, '0.1 mm'], [1e-3, '1 mm'], [1e-2, '1 cm']].forEach(([l, s]) => ctx.fillText(s, X(l), gy + gh + 16)); ctx.fillText('WAVELENGTH · LOG SCALE', gx + gw / 2, gy + gh + 34); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the acoustic peaks ---------- */
+(function () {
+  const cv = $('#c3'), bS = $('#b3'), bO = $('#b3o'), kS = $('#k3'), kO = $('#k3o');
+  const rP = $('#r3p'), rS = $('#r3s'), rM = $('#r3m');
+  // a tuned teaching model of the temperature power spectrum (see the maths box)
+  const PP = { lr: 235, ld: 1030, dp: 2, vw: 1.63, sw: 0.05, drv: 2.94, dl: 216 }, R0 = 0.036;
+  function Dl(l, R, Om) {
+    const lA = 300 / Math.sqrt(Om), x = Math.PI * (l / lA + 0.27);
+    const T = (1 / 3 + R) * Math.cos(x) - R, V = (1 / 3 + R) * Math.sin(x) / Math.sqrt(3 * (1 + R));
+    const rise = 1 - Math.exp(-Math.pow(l / (PP.lr / Math.sqrt(Om)), 2)), damp = Math.exp(-Math.pow(l / (PP.ld / Math.sqrt(Om)), PP.dp)), drive = 1 + PP.drv * Math.exp(-Math.pow(l / (PP.dl / Math.sqrt(Om)), 2));
+    return (rise * (T * T + PP.vw * V * V) * drive + PP.sw * Math.exp(-Math.pow(l / 150, 2))) * damp;
+  }
+  const NORM = 5750 / Math.max(...Array.from({ length: 300 }, (_, i) => Dl(100 + i, R0, 1)));
+  const st = { seed: 1, dirty: true, img: null };
+  const NX = 200, NY = 100, PATCH = 20 * Math.PI / 180;
+  function cur() { return { R: R0 * (+bS.value / 100), Om: +kS.value / 100 }; }
+  function info() {
+    const { R, Om } = cur(); bO.value = `${(+bS.value / 100).toFixed(2)} × measured`; kO.value = Om.toFixed(2);
+    let best = 0, bl = 0; for (let l = 80; l < 500; l++) { const v = Dl(l, R, Om); if (v > best) { best = v; bl = l; } }
+    setText(rP, `ℓ ≈ ${bl} · spots ≈ ${(180 / bl).toFixed(1)}°`);
+    setText(rS, Om > 1.02 ? 'closed, like a sphere: spots look bigger' : Om < 0.98 ? 'open, like a saddle: spots look smaller' : 'flat');
+    setText(rM, Math.abs(+bS.value - 100) <= 6 && Math.abs(+kS.value - 100) <= 2 ? 'yes' : Math.abs(+kS.value - 100) > 2 ? 'no: the peaks are in the wrong place' : 'no: the peak heights are wrong');
+    st.dirty = true;
+  }
+  function render() {
+    const { R, Om } = cur(), r = rng(st.seed * 7919 + 3), W = [];
+    for (let i = 0; i < 360; i++) { const l = Math.exp(Math.log(20) + (Math.log(2000) - Math.log(20)) * r()), th = r() * Math.PI * 2; W.push([l * Math.cos(th), l * Math.sin(th), Math.sqrt(Dl(l, R, Om)), r() * Math.PI * 2]); }
+    const F = new Float32Array(NX * NY); let s2 = 0;
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const x = i / NX * PATCH, y = j / NX * PATCH; let v = 0; for (const [kx, ky, a, ph] of W) v += a * Math.cos(kx * x + ky * y + ph); F[j * NX + i] = v; s2 += v * v; }
+    const sd = Math.sqrt(s2 / (NX * NY)) || 1;
+    const c = document.createElement('canvas'); c.width = NX; c.height = NY; const cx = c.getContext('2d'), im = cx.createImageData(NX, NY);
+    for (let k = 0; k < NX * NY; k++) { const t = clamp(F[k] / (2.6 * sd), -1, 1); let rr, gg, bb; if (t < 0) { const u = -t; rr = 232 - 173 * u; gg = 232 - 124 * u; bb = 240 + 15 * u; } else { rr = 232 + 23 * t; gg = 232 - 142 * t; bb = 240 - 180 * t; } im.data[k * 4] = rr; im.data[k * 4 + 1] = gg; im.data[k * 4 + 2] = bb; im.data[k * 4 + 3] = 255; }
+    cx.putImageData(im, 0, 0); st.img = c; st.dirty = false;
+  }
+  [bS, kS].forEach(s => s.addEventListener('input', info)); $('#re3').addEventListener('click', () => { st.seed++; st.dirty = true; });
+  info();
+  function frame() {
+    if (st.dirty) render();
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const mh = Math.min(h * 0.42, (w - 28) / 2), mw = mh * 2, mx = (w - mw) / 2, my = 26;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(st.img, mx, my, mw, mh);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(mx + 0.5, my + 0.5, mw - 1, mh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SIMULATED SKY PATCH · 20° × 10°', mx, my - 8);
+    const mpx = mw / 20 * 0.5; ctx.strokeStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(mx + mw - 18, my + mh - 14, mpx / 2, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = '#d2d1d5'; ctx.fillText('full Moon', mx + mw - 86, my + mh - 10);
+    // spectrum
+    const gx = 56, gy = my + mh + 34, gw = w - gx - 16, gh = h - gy - 36, L1 = 1800;
+    const { R, Om } = cur(); const YM = Math.max(8000, NORM * Math.max(...Array.from({ length: 400 }, (_, i) => Dl(50 + i, R, Om))) * 1.1);
+    const X = l => gx + l / L1 * gw, Y = v => gy + gh - v / YM * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [0, 2000, 4000, 6000].forEach(v => { if (v < YM) ctx.fillText(String(v), gx - 6, Y(v) + 4); }); ctx.textAlign = 'center';
+    [2, 500, 1000, 1500].forEach(l => ctx.fillText(String(l), X(l), gy + gh + 14)); ctx.fillText('ℓ · SMALLER SPOTS →', gx + gw / 2, gy + gh + 28); ctx.textAlign = 'left';
+    ctx.fillText('RIPPLE POWER (μK²)', gx + 6, gy + 14);
+    const curve = (Rv, Ov, col, wd) => { ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath(); for (let l = 2; l <= L1; l += 4) { const y = Y(NORM * Dl(l, Rv, Ov)); l > 2 ? ctx.lineTo(X(l), y) : ctx.moveTo(X(l), y); } ctx.stroke(); ctx.lineWidth = 1; };
+    curve(R0, 1, rgba(COL.violet, 0.55), 1.4);
+    curve(R, Om, COL.eigen, 2.2);
+    ctx.fillStyle = rgba(COL.violet, 0.9); ctx.textAlign = 'right'; ctx.fillText('faint = Planck best fit (model)', gx + gw - 6, w < 560 ? gy + 28 : gy + 14); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

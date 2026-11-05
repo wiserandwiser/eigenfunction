@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Pulsar Timing</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 020 colour code: ice = pulsars and their beams, pink = the gravitational-wave signal, violet = noise and corrections. */
+#vp1{aspect-ratio:16/9.5}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1{aspect-ratio:4/4}#vp2,#vp3{aspect-ratio:4/4.4}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 020 · Astrophysics series · 4 of 10</div>
+    <a class="navlink" href="019.html">← Φ 019</a>
+    <a class="navlink" href="021.html">Φ 021 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 020 · Astrophysics series · 4 of 10</p>
+    <h1>pulsar <span class="eig">timing</span></h1>
+    <p class="gloss">ASTROPHYSICS · a galaxy-sized detector — <em>dead stars that tick like atomic clocks, used to feel waves light-years long</em></p>
+    <p class="thesis">Some neutron stars spin hundreds of times a second and sweep a radio beam past Earth on every turn. Their ticks are so regular that astronomers can predict each one years ahead to within a millionth of a second. Watch dozens of them together, and tiny shared wobbles reveal gravitational waves washing through the galaxy.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Radio astronomy, gravitational waves</dd></div>
+    <div><dt>Models</dt><dd>The cosmic lighthouse, peeling the timing model, Einstein’s fingerprint across the sky</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 4 of 10. Follows Φ 017 and 019.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>pulsars</span><span class="key"><i style="background:var(--eigen)"></i>wave signal</span><span class="key"><i style="background:var(--violet)"></i>noise · corrections</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="lighthouse">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The cosmic lighthouse</span><h2>A city-sized star that spins like a blender</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A spinning neutron star sweeps two radio beams around like a lighthouse. Each time a beam crosses Earth, a pulse appears on the timeline below."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Pulsar">
+            <button class="btn" type="button" data-psr="0">First found · 1.34 s</button>
+            <button class="btn" type="button" data-psr="1">Vela · 89 ms</button>
+            <button class="btn" type="button" data-psr="2" aria-pressed="true">Crab · 34 ms</button>
+            <button class="btn" type="button" data-psr="3">Fastest · 1.4 ms</button>
+          </div>
+          <button class="btn solo" type="button" id="hear1">Hear it</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Spins per second</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Speed at its equator</b><span id="r1v">—</span></div>
+          <div class="ro"><b>Shown</b><span id="r1x">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A neutron star (Φ 017) is about 20 km across and keeps the spin of the giant star it came from. Shrinking that much spins it up, as a skater spins faster by pulling in their arms. Its enormous magnetic field funnels radio waves into two beams from its magnetic poles. If the poles are tilted from the spin axis, the beams sweep around like a lighthouse, and if one crosses Earth, we see a <strong>pulse</strong> on every turn.</p>
+        <p>In 1967, graduate student Jocelyn Bell noticed a strange “scruff” on her radio chart: pulses every 1.34 seconds, so regular the team half-jokingly labelled it LGM-1, for “little green men”. It was the first pulsar.</p>
+        <p>The fastest, <span class="i">millisecond pulsars</span>, are old neutron stars spun up by feeding on a companion star. They turn hundreds of times a second, so steadily that a few rival atomic clocks over years.</p>
+        <div class="task"><b>Try this</b>Try each pulsar and press Hear it. The first pulsar ticks like a clock; the Crab buzzes; the fastest is a musical note.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>v</var><sub>eq</sub> = 2π<var>R</var> / <var>P</var>,&nbsp; <var>R</var> ≈ 10–12 km</div>
+          <p>Speeds use a 12 km radius. The fastest known pulsar, PSR J1748−2446ad, spins 716 times a second, so its equator moves at about a fifth of the speed of light. The animation is slowed so the beams stay visible; the sound plays the real rate. Spins slow very gradually: the Crab’s period grows by about 13 millionths of a second each year.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="peel">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Timing a cosmic clock</span><h2>Peel away everything we know, and look at what’s left</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Ten years of pulse arrival times from a millisecond pulsar. Each correction removes a known effect, the vertical scale shrinks from minutes to nanoseconds, and what remains is noise plus a slow wander."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="s2">Corrections <input type="range" id="s2" min="0" max="3" step="1" value="0"><output id="s2o">—</output></label>
+          <button class="btn solo" type="button" id="gw2" aria-pressed="true">Wave: on</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Biggest effect left</b><span id="r2b" class="eg">—</span></div>
+          <div class="ro"><b>Arrival times wander by</b><span id="r2r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Astronomers record when each pulse arrives and compare it with a model that predicts every pulse. The difference, the <strong>timing residual</strong>, is where the science is.</p>
+        <p>The first thing you see is Earth itself: as we orbit the Sun, we are sometimes closer to the pulsar and sometimes farther, so pulses arrive up to about <strong>8 minutes</strong> early or late. Take that out and the pulsar’s own orbit around its companion shows. Take that out and you see the pulsar slowly spinning down. Take that out too, and what is left is scatter of about <strong>a ten-millionth of a second</strong>, over ten years.</p>
+        <p>Hidden in that scatter is a slow wander of tens to hundreds of nanoseconds. A gravitational wave light-years long stretches the space between us and the pulsar, so pulses arrive a little early for a few years, then a little late. A single pulsar can’t prove it, though: its own spin may wobble, and our clocks may drift.</p>
+        <div class="task"><b>Try this</b>Apply the corrections one at a time and watch the scale shrink from minutes to nanoseconds. At the end, switch the wave off and on.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>R</var>(<var>t</var>) = <var>t</var><sub>observed</sub> − <var>t</var><sub>model</sub>,&nbsp; Earth’s orbit: up to (1 AU / <var>c</var>) cos β ≈ 499 s × cos β</div>
+          <p>Simulated data shaped like a well-timed millisecond pulsar with a 68-day orbit around a white dwarf (similar to PSR J1713+0747), observed every two weeks. Real timing models also correct for the Sun’s gravity bending time (the Shapiro delay), the slowing of radio waves by interstellar electrons, and the pulsar’s motion across the sky.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="hd">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">A detector the size of the galaxy</span><h2>Einstein’s fingerprint across the sky</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Pulsars scattered across the sky. For every pair, the similarity of their timing wanders is plotted against the angle between them. With enough pulsars and years, the points trace a particular curve predicted by general relativity."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="n3">Pulsars <input type="range" id="n3" min="6" max="80" step="1" value="8"><output id="n3o">—</output></label>
+          <label class="scrub" for="y3">Years observed <input type="range" id="y3" min="1" max="30" step="1" value="3"><output id="y3o">—</output></label>
+          <button class="btn solo" type="button" id="re3">New sky</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Pulsar pairs</b><span id="r3p">—</span></div>
+          <div class="ro"><b>Match to the curve</b><span id="r3m" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The trick is to compare <em>pairs</em> of pulsars. A background of gravitational waves, from countless pairs of supermassive black holes across the universe, stretches the space around Earth in a shared way, so every pulsar’s wander has a common part.</p>
+        <p>General relativity predicts how similar two pulsars’ wanders should be, depending only on the angle between them in our sky: alike when close together, opposite at about 90°, and partly alike again when on opposite sides. This is the <span class="a">Hellings–Downs curve</span>, worked out in 1983. Clock errors or solar-system mistakes would leave different fingerprints.</p>
+        <p>In June 2023, the NANOGrav collaboration (68 pulsars, 15 years) and teams in Europe, India, Australia and China reported evidence for this curve. The background is most likely from supermassive black-hole pairs, though more exotic sources are not ruled out.</p>
+        <div class="task"><b>Try this</b>Start with a few pulsars and a few years: the points are a mess. Add pulsars and years, and watch the curve emerge from the noise.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Γ(θ) = ½ − <var>x</var>/4 + (3/2) <var>x</var> ln <var>x</var>,&nbsp; <var>x</var> = (1 − cos θ)/2</div>
+          <p>Each pulsar’s data here is simulated as a common wander with exactly these correlations plus independent noise twice as large, so most single pairs are dominated by noise. The number of independent samples grows with the years observed, because the waves are so slow. “Match” is the correlation between the binned averages and the curve. Real analyses must also model each pulsar’s own slow noise, which is why it took over 15 years.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Pulsars to know</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1967 · Vulpecula</div><h3>PSR B1919+21</h3><p>The first pulsar, found by Jocelyn Bell Burnell. Its stacked pulses later became a famous album cover. The 1974 Nobel Prize for the discovery went to her supervisor Antony Hewish and to Martin Ryle.</p></div>
+      <div class="g"><div class="where">1974</div><h3>The Hulse–Taylor binary</h3><p>A pulsar orbiting another neutron star. Its orbit shrinks exactly as gravitational-wave losses predict, the first evidence the waves exist (Φ 019).</p></div>
+      <div class="g"><div class="where">2003</div><h3>The Double Pulsar</h3><p>PSR J0737−3039: two pulsars orbiting each other every 2.4 hours. It has confirmed general relativity to about 0.01% and shows the time delay of signals passing a heavy star.</p></div>
+      <div class="g"><div class="where">1992</div><h3>The first exoplanets</h3><p>Planets were first found orbiting a pulsar, PSR B1257+12, through tiny shifts in its pulse times, three years before one was found around a Sun-like star (Φ 023).</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Millisecond pulsars are clocks scattered across the galaxy; when their tiny timing errors line up in <span class="a">Einstein’s pattern</span>, they reveal gravitational waves light-years long.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><span class="chip here">020 · Pulsar timing</span><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 020 · Clocks in the sky · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const gauss = r => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+let AC = null;
+
+/* ---------- BAY 01: the lighthouse ---------- */
+(function () {
+  const cv = $('#c1'), hearB = $('#hear1');
+  const rS = $('#r1s'), rV = $('#r1v'), rX = $('#r1x');
+  const PSR = [['PSR B1919+21', 1.3373], ['Vela pulsar', 0.08933], ['Crab pulsar', 0.03368], ['PSR J1748−2446ad', 0.0013962]];
+  const st = { k: 2, ang: 0, t: 0, pulses: [] };
+  $$('[data-psr]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.psr; st.pulses = []; $$('[data-psr]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  hearB.addEventListener('click', () => {
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+      const P = PSR[st.k][1], dur = Math.max(2.5, P * 4), sr = AC.sampleRate, buf = AC.createBuffer(1, Math.floor(sr * dur), sr), d = buf.getChannelData(0);
+      for (let t0 = 0.02; t0 < dur - 0.01; t0 += P) { const i0 = Math.floor(t0 * sr); for (let i = 0; i < sr * 0.004 && i0 + i < d.length; i++) d[i0 + i] += Math.exp(-i / (sr * 0.0006)) * (i % 2 ? -1 : 1) * 0.5; }
+      const src = AC.createBufferSource(), g = AC.createGain(); g.gain.value = 0.35; src.buffer = buf; src.connect(g).connect(AC.destination); src.start();
+    } catch (e) { hearB.textContent = 'No audio'; }
+  });
+  function frame(dt) {
+    const [name, P] = PSR[st.k], real = 1 / P, vis = Math.min(real, 0.7), slow = real / vis;
+    if (!REDUCE) { st.ang += dt * vis * 2 * Math.PI; st.t += dt; }
+    setText(rS, real < 10 ? real.toFixed(2) : Math.round(real).toLocaleString('en-US'));
+    const v = 2 * Math.PI * 12 / P; setText(rV, `${Math.round(v).toLocaleString('en-US')} km/s${v > 3000 ? ` · ${(v / 2998).toFixed(0)}% of light` : ''}`);
+    setText(rX, slow > 1.05 ? `${name} · slowed ${Math.round(slow).toLocaleString('en-US')}×` : `${name} · real speed`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const th = Math.min(70, h * 0.2), sy = h - th - 26, cx = Math.min(w * 0.3, sy * 0.6), cy = sy / 2 + 8, ex = w - 40;
+    // beams
+    const a = st.ang % (2 * Math.PI), L = Math.hypot(w, h);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, sy - 4); ctx.clip();
+    [[a, 1], [a + Math.PI, 0.35]].forEach(([b, al]) => {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, L * 0.8); g.addColorStop(0, rgba(COL.ice, 0.5 * al)); g.addColorStop(1, rgba(COL.ice, 0));
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, L, b - 0.09, b + 0.09); ctx.closePath(); ctx.fill();
+    });
+    ctx.restore();
+    // star
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 16); g.addColorStop(0, '#d2d1d5'); g.addColorStop(0.6, COL.ice); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('NEUTRON STAR · 20 KM', cx - 60, cy + 34);
+    ctx.fillText('faint beam is tilted: it misses Earth', 20, 22);
+    // Earth: pulse when the bright beam crosses angle 0
+    const pulse = Math.exp(-Math.pow(Math.atan2(Math.sin(a), Math.cos(a)) / 0.2, 2));
+    ctx.fillStyle = rgba(COL.ice, 0.4 + 0.6 * pulse); ctx.beginPath(); ctx.arc(ex, cy, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('Earth', ex - 18, cy + 22);
+    st.pulses.push([st.t, pulse]); while (st.pulses.length && st.t - st.pulses[0][0] > 6) st.pulses.shift();
+    // timeline
+    const tx = 14, tw = w - 28;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(tx + 0.5, sy + 0.5, tw, th);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('RADIO SIGNAL AT EARTH', tx + 6, sy + 13);
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 1.5; ctx.beginPath();
+    st.pulses.forEach(([t, p], i) => { const x = tx + tw - (st.t - t) / 6 * tw, y = sy + th - 6 - p * (th - 22); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    ctx.stroke(); ctx.lineWidth = 1;
+    if (REDUCE) { ctx.fillStyle = COL['ink-3']; ctx.fillText('animation off (reduced motion)', tx + 6, sy + th - 8); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: peeling the timing model ---------- */
+(function () {
+  const cv = $('#c2'), sS = $('#s2'), sO = $('#s2o'), gwB = $('#gw2');
+  const rB = $('#r2b'), rR = $('#r2r');
+  const r = rng(20230629), NPT = 261, T = [], E = [], B = [], SD = [], N = [], G = [];
+  for (let i = 0; i < NPT; i++) {
+    const t = i * 14 / 365.25 + 0.02 * r(); T.push(t);
+    E.push(411 * Math.cos(2 * Math.PI * t + 0.7));
+    B.push(32.3 * Math.sin(2 * Math.PI * t / (67.8 / 365.25) + 0.3));
+    SD.push(0.0032 * 0.5 * Math.pow(t - 5, 2) - 0.0133);
+    N.push(100e-9 * gauss(r));
+    G.push(1e-9 * (120 * Math.sin(2 * Math.PI * t / 7.3 + 1.1) + 60 * Math.sin(2 * Math.PI * t / 3.9 + 2.4) + 30 * Math.sin(2 * Math.PI * t / 2.2 + 0.2)));
+  }
+  const LV = [['nothing yet', 'Earth’s orbit around the Sun · ±411 s'], ['Earth’s orbit', 'the pulsar’s 68-day orbit · ±32 s'], ['+ pulsar’s orbit', 'the pulsar slowly spinning down · ~40 ms'], ['+ spin-down', '']];
+  const st = { k: 0, gw: true, shown: 1 };
+  const unit = v => v >= 1 ? [1, 's'] : v >= 1e-3 ? [1e-3, 'ms'] : v >= 1e-6 ? [1e-6, 'μs'] : [1e-9, 'ns'];
+  const val = i => (st.k < 1 ? E[i] : 0) + (st.k < 2 ? B[i] : 0) + (st.k < 3 ? SD[i] : 0) + N[i] + (st.gw ? G[i] : 0);
+  function upd() {
+    st.k = +sS.value; sO.value = LV[st.k][0];
+    let m = 0, s2 = 0; for (let i = 0; i < NPT; i++) { const v = val(i); m = Math.max(m, Math.abs(v)); s2 += v * v; }
+    st.max = m; const rms = Math.sqrt(s2 / NPT), [f, u] = unit(rms);
+    setText(rB, st.k < 3 ? LV[st.k][1] : st.gw ? 'a slow wander shared with other pulsars?' : 'only measurement noise');
+    setText(rR, `${(rms / f).toFixed(rms / f < 10 ? 1 : 0)} ${u} (rms)`);
+  }
+  sS.addEventListener('input', upd);
+  gwB.addEventListener('click', () => { st.gw = !st.gw; gwB.setAttribute('aria-pressed', String(st.gw)); gwB.textContent = st.gw ? 'Wave: on' : 'Wave: off'; upd(); });
+  upd();
+  function frame(dt) {
+    // ease the vertical scale so each correction visibly zooms in
+    const target = Math.log(st.max * 1.15);
+    st.lsc = st.lsc === undefined ? target : st.lsc + (target - st.lsc) * Math.min(1, dt * (REDUCE ? 99 : 4));
+    const sc = Math.exp(st.lsc);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 62, gy = 22, gw = w - gx - 14, gh = h - gy - 40;
+    const X = t => gx + t / 10 * gw, Y = v => gy + gh / 2 - v / sc * gh / 2;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.strokeStyle = rgba(COL.ink, 0.15); ctx.beginPath(); ctx.moveTo(gx, Y(0)); ctx.lineTo(gx + gw, Y(0)); ctx.stroke();
+    const [f, u] = unit(sc / 2); ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right';
+    [-1, -0.5, 0.5, 1].forEach(k => { const v = k * sc * 0.9; ctx.fillText(`${(v / f).toFixed(Math.abs(v / f) < 10 ? 1 : 0)} ${u}`, gx - 6, Y(v) + 4); });
+    ctx.fillText('0', gx - 6, Y(0) + 4); ctx.textAlign = 'center';
+    for (let y = 0; y <= 10; y += 2) ctx.fillText(`${y}`, X(y), gy + gh + 14);
+    ctx.fillText('YEARS', gx + gw / 2, gy + gh + 30); ctx.textAlign = 'left';
+    ctx.fillText('PULSE ARRIVES LATE ↑ / EARLY ↓', gx + 8, gy + 14);
+    if (st.k === 3 && st.gw) { ctx.strokeStyle = rgba(COL.eigen, 0.8); ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 200; i++) { const t = i / 20, v = 1e-9 * (120 * Math.sin(2 * Math.PI * t / 7.3 + 1.1) + 60 * Math.sin(2 * Math.PI * t / 3.9 + 2.4) + 30 * Math.sin(2 * Math.PI * t / 2.2 + 0.2)); i ? ctx.lineTo(X(t), Y(v)) : ctx.moveTo(X(t), Y(v)); } ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = COL.eigen; ctx.fillText('the wave’s slow wander', gx + 8, gy + 30); }
+    ctx.fillStyle = st.k === 3 ? COL.ice : COL.violet;
+    for (let i = 0; i < NPT; i++) { const y = Y(val(i)); if (y < gy || y > gy + gh) continue; ctx.beginPath(); ctx.arc(X(T[i]), y, 2, 0, Math.PI * 2); ctx.fill(); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the Hellings–Downs curve ---------- */
+(function () {
+  const cv = $('#c3'), nS = $('#n3'), nO = $('#n3o'), yS = $('#y3'), yO = $('#y3o');
+  const rP = $('#r3p'), rM = $('#r3m');
+  const HD = th => { const x = (1 - Math.cos(th)) / 2; return x < 1e-9 ? 0.5 : 0.5 - x / 4 + 1.5 * x * Math.log(x); };
+  const st = { seed: 7, pairs: [], bins: [], sky: [] };
+  function run() {
+    const Np = +nS.value, Y = +yS.value, Ts = 4 * Y; nO.value = String(Np); yO.value = `${Y} yr`;
+    const r = rng(st.seed * 1000 + 17);
+    const P = []; for (let i = 0; i < Np; i++) { const z = 2 * r() - 1, ph = 2 * Math.PI * r(), s = Math.sqrt(1 - z * z); P.push([s * Math.cos(ph), s * Math.sin(ph), z]); }
+    st.sky = P;
+    // covariance: 1 on the diagonal (Earth term + pulsar term), Hellings–Downs off it
+    const Cm = P.map((a, i) => P.map((b, j) => i === j ? 1 : HD(Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))))));
+    const L = Cm.map(() => new Array(Np).fill(0));
+    for (let i = 0; i < Np; i++) for (let j = 0; j <= i; j++) { let s = Cm[i][j]; for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k]; L[i][j] = i === j ? Math.sqrt(Math.max(s, 1e-9)) : s / L[j][j]; }
+    const X = P.map(() => new Float64Array(Ts));
+    for (let t = 0; t < Ts; t++) { const z = P.map(() => gauss(r)); for (let i = 0; i < Np; i++) { let s = 0; for (let k = 0; k <= i; k++) s += L[i][k] * z[k]; X[i][t] = s + 2 * gauss(r); } }
+    st.pairs = [];
+    for (let i = 0; i < Np; i++) for (let j = i + 1; j < Np; j++) { let s = 0; for (let t = 0; t < Ts; t++) s += X[i][t] * X[j][t]; const a = P[i], b = P[j]; st.pairs.push([Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))), s / Ts]); }
+    const NB = 9; st.bins = [];
+    for (let b = 0; b < NB; b++) { const lo = b * Math.PI / NB, hi = lo + Math.PI / NB, v = st.pairs.filter(p => p[0] >= lo && p[0] < hi).map(p => p[1]); if (v.length < 2) continue; const m = v.reduce((x, y) => x + y, 0) / v.length, sd = Math.sqrt(v.reduce((x, y) => x + (y - m) ** 2, 0) / (v.length - 1)); st.bins.push([(lo + hi) / 2, m, sd / Math.sqrt(v.length)]); }
+    const hv = st.bins.map(b => HD(b[0])), bv = st.bins.map(b => b[1]);
+    const mean = a => a.reduce((x, y) => x + y, 0) / a.length, mh = mean(hv), mb = mean(bv);
+    let sxy = 0, sxx = 0, syy = 0; hv.forEach((h, i) => { sxy += (h - mh) * (bv[i] - mb); sxx += (h - mh) ** 2; syy += (bv[i] - mb) ** 2; });
+    const rr = sxy / Math.sqrt(sxx * syy);
+    setText(rP, st.pairs.length.toLocaleString('en-US'));
+    setText(rM, st.pairs.length < 60 ? 'too few pairs to tell' : `${rr.toFixed(2)} · ${rr > 0.95 ? 'clear' : rr > 0.8 ? 'emerging' : rr > 0.5 ? 'hints' : 'lost in noise'}`);
+  }
+  nS.addEventListener('input', run); yS.addEventListener('input', run);
+  $('#re3').addEventListener('click', () => { st.seed++; run(); });
+  run();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const gx = 46, gy = narrow ? h * 0.32 : 20, gw = (narrow ? w : w * 0.7) - gx - 14, gh = h - gy - 40;
+    const Y0 = -0.5, Y1 = 0.75, X = th => gx + th / Math.PI * gw, Y = v => gy + (Y1 - Math.max(Y0, Math.min(Y1, v))) / (Y1 - Y0) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.strokeStyle = rgba(COL.ink, 0.15); ctx.beginPath(); ctx.moveTo(gx, Y(0)); ctx.lineTo(gx + gw, Y(0)); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [-0.25, 0, 0.25, 0.5].forEach(v => ctx.fillText(v.toFixed(2), gx - 6, Y(v) + 4));
+    ctx.textAlign = 'center'; [0, 45, 90, 135, 180].forEach(d => ctx.fillText(`${d}°`, X(d * Math.PI / 180), gy + gh + 14));
+    ctx.fillText('ANGLE BETWEEN THE TWO PULSARS', gx + gw / 2, gy + gh + 30); ctx.textAlign = 'left';
+    ctx.fillText('HOW ALIKE THEIR WANDERS ARE', gx + 8, gy + 14);
+    const al = Math.min(0.5, 30 / Math.sqrt(st.pairs.length + 1) * 0.12);
+    ctx.fillStyle = rgba(COL.violet, al); st.pairs.forEach(([t, v]) => { if (v > Y0 && v < Y1) ctx.fillRect(X(t) - 1, Y(v) - 1, 2.2, 2.2); });
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 120; i++) { const t = i / 120 * Math.PI; i ? ctx.lineTo(X(t), Y(HD(t))) : ctx.moveTo(X(t), Y(HD(t))); } ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL.ice; ctx.fillText('— Einstein’s prediction', gx + 8, gy + 30);
+    st.bins.forEach(([t, m, e]) => { ctx.strokeStyle = COL.eigen; ctx.beginPath(); ctx.moveTo(X(t), Y(m - e)); ctx.lineTo(X(t), Y(m + e)); ctx.stroke(); ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(X(t), Y(m), 4, 0, Math.PI * 2); ctx.fill(); });
+    // sky map
+    const sx = narrow ? 14 : w * 0.7 + 6, sw = narrow ? w - 28 : w * 0.3 - 20, shh = sw / 2, sy = narrow ? 30 : 34;
+    const shh2 = narrow ? Math.min(shh, h * 0.3 - 30) : shh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.ellipse(sx + sw / 2, sy + shh2 / 2, sw / 2, shh2 / 2, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('THE PULSARS ON OUR SKY', sx + 6, sy - 10);
+    st.sky.forEach(([x, y, z]) => { const lon = Math.atan2(y, x), lat = Math.asin(z), px = sx + sw / 2 + lon / Math.PI * Math.cos(lat) * sw / 2, py = sy + shh2 / 2 - lat / (Math.PI / 2) * shh2 / 2; ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(px, py, 2.2, 0, Math.PI * 2); ctx.fill(); });
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

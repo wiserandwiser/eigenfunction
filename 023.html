@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Exoplanets</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 023 colour code: stars in their true colour; ice = the planet's signal, pink = too hot, violet = too cold. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/9}
+#vp3{aspect-ratio:16/8}
+@media (max-width:640px){#vp1,#vp2{aspect-ratio:4/4.6}#vp3{aspect-ratio:4/3.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 023 · Astrophysics series · 7 of 10</div>
+    <a class="navlink" href="022.html">← Φ 022</a>
+    <a class="navlink" href="024.html">Φ 024 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 023 · Astrophysics series · 7 of 10</p>
+    <h1>other <span class="eig">worlds</span></h1>
+    <p class="gloss">ASTROPHYSICS · exoplanets — <em>finding planets we can’t see, from a star’s faint dimming and tiny wobble</em></p>
+    <p class="thesis">Until 1995 we knew of no planet around another Sun-like star. Now over 6,000 are confirmed, and statistics suggest most stars have planets. Almost none has been seen directly. They are found from the shadows they cast and the tugs they give their stars, effects as small as a flea crossing a car headlight.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Exoplanet astronomy</dd></div>
+    <div><dt>Models</dt><dd>The transit dip, the wobble, the habitable zone</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 7 of 10. Follows Φ 017 (stars) and Φ 020 (pulsar planets).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>planet signal</span><span class="key"><i style="background:var(--eigen)"></i>too hot</span><span class="key"><i style="background:var(--violet)"></i>too cold</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="transit">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The transit</span><h2>A planet crosses its star, and the light dips</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A planet crosses the face of its star. Below, the star's brightness over time dips while the planet is in front, by an amount set by the planet's size."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="r1">Planet size <input type="range" id="r1" min="0" max="1000" step="1" value="1000"><output id="r1o">—</output></label>
+          <label class="scrub" for="b1">Path across the star <input type="range" id="b1" min="0" max="110" step="1" value="30"><output id="b1o">—</output></label>
+          <button class="btn solo" type="button" id="n1" aria-pressed="false">Real noise: off</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Dip in brightness</b><span id="r1d" class="eg">—</span></div>
+          <div class="ro"><b>Transit lasts</b><span id="r1t">—</span></div>
+          <div class="ro"><b>Odds our view lines up</b><span id="r1p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>If a planet’s orbit happens to be edge-on to us, once per orbit it passes in front of its star and blocks a little light. The dip tells you the planet’s size: the fraction of light lost equals the fraction of the star’s disk covered.</p>
+        <p>Jupiter crossing the Sun would dim it by about <strong>1%</strong>. Earth would dim it by under <strong>0.01%</strong>, for about 13 hours, once a year. NASA’s <span class="i">Kepler</span> telescope stared at 150,000 stars for four years to catch dips that small, finding about 2,700 planets. Its successor, TESS, surveys almost the whole sky.</p>
+        <p>The star is darker towards its edge, because there we see its cooler outer layers. That is why the bottom of each dip is curved, not flat.</p>
+        <div class="task"><b>Try this</b>Shrink the planet from Jupiter to Earth and watch the dip all but vanish. Turn on real noise: could you spot an Earth?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Δ<var>F</var>/<var>F</var> ≈ (<var>R</var><sub>p</sub>/<var>R</var><sub>★</sub>)²,&nbsp; <var>P</var>(transit) ≈ <var>R</var><sub>★</sub>/<var>a</var></div>
+          <p>A Sun-like star with a planet at Earth’s distance, so only about 1 in 200 such planets transit from our viewpoint. The path slider is the impact parameter <var>b</var>, how far from the centre the planet crosses, in star radii. Limb darkening uses a quadratic law with Sun-like coefficients; the noise is about 60 parts per million per point, like Kepler on a bright star.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="wobble">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The wobble</span><h2>A planet tugs its star back and forth</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A star and planet orbit their shared centre of mass. The star's light is shifted slightly blue as it approaches and red as it recedes; dark lines in its spectrum slide back and forth and a velocity curve is traced."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="m2">Planet mass <input type="range" id="m2" min="0" max="1000" step="1" value="700"><output id="m2o">—</output></label>
+          <label class="scrub" for="a2">Orbit size <input type="range" id="a2" min="0" max="1000" step="1" value="120"><output id="a2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Star’s wobble speed</b><span id="r2k" class="eg">—</span></div>
+          <div class="ro"><b>Year length</b><span id="r2p">—</span></div>
+          <div class="ro"><b>Detectable today?</b><span id="r2d">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A planet doesn’t orbit its star; both orbit their shared centre of mass. The star traces a tiny circle, moving towards us and then away. Its light is shifted very slightly bluer, then redder, and the dark lines in its spectrum slide back and forth.</p>
+        <p>In 1995 Michel Mayor and Didier Queloz found <strong>51 Pegasi b</strong> this way: a planet half Jupiter’s mass orbiting its star every 4.2 days, closer than Mercury is to the Sun. Nobody had expected such “hot Jupiters”. The discovery won the 2019 Nobel Prize.</p>
+        <p>Earth makes the Sun wobble at only about <strong>9 centimetres per second</strong>, slower than a tortoise. The best spectrographs today reach a few tens of centimetres per second, so finding a true Earth twin this way is still just out of reach.</p>
+        <div class="task"><b>Try this</b>Start with a hot Jupiter, then move it out and shrink it to Earth. Watch the wobble speed fall below the detection line.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>K</var> ≈ 28.4 m/s × (<var>M</var><sub>p</sub>/<var>M</var><sub>J</sub>) × (<var>P</var>/1 yr)<sup>−1/3</sup>,&nbsp; Δλ/λ = <var>v</var>/<var>c</var></div>
+          <p>For a Sun-like star and a circular, edge-on orbit; tilted orbits show only <var>M</var><sub>p</sub> sin <var>i</var>. The line shifts are exaggerated about a million times to be visible: 1 m/s shifts a line by about 2 millionths of a nanometre. Detection lines: HARPS (2003) about 1 m/s, ESPRESSO (2018) about 0.3 m/s.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="hz">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The habitable zone</span><h2>Not too hot, not too cold</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A star with its habitable zone, the band of orbits where water could stay liquid. Changing the star's mass moves and resizes the zone; a planet's distance sets its temperature and year."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Preset">
+            <button class="btn" type="button" data-hz="earth" aria-pressed="true">Earth</button>
+            <button class="btn" type="button" data-hz="prox">Proxima b</button>
+            <button class="btn" type="button" data-hz="trap">TRAPPIST-1e</button>
+          </div>
+          <label class="scrub" for="s3">Star mass <input type="range" id="s3" min="0" max="1000" step="1" value="600"><output id="s3o">—</output></label>
+          <label class="scrub" for="d3">Planet distance <input type="range" id="d3" min="0" max="1000" step="1" value="600"><output id="d3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Planet is</b><span id="r3z" class="eg">—</span></div>
+          <div class="ro"><b>Temperature (no greenhouse)</b><span id="r3t">—</span></div>
+          <div class="ro"><b>Year</b><span id="r3y">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The <strong>habitable zone</strong> is the range of orbits where a rocky planet with an atmosphere could keep liquid water on its surface. It is not a guarantee of life, or even of water: Venus sits just inside the inner edge and Mars near the outer one.</p>
+        <p>Small red dwarfs, the commonest stars, are so dim that their habitable zones huddle very close, with “years” of days or weeks. The nearest exoplanet, <span class="i">Proxima b</span>, orbits in its star’s zone every 11 days. Planets that close are probably tidally locked, one face in permanent day, and are blasted by their star’s flares.</p>
+        <p>The <span class="i">TRAPPIST-1</span> system, 40 light-years away, has seven Earth-sized planets, three or four of them in the zone. The James Webb Space Telescope is now testing whether any of them keeps an atmosphere at all.</p>
+        <div class="task"><b>Try this</b>Try the three presets. Then shrink the star and see how close the zone moves, and how short the year becomes.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>T</var><sub>eq</sub> ≈ 278 K × (<var>L</var>/<var>L</var><sub>☉</sub>)<sup>1/4</sup> (<var>a</var>/1 AU)<sup>−1/2</sup> (1 − <var>A</var>)<sup>1/4</sup>,&nbsp; <var>P</var> = √(<var>a</var>³/<var>M</var>) yr</div>
+          <p>Albedo <var>A</var> = 0.3, like Earth. Without its greenhouse effect Earth would average about −18 °C; the real average is about +15 °C. The zone edges are the conservative limits of Kopparapu and colleagues (2013), roughly √(<var>L</var>/1.1) to √(<var>L</var>/0.36) AU. Star brightness follows a simple mass–luminosity rule, and the preset stars use their measured values.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Worlds to know</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1995 · 50 light-years</div><h3>51 Pegasi b</h3><p>The first planet found orbiting a Sun-like star: a hot Jupiter with a four-day year. It upended theories of how planetary systems form.</p></div>
+      <div class="g"><div class="where">2016 · 4.2 light-years</div><h3>Proxima b</h3><p>A planet at least as massive as Earth in the habitable zone of the nearest star. Whether it keeps an atmosphere under its star’s flares is unknown.</p></div>
+      <div class="g"><div class="where">2017 · 40 light-years</div><h3>TRAPPIST-1</h3><p>Seven Earth-sized planets around a star barely bigger than Jupiter, all closer to it than Mercury is to the Sun. JWST found that the innermost two have little or no thick atmosphere.</p></div>
+      <div class="g"><div class="where">2022 · 700 light-years</div><h3>WASP-39b</h3><p>A hot, puffy gas giant whose starlight-filtered atmosphere gave JWST’s first clear detection of carbon dioxide on an exoplanet.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">We find other worlds by their <span class="a">shadows and tugs</span>: a dip in starlight gives a planet’s size, a wobble gives its mass, and the star’s light sets whether water could be liquid.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><span class="chip here">023 · Exoplanets</span><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 023 · Other worlds · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const gauss = r => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+function tempColor(T) {
+  const P = [[2500, [255, 140, 70]], [3500, [255, 170, 110]], [4500, [255, 205, 150]], [5800, [255, 244, 232]], [7500, [235, 238, 255]], [10000, [205, 220, 255]]];
+  if (T <= P[0][0]) return `rgb(${P[0][1]})`;
+  for (let i = 1; i < P.length; i++) if (T <= P[i][0]) { const f = (T - P[i - 1][0]) / (P[i][0] - P[i - 1][0]); return `rgb(${P[i - 1][1].map((v, k) => Math.round(v + (P[i][1][k] - v) * f))})`; }
+  return `rgb(${P[P.length - 1][1]})`;
+}
+
+/* ---------- BAY 01: the transit ---------- */
+(function () {
+  const cv = $('#c1'), rS = $('#r1'), rO = $('#r1o'), bS = $('#b1'), bO = $('#b1o'), nB = $('#n1');
+  const rD = $('#r1d'), rT = $('#r1t'), rP = $('#r1p');
+  const U1 = 0.44, U2 = 0.23, RE = 6371 / 695700;
+  const I = mu => 1 - U1 * (1 - mu) - U2 * (1 - mu) ** 2, NORM = Math.PI * (1 - U1 / 3 - U2 / 6);
+  // area of overlap between the star (radius 1) and planet (radius p) at centre distance d
+  function overlap(d, p) {
+    if (d >= 1 + p) return 0; if (d <= 1 - p) return Math.PI * p * p; if (d <= p - 1) return Math.PI;
+    const k0 = Math.acos((p * p + d * d - 1) / (2 * p * d)), k1 = Math.acos((1 - p * p + d * d) / (2 * d));
+    return p * p * k0 + k1 - 0.5 * Math.sqrt(Math.max(0, 4 * d * d - (1 + d * d - p * p) ** 2));
+  }
+  function flux(d, p) { const A = overlap(d, p); if (!A) return 1; const rr = d <= 1 - p ? d : Math.min(1, (Math.max(0, d - p) + 1) / 2), mu = Math.sqrt(Math.max(0, 1 - rr * rr)); return 1 - I(mu) * A / NORM; }
+  const st = { x: -1.6, noise: false, r: rng(51) };
+  nB.addEventListener('click', () => { st.noise = !st.noise; nB.setAttribute('aria-pressed', String(st.noise)); nB.textContent = st.noise ? 'Real noise: on' : 'Real noise: off'; });
+  const NZ = Array.from({ length: 260 }, () => gauss(st.r));
+  function frame(dt) {
+    const Re = Math.pow(10, Math.log10(0.5) + (Math.log10(12) - Math.log10(0.5)) * +rS.value / 1000), p = Re * RE, b = +bS.value / 100;
+    rO.value = Re < 1.3 ? `${Re.toFixed(1)} × Earth` : Re > 10.5 ? `${(Re / 11.21).toFixed(2)} × Jupiter` : Re > 3.5 && Re < 4.4 ? `${Re.toFixed(1)} × Earth · Neptune` : `${Re.toFixed(1)} × Earth`;
+    bO.value = b < 0.05 ? 'through the centre' : b > 1 + p ? 'misses the star' : `${b.toFixed(2)} radii off-centre`;
+    if (!REDUCE) { st.x += dt * 0.45; if (st.x > 1.6) st.x = -1.6; } else st.x = 0;
+    const depth = 1 - flux(b, p);
+    setText(rD, depth <= 0 ? 'none: no transit' : depth < 0.001 ? `${Math.round(depth * 1e6)} parts per million` : `${(depth * 100).toFixed(2)}%`);
+    setText(rT, b >= 1 + p ? '—' : `${(13 * Math.sqrt(Math.max(0, (1 + p) ** 2 - b * b))).toFixed(1)} hours, once a year`);
+    setText(rP, 'about 1 in 215 (orbit like Earth’s)');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sh = h * 0.5, R = Math.min(sh * 0.42, w * 0.2), cx = w / 2, cy = sh / 2 + 10;
+    // star with limb darkening
+    for (let k = 40; k >= 1; k--) { const rr = k / 40, mu = Math.sqrt(1 - Math.min(1, rr * rr) + 1e-9); ctx.fillStyle = `rgba(255,${Math.round(205 + 40 * mu)},${Math.round(150 + 90 * mu)},${(0.25 + 0.75 * I(mu)).toFixed(3)})`; ctx.beginPath(); ctx.arc(cx, cy, R * rr, 0, Math.PI * 2); ctx.fill(); }
+    const px = cx + st.x * R, py = cy + b * R, pr = Math.max(1.2, p * R);
+    ctx.fillStyle = '#080907'; ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI * 2); ctx.fill();
+    if (pr < 4) { ctx.strokeStyle = COL.ice; ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.stroke(); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('PLANET DRAWN TO SCALE WITH A SUN-LIKE STAR', 14, 18);
+    // light curve
+    const gx = 60, gy = sh + 24, gw = w - gx - 16, gh = h - gy - 26;
+    const lo = Math.max(0.0001, depth * 1.6, st.noise ? 0.00035 : 0);
+    const X = x => gx + (x + 1.6) / 3.2 * gw, Y = f => gy + (1 - f) / lo * (gh - 10) + 4;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right';
+    ctx.fillText('100%', gx - 6, Y(1) + 4); ctx.fillText(lo < 0.002 ? `−${Math.round(lo * 1e6)} ppm` : `−${(lo * 100).toFixed(1)}%`, gx - 6, Y(1 - lo) + 4); ctx.textAlign = 'left';
+    ctx.fillText('BRIGHTNESS', gx + 6, gy + gh - 6);
+    if (st.noise) { ctx.fillStyle = rgba(COL.ice, 0.55); NZ.forEach((z, i) => { const x = -1.6 + 3.2 * i / 259, f = flux(Math.hypot(x, b), p) + z * 60e-6; const y = Y(f); if (y > gy && y < gy + gh) ctx.fillRect(X(x) - 1, y - 1, 2.4, 2.4); }); }
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 1.6; ctx.beginPath();
+    for (let i = 0; i <= 300; i++) { const x = -1.6 + 3.2 * i / 300, y = Y(flux(Math.hypot(x, b), p)); i ? ctx.lineTo(X(x), y) : ctx.moveTo(X(x), y); }
+    ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(st.x), Y(flux(Math.hypot(st.x, b), p)), 3.5, 0, Math.PI * 2); ctx.fill();
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the wobble ---------- */
+(function () {
+  const cv = $('#c2'), mS = $('#m2'), mO = $('#m2o'), aS = $('#a2'), aO = $('#a2o');
+  const rK = $('#r2k'), rP = $('#r2p'), rD = $('#r2d');
+  const MJ_ME = 317.8;
+  const st = { ph: 0, hist: [] };
+  const fmtP = y => y < 1 / 12 ? `${(y * 365.25).toFixed(1)} days` : y < 2 ? `${(y * 365.25).toFixed(0)} days` : `${y.toFixed(1)} years`;
+  function frame(dt) {
+    const Me = Math.pow(10, 0 + Math.log10(3000) * +mS.value / 1000), a = Math.pow(10, Math.log10(0.03) + (Math.log10(10) - Math.log10(0.03)) * +aS.value / 1000);
+    const P = Math.pow(a, 1.5), K = 28.4 * (Me / MJ_ME) * Math.pow(P, -1 / 3);
+    mO.value = Me < 50 ? `${Me.toFixed(Me < 10 ? 1 : 0)} × Earth` : `${(Me / MJ_ME).toFixed(2)} × Jupiter`;
+    aO.value = `${a < 0.1 ? a.toFixed(3) : a.toFixed(2)} AU`;
+    setText(rK, K >= 1 ? `${K.toFixed(K < 10 ? 1 : 0)} m/s` : `${(K * 100).toFixed(K < 0.1 ? 1 : 0)} cm/s`);
+    setText(rP, fmtP(P));
+    setText(rD, K > 3 ? 'yes, easily' : K > 1 ? 'yes, with HARPS-class instruments' : K > 0.3 ? 'only with the very best (ESPRESSO)' : 'not yet: below today’s best');
+    if (!REDUCE) st.ph += dt * 1.2; // one visual orbit every ~5 s regardless of the real year
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, oh = narrow ? h * 0.42 : h * 0.55, cx = narrow ? w / 2 : w * 0.3, cy = oh / 2 + 10;
+    const R = Math.min(oh * 0.4, narrow ? w * 0.4 : w * 0.25);
+    const wob = Math.max(2, Math.min(R * 0.25, 4 + 22 * Math.log10(1 + K) / 2.5));
+    const px = cx + Math.cos(st.ph) * R, py = cy + Math.sin(st.ph) * R * 0.35, sx = cx - Math.cos(st.ph) * wob, sy = cy - Math.sin(st.ph) * wob * 0.35;
+    ctx.strokeStyle = rgba(COL['ink-3'], 0.4); ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.ellipse(cx, cy, R, R * 0.35, 0, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.ellipse(cx, cy, wob, wob * 0.35, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    const vlos = Math.cos(st.ph); // + = moving away from us (we are at the bottom of the screen)
+    const sc = vlos > 0 ? [255, 160, 130] : [170, 200, 255], k = Math.abs(vlos) * Math.min(1, K / 10 + 0.15);
+    const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 26); g.addColorStop(0, '#d2d1d5'); g.addColorStop(0.5, `rgb(${Math.round(255 + (sc[0] - 255) * k)},${Math.round(244 + (sc[1] - 244) * k)},${Math.round(232 + (sc[2] - 232) * k)})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, 26, 0, Math.PI * 2); ctx.fill();
+    const pr = Math.max(2.5, Math.min(9, 2 + 2.5 * Math.cbrt(Me)));
+    ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('WOBBLE EXAGGERATED · WE VIEW FROM BELOW', 14, 18); ctx.fillText('↓ to Earth', cx - 26, cy + R * 0.35 + 20);
+    // spectrum strip with absorption lines
+    const sx0 = narrow ? 14 : w * 0.6, sw = narrow ? w - 28 : w * 0.4 - 16, sy0 = narrow ? oh + 34 : 34, shh = 36;
+    for (let i = 0; i < sw; i++) { const hue = 270 - i / sw * 270; ctx.fillStyle = `hsl(${hue},70%,55%)`; ctx.fillRect(sx0 + i, sy0, 1, shh); }
+    const vrad = vlos; // + = away (red)
+    [0.12, 0.19, 0.33, 0.47, 0.52, 0.71, 0.86].forEach(f => { ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(sx0 + f * sw + vrad * Math.min(14, 3 + 6 * Math.log10(1 + K)), sy0, 2.5, shh); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('STAR’S SPECTRUM · BLUE ← → RED', sx0, sy0 - 6);
+    // velocity curve
+    const gx = sx0, gy = sy0 + shh + 26, gw = sw, gh = h - gy - 16;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.strokeStyle = rgba(COL.ink, 0.15); ctx.beginPath(); ctx.moveTo(gx, gy + gh / 2); ctx.lineTo(gx + gw, gy + gh / 2); ctx.stroke();
+    const Kmax = Math.max(K, 1) * 1.3, VY = v => gy + gh / 2 - v / Kmax * (gh / 2 - 6);
+    [1, 0.3].forEach(lim => { if (lim < Kmax) { ctx.setLineDash([3, 3]); ctx.strokeStyle = rgba(COL.violet, 0.6); ctx.beginPath(); ctx.moveTo(gx, VY(lim)); ctx.lineTo(gx + gw, VY(lim)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = rgba(COL.violet, 0.9); ctx.fillText(lim === 1 ? 'HARPS 1 m/s' : 'ESPRESSO 0.3', lim === 1 ? gx + gw - 92 : gx + 6, VY(lim) - 3); } });
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 1.6; ctx.beginPath();
+    for (let i = 0; i <= 120; i++) { const ph = st.ph - 2 * Math.PI * (1 - i / 120), x = gx + i / 120 * gw, y = VY(K * Math.cos(ph)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`AWAY ↑ · ±${K >= 1 ? K.toFixed(1) + ' m/s' : (K * 100).toFixed(1) + ' cm/s'}`, gx + 6, gy + 13);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the habitable zone ---------- */
+(function () {
+  const cv = $('#c3'), sS = $('#s3'), sO = $('#s3o'), dS = $('#d3'), dO = $('#d3o');
+  const rZ = $('#r3z'), rT = $('#r3t'), rY = $('#r3y');
+  const PRE = { earth: { M: 1, L: 1, T: 5772, a: 1, name: 'the Sun' }, prox: { M: 0.122, L: 0.00155, T: 3042, a: 0.0486, name: 'Proxima Centauri' }, trap: { M: 0.0898, L: 0.000553, T: 2566, a: 0.0293, name: 'TRAPPIST-1' } };
+  const st = { pre: PRE.earth, ph: 0 };
+  const mOf = v => Math.pow(10, Math.log10(0.08) + (Math.log10(1.5) - Math.log10(0.08)) * v / 1000);
+  const vOfM = M => (Math.log10(M) - Math.log10(0.08)) / (Math.log10(1.5) - Math.log10(0.08)) * 1000;
+  const aOf = v => Math.pow(10, -2 + 3 * v / 1000), vOfA = a => (Math.log10(a) + 2) / 3 * 1000;
+  const lum = M => M < 0.43 ? 0.23 * Math.pow(M, 2.3) : Math.pow(M, 4);
+  const teff = M => 5772 * Math.pow(lum(M), 0.25) / Math.pow(M < 1 ? Math.pow(M, 0.8) : Math.pow(M, 0.57), 0.5);
+  $$('[data-hz]').forEach(b => b.addEventListener('click', () => { const p = PRE[b.dataset.hz]; st.pre = p; st.a = p.a; sS.value = vOfM(p.M); dS.value = vOfA(p.a); $$('[data-hz]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  sS.addEventListener('input', () => { st.pre = null; st.a = st.a ? null : st.a; $$('[data-hz]').forEach(x => x.setAttribute('aria-pressed', 'false')); });
+  sS.value = vOfM(1); dS.value = vOfA(1); st.a = 1;
+  dS.addEventListener('input', () => { st.a = null; });
+  function frame(dt) {
+    const M = st.pre ? st.pre.M : mOf(+sS.value), L = st.pre ? st.pre.L : lum(M), Ts = st.pre ? st.pre.T : teff(M), a = st.a || aOf(+dS.value);
+    sO.value = `${M.toFixed(M < 0.2 ? 3 : 2)} Suns`; dO.value = `${a < 0.1 ? a.toFixed(3) : a.toFixed(2)} AU`;
+    const hin = Math.sqrt(L / 1.1), hout = Math.sqrt(L / 0.36), Teq = 278.6 * Math.pow(L, 0.25) / Math.sqrt(a) * Math.pow(0.7, 0.25), P = Math.sqrt(a ** 3 / M);
+    setText(rZ, a < hin ? 'too hot: water boils away' : a > hout ? 'too cold: water freezes' : 'in the habitable zone');
+    setText(rT, `${Math.round(Teq - 273)} °C`);
+    setText(rY, P < 1 / 12 ? `${(P * 365.25).toFixed(1)} days` : P < 2 ? `${(P * 365.25).toFixed(0)} days` : `${P.toFixed(1)} years`);
+    if (!REDUCE) st.ph += dt * 0.8;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // log-distance strip: star on the left, distance 0.01..10 AU across
+    const x0 = 54, gw = w - x0 - 20, A0 = -2, A1 = 1, X = d => x0 + (Math.log10(Math.max(0.0101, Math.min(9.9, d))) - A0) / (A1 - A0) * gw;
+    const by = h * 0.3, bh = h * 0.34, cy = by + bh / 2;
+    const zone = (d0, d1, col) => { ctx.fillStyle = col; ctx.fillRect(X(d0), by, Math.max(0, X(d1) - X(d0)), bh); };
+    zone(0.0101, hin, rgba(COL.eigen, 0.16)); zone(hin, hout, rgba('#5a8fb3', 0.3)); zone(hout, 9.9, rgba(COL.violet, 0.14));
+    ctx.fillStyle = COL.eigen; if (X(hin) - x0 > 60) ctx.fillText('too hot', x0 + 6, by - 8);
+    ctx.fillStyle = '#5a8fb3'; ctx.textAlign = 'center'; ctx.fillText('habitable zone', clamp((X(hin) + X(hout)) / 2, 60, w - 60), by - 8); ctx.textAlign = 'left';
+    ctx.fillStyle = COL.violet; if (x0 + gw - X(hout) > 70) ctx.fillText('too cold', x0 + gw - 60, by - 8);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center';
+    [0.01, 0.1, 1, 10].forEach(d => { ctx.fillText(d >= 1 ? `${d} AU` : `${d} AU`, X(d) + (d === 10 ? -14 : d === 0.01 ? 14 : 0), by + bh + 18); });
+    ctx.fillText('DISTANCE FROM STAR · LOG SCALE', x0 + gw / 2, h - 12); ctx.textAlign = 'left';
+    const g = ctx.createRadialGradient(24, cy, 0, 24, cy, 20); g.addColorStop(0, '#d2d1d5'); g.addColorStop(0.5, tempColor(Ts)); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(24, cy, 20, 0, Math.PI * 2); ctx.fill();
+    if (Math.abs(M - 1) < 0.02 && L === 1) [['Venus', 0.723], ['Mars', 1.524], ['Jupiter', 5.2]].forEach(([n, d]) => { ctx.fillStyle = COL['ink-3']; ctx.beginPath(); ctx.arc(X(d), by + bh - 10, 2.5, 0, Math.PI * 2); ctx.fill(); ctx.fillText(w < 560 ? n[0] : n, X(d) - (w < 560 ? 3 : 12), by + bh - 18); });
+    const col = a < hin ? COL.eigen : a > hout ? COL.violet : COL.ice, py = cy + Math.sin(st.ph) * bh * 0.12;
+    ctx.strokeStyle = rgba(COL.ink, 0.3); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(X(a), by); ctx.lineTo(X(a), by + bh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(a), py, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL.ink; ctx.fillText(st.pre && Math.abs(Math.log10(a / st.pre.a)) < 0.01 ? (st.pre === PRE.earth ? 'Earth' : st.pre === PRE.prox ? 'Proxima b' : 'TRAPPIST-1e') : 'your planet', Math.min(X(a) + 12, w - 90), py - 10);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(st.pre ? `STAR: ${st.pre.name.toUpperCase()}` : `STAR: ${Math.round(Ts).toLocaleString('en-US')} K SURFACE`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

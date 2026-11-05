@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Double Slit</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 007 colour code: ice = waves, pink = particles landing, violet = which-path information. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/3}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 007 · Quantum series · 1 of 10</div>
+    <a class="navlink" href="006.html">← Φ 006</a>
+    <a class="navlink" href="008.html">Φ 008 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 007 · Quantum series · 1 of 10</p>
+    <h1>double <span class="eig">slit</span></h1>
+    <p class="gloss">QUANTUM · interference — <em>two paths adding up, so that some places get more and some get none</em></p>
+    <p class="thesis">Fire single particles, one at a time, at a wall with two slits. Each one lands as a single dot. Yet together the dots draw a pattern only a wave could make, and the pattern vanishes the moment you look to see which slit each particle used.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Waves → quantum mechanics</dd></div>
+    <div><dt>Models</dt><dd>A ripple tank, a particle-by-particle screen, a which-path detector</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 1 of 10. Pairs with <a href="001.html">Φ 001</a>.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>waves</span><span class="key"><i style="background:var(--eigen)"></i>particles landing</span><span class="key"><i style="background:var(--violet)"></i>which-path</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="waves">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Waves</span><h2>Two openings, one pattern</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Top view of waves passing through two slits and spreading out, with the brightness they make on a screen at the right."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="l1">Wavelength <input type="range" id="l1" min="0.6" max="2" step="0.01" value="1"><output id="l1o">1.00</output></label>
+          <label class="scrub" for="d1">Slit gap <input type="range" id="d1" min="2" max="8" step="0.1" value="4"><output id="d1o">4.0</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Slits">
+            <button class="btn" type="button" data-s1="2" aria-pressed="true">Both slits open</button>
+            <button class="btn" type="button" data-s1="1" aria-pressed="false">Cover one</button>
+          </div>
+          <button class="btn solo" type="button" id="play1">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Bright bands on screen</b><span id="r1n" class="eg">—</span></div>
+          <div class="ro"><b>Band spacing</b><span id="r1s">—</span></div>
+          <div class="ro"><b>Darkest point</b><span id="r1d">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Start with something familiar: water waves. A wave rolls up to a wall with two narrow openings. Each opening becomes a new source of ripples, and the two sets spread out and overlap.</p>
+        <p>Where a crest from one slit meets a crest from the other, they add up into a bigger wave. Where a crest meets a trough, they cancel to nothing. On the screen at the right this makes stripes of bright and dark. This is <span class="i">interference</span>, the signature of waves. Thomas Young used it around 1801 to show that light is a wave.</p>
+        <p>Cover one slit and the stripes disappear, leaving one broad glow. The dark bands only exist because there are two ways to get there, and they cancel.</p>
+        <div class="task"><b>Try this</b>Shorten the wavelength or widen the gap and the bands crowd together. Then cover one slit, and notice that some dark spots get brighter. Opening a second path made those places darker.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>I</var>(<var>θ</var>) ∝ cos²<span style="font-size:.8em">(</span><span class="frac"><span>π<var>d</var> sin <var>θ</var></span><span><var>λ</var></span></span><span style="font-size:.8em">)</span> · sinc²<span style="font-size:.8em">(</span><span class="frac"><span>π<var>a</var> sin <var>θ</var></span><span><var>λ</var></span></span><span style="font-size:.8em">)</span></div>
+          <p>Bright bands sit where the path difference <var>d</var> sin <var>θ</var> is a whole number of wavelengths. Their spacing on a distant screen is about <var>λL</var>/<var>d</var>. The sinc² factor is the broad glow from each slit’s own width <var>a</var>. The ripple tank sums circular waves from points across each slit, with amplitude falling as 1/√<var>r</var>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="particles">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">One at a time</span><h2>Particles that land like dots and add up like waves</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A detector screen where single particles land one at a time as dots, slowly building up striped bands, with a histogram and the wave prediction below."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="What to fire">
+            <button class="btn" type="button" data-p2="photon" aria-pressed="false">Photons</button>
+            <button class="btn" type="button" data-p2="electron" aria-pressed="true">Electrons</button>
+            <button class="btn" type="button" data-p2="c60" aria-pressed="false">Buckyballs</button>
+          </div>
+          <label class="scrub" for="rate2">Rate <input type="range" id="rate2" min="0" max="1000" step="1" value="350"><output id="rate2o">—</output></label>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="clr2">Clear screen</button>
+          <button class="btn solo" type="button" id="play2">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Particles landed</b><span id="r2n" class="eg">0</span></div>
+          <div class="ro"><b>Next one lands</b><span id="r2x">—</span></div>
+          <div class="ro"><b>Pattern</b><span id="r2p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Now turn the source down until only one particle is in flight at a time. Each one arrives at the screen as a single <span class="a">dot</span>, in one place, never a smeared wave. Where it lands looks completely random.</p>
+        <p>Keep going. After a few dozen, nothing. After a few hundred, stripes begin to show. After thousands, the dots have drawn exactly the bright and dark bands of Bay 01.</p>
+        <p>So each particle on its own somehow “knew” about both slits. It travelled as a wave of possibility through both openings, the wave interfered with itself, and only on arrival did it land as one dot, with the odds set by the wave.</p>
+        <p>This isn’t a thought experiment. In 1989 a team at Hitachi filmed electrons building up this pattern one by one. Physicists have since done it with buckyballs (60 carbon atoms, 1999) and with molecules of about 2,000 atoms (2019).</p>
+        <div class="task"><b>Try this</b>Clear the screen, slow the rate right down, and try to predict where the next dot will land. Then speed up and watch the bands appear from the noise.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>P</var>(<var>x</var>) = |<var>ψ</var>₁(<var>x</var>) + <var>ψ</var>₂(<var>x</var>)|²</div>
+          <p>The Born rule: the chance of landing at <var>x</var> is the squared size of the total wave there. Add the waves first, then square. The cross term 2 Re(<var>ψ</var>₁*<var>ψ</var>₂) is the interference. Each dot here is drawn at random from exactly this distribution. The wavelength is de Broglie’s <var>λ</var> = <var>h</var>/<var>p</var>, which is why heavy molecules need very slow speeds and very fine gratings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="whichpath">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Looking</span><h2>Find out which slit, and the stripes vanish</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="The same particle screen with a which-path detector at the slits. As the detector gets better, the stripes fade into two smooth humps."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="k3">Which-path detector <input type="range" id="k3" min="0" max="1" step="0.01" value="0"><output id="k3o">off</output></label>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="clr3">Clear screen</button>
+          <button class="btn solo" type="button" id="play3">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Path information</b><span id="r3d" class="vi">—</span></div>
+          <div class="ro"><b>Stripe contrast</b><span id="r3v" class="eg">—</span></div>
+          <div class="ro"><b>Their squares add to</b><span id="r3s">—</span></div>
+          <div class="ro"><b>Particles landed</b><span id="r3n">0</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The obvious next step is to catch each particle in the act: place a detector at the slits that records which one it went through.</p>
+        <p>The moment the detector can tell, the stripes disappear. The dots pile up in two plain humps, one behind each slit, as if they were ordinary bullets. No interference.</p>
+        <p>It isn’t that the detector kicks the particle off course. What matters is <span class="v">information</span>. If the path is knowable even in principle, the two possibilities no longer overlap and can’t interfere. Make the detector only partly reliable and you get faint stripes. The trade-off is exact: the more you know about the path, the less contrast in the stripes.</p>
+        <p>Stranger still, if the which-path record is erased before anyone reads it, the stripes can be recovered among the matching events. This is the <strong>quantum eraser</strong>, first demonstrated around 2000.</p>
+        <div class="task"><b>Try this</b>Slide the detector from off to on, clearing the screen at each step. Watch the stripes fade in proportion. Check that the two readouts, squared, always add up to 1.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>V</var>² + <var>D</var>² ≤ 1</div>
+          <p>Englert’s duality relation (1996). <var>D</var> is the distinguishability of the paths, and <var>V</var> the visibility of the fringes: (<var>I</var><sub>max</sub> − <var>I</var><sub>min</sub>)/(<var>I</var><sub>max</sub> + <var>I</var><sub>min</sub>). With a perfect detector <var>D</var> = 1 and <var>V</var> = 0. The model uses <var>P</var> = ½(<var>P</var>₁ + <var>P</var>₂) + <var>V</var>√(<var>P</var>₁<var>P</var>₂) cos <var>φ</var>, with <var>V</var> = √(1 − <var>D</var>²).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Where interference is put to work</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Measurement</div><h3>Interferometers</h3><p>Split a beam, send the halves down two paths, and recombine them. The stripes shift if either path changes by a fraction of a wavelength. LIGO’s gravitational-wave detector is this idea, 4 kilometres long.</p></div>
+      <div class="g"><div class="where">Atoms</div><h3>Matter-wave sensors</h3><p>Atom interferometers split clouds of cold atoms the same way. They measure gravity and rotation precisely enough to map rock density underground and to navigate without GPS.</p></div>
+      <div class="g"><div class="where">Microscopy</div><h3>Electron microscopes</h3><p>Electrons have far shorter wavelengths than light, so they resolve far finer detail. Cryo-electron microscopy, which won the 2017 Nobel Prize in Chemistry, images proteins atom by atom.</p></div>
+      <div class="g"><div class="where">Open question</div><h3>How big can it go?</h3><p>Researchers keep pushing interference to heavier objects to test whether quantum mechanics ever gives way. So far it hasn’t, up to molecules of tens of thousands of atomic mass units.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A particle travels like a <span class="a">wave of possibilities</span> through every open path, and lands like a dot. Learn which path it took, and the possibilities no longer interfere.</p>
+    <p class="cite">“In reality, it contains the only mystery.” Richard Feynman, on this experiment</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><span class="chip here">007 · Double slit</span><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 007 · Interference · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* shared screen model for bays 02–03: u in [-1, 1] across the screen */
+const NB = 400;
+const sinc = x => Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
+function profile(V, sep) {
+  // two slightly offset single-slit humps plus interference term with visibility V
+  const P = new Float64Array(NB);
+  for (let i = 0; i < NB; i++) {
+    const u = -1 + 2 * (i + 0.5) / NB;
+    const p1 = sinc(3.2 * (u - sep)) ** 2, p2 = sinc(3.2 * (u + sep)) ** 2;
+    P[i] = 0.5 * (p1 + p2) + V * Math.sqrt(p1 * p2) * Math.cos(2 * 13 * u);
+  }
+  return P;
+}
+function cdfOf(P) { const c = new Float64Array(NB); let s = 0; for (let i = 0; i < NB; i++) { s += Math.max(0, P[i]); c[i] = s; } for (let i = 0; i < NB; i++) c[i] /= s; return c; }
+function sample(c) { const r = Math.random(); let lo = 0, hi = NB - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (c[m] < r) lo = m + 1; else hi = m; } return -1 + 2 * (lo + Math.random()) / NB; }
+function screen(ctx, w, h, hits, P, label, tint) {
+  ctx.font = `10.5px ${MONO}`;
+  const pad = 14, sh = h * 0.52, sx = pad, sw = w - 2 * pad, sy = 22;
+  ctx.fillStyle = COL['bay-2']; ctx.fillRect(sx, sy, sw, sh);
+  ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(sx + 0.5, sy + 0.5, sw - 1, sh - 1);
+  ctx.fillStyle = COL['ink-3']; ctx.fillText(label, sx, sy - 8);
+  const n = hits.length, r = n > 4000 ? 1 : n > 1200 ? 1.4 : 2;
+  ctx.fillStyle = rgba(COL.eigen, n > 4000 ? 0.55 : 0.85);
+  for (let k = 0; k < n; k++) { const [u, v] = hits[k]; ctx.fillRect(sx + (u + 1) / 2 * sw - r / 2, sy + v * sh - r / 2, r, r); }
+  if (n) { const [u, v] = hits[n - 1]; ctx.fillStyle = '#d2d1d5'; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(sx + (u + 1) / 2 * sw, sy + v * sh, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; }
+  // histogram vs prediction
+  const hT = sy + sh + 30, hB = h - 18, BINS = 100, hist = new Float64Array(BINS);
+  for (const [u] of hits) hist[Math.min(BINS - 1, Math.floor((u + 1) / 2 * BINS))]++;
+  const pm = Math.max(...P), hm = Math.max(1, ...hist);
+  ctx.fillStyle = COL['ink-3']; ctx.fillText('COUNT AT EACH POSITION  ·  - - WAVE PREDICTION', sx, hT - 8);
+  const bw = sw / BINS;
+  for (let b = 0; b < BINS; b++) { const v = hist[b] / hm; ctx.fillStyle = rgba(COL.eigen, 0.75); ctx.fillRect(sx + b * bw + 0.5, hB - v * (hB - hT), Math.max(1, bw - 1), v * (hB - hT)); }
+  if (n > 20) {
+    const scale = hm / (n * (2 / BINS) * NB / 2) ;
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = tint; ctx.lineWidth = 1.5; ctx.beginPath();
+    let s = 0; for (let i = 0; i < NB; i++) s += Math.max(0, P[i]);
+    for (let i = 0; i < NB; i++) { const x = sx + (i + 0.5) / NB * sw, expected = n * Math.max(0, P[i]) / s * (NB / BINS); const y = hB - Math.min(1.15, expected / hm) * (hB - hT); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(sx, hB); ctx.lineTo(sx + sw, hB); ctx.stroke();
+}
+
+/* ---------- BAY 01: ripple tank ---------- */
+(function () {
+  const cv = $('#c1'), lS = $('#l1'), dS = $('#d1'), lO = $('#l1o'), dO = $('#d1o'), playBtn = $('#play1');
+  const rN = $('#r1n'), rS = $('#r1s'), rD = $('#r1d');
+  const st = { lam: 1, d: 4, slits: 2, t: 0, playing: !REDUCE };
+  const GX = 220, GY = 132, buf = new Float32Array(GX * GY);
+  const XW = 40, YH = 24, BX = 10, L = 28, A = 0.6, SUB = 5;   // world units: barrier at x = BX, screen at x = BX + L
+  let img = null, off = null;
+  function upd() { st.lam = +lS.value; st.d = +dS.value; lO.value = st.lam.toFixed(2); dO.value = st.d.toFixed(1); }
+  lS.addEventListener('input', upd); dS.addEventListener('input', upd);
+  $$('[data-s1]').forEach(b => b.addEventListener('click', () => { st.slits = +b.dataset.s1; $$('[data-s1]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing); upd();
+  function sources() {
+    const ys = st.slits === 2 ? [st.d / 2, -st.d / 2] : [st.d / 2];
+    const s = []; ys.forEach(y0 => { for (let k = 0; k < SUB; k++) s.push(y0 - A / 2 + A * (k + 0.5) / SUB); });
+    return s;
+  }
+  function frame(dt) {
+    if (st.playing) st.t += dt;
+    const k = 2 * Math.PI / st.lam, om = 2 * Math.PI * 0.9, ph = om * st.t, S = sources();
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const narrow = w < 560, tw = narrow ? w - 28 : w * 0.74, th = narrow ? h * 0.66 : h - 28, tx = 14, ty = 14;
+    for (let j = 0; j < GY; j++) {
+      const y = YH / 2 - YH * (j + 0.5) / GY;
+      for (let i = 0; i < GX; i++) {
+        const x = XW * (i + 0.5) / GX;
+        let v;
+        if (x < BX) v = Math.cos(k * x - ph);
+        else if (x > BX + L) v = 0;
+        else {
+          let re = 0; for (const sy of S) { const r = Math.hypot(x - BX, y - sy) + 1e-3; re += Math.cos(k * r + k * BX - ph) / Math.sqrt(r); }
+          v = re / (S.length / (st.slits === 2 ? 2 : 1)) * 1.6;
+        }
+        buf[j * GX + i] = v;
+      }
+    }
+    if (!img || img.width !== GX) { img = ctx.createImageData(GX, GY); off = document.createElement('canvas'); off.width = GX; off.height = GY; }
+    const ci = rgb(COL.ice), cb = rgb(COL.bay);
+    for (let q = 0; q < GX * GY; q++) {
+      const v = clamp(buf[q], -1.4, 1.4) / 1.4, t = (v + 1) / 2;
+      img.data[4 * q] = cb[0] + (ci[0] - cb[0]) * t * t; img.data[4 * q + 1] = cb[1] + (ci[1] - cb[1]) * t * t; img.data[4 * q + 2] = cb[2] + (ci[2] - cb[2]) * t * t; img.data[4 * q + 3] = 255;
+    }
+    off.getContext('2d').putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, tx, ty, tw, th);
+    const WX = x => tx + x / XW * tw, WY = y => ty + (YH / 2 - y) / YH * th;
+    // barrier
+    ctx.fillStyle = COL['ink-3'];
+    const ys = st.slits === 2 ? [st.d / 2, -st.d / 2] : [st.d / 2];
+    const bw = Math.max(3, tw * 0.008);
+    let edges = [YH / 2]; [...ys].sort((a, b) => b - a).forEach(y => edges.push(y + A / 2, y - A / 2)); edges.push(-YH / 2);
+    for (let e = 0; e < edges.length; e += 2) ctx.fillRect(WX(BX) - bw / 2, WY(edges[e]), bw, WY(edges[e + 1]) - WY(edges[e]));
+    if (st.slits === 1) { ctx.fillStyle = COL.violet; ctx.fillRect(WX(BX) - bw / 2, WY(-st.d / 2 + A / 2), bw, WY(-st.d / 2 - A / 2) - WY(-st.d / 2 + A / 2)); }
+    // screen line
+    ctx.fillStyle = COL['ink-2']; ctx.fillRect(WX(BX + L) - 1, ty, 2, th);
+    // intensity on the screen (time-averaged)
+    const I = [], NY = 200; let im = 0;
+    for (let q = 0; q < NY; q++) {
+      const y = YH / 2 - YH * (q + 0.5) / NY; let re = 0, imag = 0;
+      for (const sy of S) { const r = Math.hypot(L, y - sy); re += Math.cos(k * r) / Math.sqrt(r); imag += Math.sin(k * r) / Math.sqrt(r); }
+      const v = re * re + imag * imag; I.push(v); im = Math.max(im, v);
+    }
+    const gx0 = narrow ? tx : tx + tw + 8, gw = narrow ? w - 28 : w - gx0 - 14;
+    if (narrow) {
+      const gy0 = ty + th + 16, gh = h - gy0 - 12;
+      ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath();
+      I.forEach((v, q) => { const x = tx + (q + 0.5) / NY * tw, y = gy0 + gh - v / im * gh; q ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+      ctx.fillStyle = COL['ink-3']; ctx.font = `10.5px ${MONO}`; ctx.fillText('BRIGHTNESS ALONG THE SCREEN (TOP → BOTTOM)', tx, gy0 - 4);
+    } else {
+      ctx.fillStyle = COL['ink-3']; ctx.font = `10.5px ${MONO}`; ctx.fillText('SCREEN', gx0, ty + 10);
+      ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 8; ctx.beginPath();
+      I.forEach((v, q) => { const y = ty + (q + 0.5) / NY * th, x = gx0 + v / im * gw * 0.95; q ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.shadowBlur = 0;
+    }
+    // readouts
+    let peaks = 0; for (let q = 1; q < NY - 1; q++) if (I[q] > I[q - 1] && I[q] >= I[q + 1] && I[q] > 0.15 * im) peaks++;
+    setText(rN, String(peaks));
+    setText(rS, st.slits === 2 ? `${(st.lam * L / st.d).toFixed(1)} units` : 'no bands');
+    const minI = Math.min(...I.slice(NY * 0.3, NY * 0.7));
+    setText(rD, st.slits === 2 ? `${(minI / im * 100).toFixed(0)}% of brightest` : `${(minI / im * 100).toFixed(0)}% · no cancelling`);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: one particle at a time ---------- */
+(function () {
+  const cv = $('#c2'), rateS = $('#rate2'), rateO = $('#rate2o'), playBtn = $('#play2');
+  const rN = $('#r2n'), rX = $('#r2x'), rP = $('#r2p');
+  const P = profile(1, 0.06), C = cdfOf(P);
+  const st = { hits: [], acc: 0, playing: !REDUCE, kind: 'electron' };
+  const rate = () => Math.pow(10, -0.3 + 3 * +rateS.value / 1000);
+  $('#clr2').addEventListener('click', () => { st.hits = []; });
+  $$('[data-p2]').forEach(b => b.addEventListener('click', () => { st.kind = b.dataset.p2; st.hits = []; $$('[data-p2]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  if (REDUCE) for (let k = 0; k < 3000; k++) st.hits.push([sample(C), Math.random()]);
+  const NAMES = { photon: 'PHOTONS', electron: 'ELECTRONS', c60: 'BUCKYBALLS (C₆₀)' };
+  function frame(dt) {
+    const r = rate(); rateO.value = r < 10 ? `${r.toFixed(1)}/s` : `${Math.round(r)}/s`;
+    if (st.playing && st.hits.length < 20000) { st.acc += r * dt; while (st.acc >= 1) { st.hits.push([sample(C), Math.random()]); st.acc -= 1; } }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    screen(ctx, w, h, st.hits, P, `DETECTOR SCREEN · ${NAMES[st.kind]} · ONE AT A TIME`, COL.ice);
+    const n = st.hits.length;
+    setText(rN, n.toLocaleString('en-US'));
+    setText(rX, 'nobody can say');
+    setText(rP, n < 60 ? 'random scatter so far' : n < 400 ? 'bands starting to show' : 'clear interference bands');
+    rP.className = n >= 400 ? 'eg' : '';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: which-path detector ---------- */
+(function () {
+  const cv = $('#c3'), kS = $('#k3'), kO = $('#k3o'), playBtn = $('#play3');
+  const rD = $('#r3d'), rV = $('#r3v'), rS = $('#r3s'), rN = $('#r3n');
+  const st = { D: 0, hits: [], acc: 0, playing: !REDUCE, P: null, C: null };
+  function upd() {
+    st.D = +kS.value; const V = Math.sqrt(Math.max(0, 1 - st.D * st.D));
+    st.P = profile(V, 0.16); st.C = cdfOf(st.P);
+    kO.value = st.D === 0 ? 'off' : st.D === 1 ? 'perfect' : `${Math.round(st.D * 100)}%`;
+    setText(rD, `D = ${st.D.toFixed(2)}`); setText(rV, `V = ${V.toFixed(2)}`); setText(rS, `${(V * V + st.D * st.D).toFixed(2)}`);
+  }
+  kS.addEventListener('input', () => { upd(); st.hits = []; });
+  $('#clr3').addEventListener('click', () => { st.hits = []; });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing); upd();
+  if (REDUCE) for (let k = 0; k < 3000; k++) st.hits.push([sample(st.C), Math.random()]);
+  function frame(dt) {
+    if (st.playing && st.hits.length < 20000) { st.acc += 160 * dt; while (st.acc >= 1) { st.hits.push([sample(st.C), Math.random()]); st.acc -= 1; } }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    screen(ctx, w, h, st.hits, st.P, st.D === 0 ? 'DETECTOR SCREEN · NO WHICH-PATH DETECTOR' : `DETECTOR SCREEN · WHICH-PATH DETECTOR ${kO.value.toUpperCase()}`, COL.violet);
+    setText(rN, st.hits.length.toLocaleString('en-US'));
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

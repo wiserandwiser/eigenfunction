@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Curved Spacetime</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 003 · Geometry → Gravity → Black holes</div>
+    <a class="navlink" href="002.html">← Φ 002</a>
+    <a class="navlink" href="004.html">Φ 004 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 003 · Big ideas, seen moving</p>
+    <h1>space<span class="eig">time</span></h1>
+    <p class="gloss">GEOMETRY · spacetime — <em>space and time as one fabric, which mass can bend</em></p>
+    <p class="thesis">Newton said gravity is a force that pulls. Einstein said nothing pulls at all. Mass bends space and time, and a falling object is simply moving as straight as it can through that bent geometry. Surprisingly, most of the work is done by bending time.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Geometry → general relativity → black holes</dd></div>
+    <div><dt>Models</dt><dd>3 live simulations, orbits solved from Einstein’s equations</dd></div>
+    <div><dt>Library</dt><dd><a href="001.html">001 Eigenfunction</a> · <a href="002.html">002 Tunnelling</a></dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>what you follow</span><span class="key"><i style="background:var(--ice)"></i>geometry</span><span class="key"><i style="background:var(--violet)"></i>mass</span></dd></div>
+  </dl>
+</section>
+
+<!-- BAY 01 -->
+<section class="bay" id="geodesics">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Straight lines</span><h2>Two travellers walk straight ahead and still meet</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="v1">
+          <div class="fallback" hidden>The 3D model needs WebGL and couldn’t start in this browser.</div>
+          <div class="hint">Drag to orbit</div>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="k1">Curvature <input type="range" id="k1" min="0" max="1.2" step="0.01" value="0.35"><output id="k1o">0.35</output></label>
+          <label class="scrub" for="g1">Start gap <input type="range" id="g1" min="0.4" max="2.4" step="0.05" value="1.4"><output id="g1o">1.40</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Surface">
+            <button class="btn" type="button" data-k="0" aria-pressed="false">Flat</button>
+            <button class="btn" type="button" data-k="0.35" aria-pressed="true">Gentle</button>
+            <button class="btn" type="button" data-k="1.2" aria-pressed="false">Sharp</button>
+          </div>
+          <button class="btn solo" type="button" id="walk1">Walk again</button>
+          <button class="btn solo" type="button" id="play1">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Curvature radius</b><span id="r1r">—</span></div>
+          <div class="ro"><b>Distance walked</b><span id="r1d">—</span></div>
+          <div class="ro"><b>Gap now</b><span id="r1g" class="eg">—</span></div>
+          <div class="ro"><b>They meet after</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Two travellers stand on the equator a short way apart. Both walk due north. Neither ever turns. Yet they drift closer together, and they meet at the pole.</p>
+        <p>Nothing pulls them together. The surface is curved, and on a curved surface, straight lines that start out parallel do not stay parallel.</p>
+        <p>The straightest possible path across a surface is called a <span class="a">geodesic</span>. On a flat surface, geodesics that start parallel stay parallel forever. Set the curvature to zero and see.</p>
+        <p>Einstein’s idea was that mass curves spacetime, and anything in free fall, like a dropped apple, an orbiting moon or the Earth itself, is simply following a geodesic. What we feel as the pull of gravity is curvature, the same thing that brought the travellers together.</p>
+        <div class="task"><b>Try this</b>Choose Flat, then slowly raise the curvature. Watch the gap start to close. A sharper curve makes them meet sooner, however far apart they start.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><span class="frac"><span>d²<var>ξ</var></span><span>d<var>s</var>²</span></span> = −<var>K ξ</var> &nbsp;⇒&nbsp; <var>ξ</var>(<var>s</var>) = <var>ξ</var>₀ cos(√<var>K</var> <var>s</var>)</div>
+          <p>The geodesic deviation (Jacobi) equation. On a surface with curvature <var>K</var> = 1/<var>R</var>², the gap <var>ξ</var> between neighbouring geodesics shrinks like a cosine and closes after a distance π<var>R</var>/2. In general relativity the same idea uses the Riemann curvature tensor:</p>
+          <div class="eq"><span class="frac"><span>D²<var>ξ</var><sup><var>μ</var></sup></span><span>d<var>τ</var>²</span></span> = −<var>R</var><sup><var>μ</var></sup><sub><var>νρσ</var></sub> <var>u</var><sup><var>ν</var></sup><var>ξ</var><sup><var>ρ</var></sup><var>u</var><sup><var>σ</var></sup></div>
+          <p>That relative squeeze between free-falling neighbours is the tidal force.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 02 -->
+<section class="bay" id="clocks">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Curved time</span><h2>Time runs slower lower down</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2">
+          <canvas id="c2" aria-label="Three clocks: on the ground, higher up, and far away. Below, a chart of how much slower time runs at each height."></canvas>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Body">
+            <button class="btn" type="button" data-body="earth" aria-pressed="true">Earth</button>
+            <button class="btn" type="button" data-body="sun" aria-pressed="false">Sun</button>
+            <button class="btn" type="button" data-body="wd" aria-pressed="false">White dwarf</button>
+            <button class="btn" type="button" data-body="ns" aria-pressed="false">Neutron star</button>
+            <button class="btn" type="button" data-body="bh" aria-pressed="false">Black hole</button>
+          </div>
+        </div>
+        <div class="controls">
+          <label class="scrub" for="h2">High clock <input type="range" id="h2" min="0" max="1000" step="1" value="715"><output id="h2o">—</output></label>
+          <button class="btn solo" type="button" id="gps2">GPS height</button>
+          <button class="btn solo" type="button" id="rst2">Restart clocks</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Ground clock</b><span id="r2g" class="vi">—</span></div>
+          <div class="ro"><b>High clock</b><span id="r2h">—</span></div>
+          <div class="ro"><b>High gains per day</b><span id="r2d" class="eg">—</span></div>
+          <div class="ro"><b>Over 80 years</b><span id="r2l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Mass does not only curve space. It slows time. A clock closer to a mass ticks slower than one higher up.</p>
+        <p>This has been measured, not just predicted. Optical atomic clocks raised by only 33 cm have been caught running faster than their twins below (NIST, 2010).</p>
+        <p>This warping of time is most of what gravity is. For anything moving slowly, like a dropped apple or a thrown ball, the bending of time does nearly all the work. The straightest path through spacetime curves toward where clocks run slower, and we call that falling.</p>
+        <p>Your phone depends on it. GPS satellites orbit 20,200 km up. Their clocks gain about 45 microseconds a day from the weaker gravity and lose about 7 from their speed. Left uncorrected, the net 38 microseconds would throw your position off by roughly 10 km every day.</p>
+        <div class="task"><b>Try this</b>Set the high clock to GPS height and read the gain. Then pick Neutron star and watch the ground clock visibly fall behind. Finally, hover beside a black hole.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><span class="frac"><span>d<var>τ</var></span><span>d<var>t</var></span></span> = <span style="font-size:1.1em">√</span><span style="border-top:1px solid var(--ink-2)">1 − <var>r</var><sub>s</sub>/<var>r</var></span>,&nbsp; <var>r</var><sub>s</sub> = <span class="frac"><span>2<var>GM</var></span><span><var>c</var>²</span></span></div>
+          <p>A clock hovering at radius <var>r</var> ticks at this rate compared with a clock far away. <var>r</var><sub>s</sub> is the Schwarzschild radius: 8.9 mm for the Earth, 3 km for the Sun. Near the ground this reduces to Δ<var>τ</var>/<var>τ</var> ≈ <var>gh</var>/<var>c</var>², about one part in 10¹⁶ per metre of height.</p>
+          <p>The readouts show only this gravitational effect for clocks held still. Real GPS satellites also move fast, which special relativity says slows them by about 7 µs a day.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 03 -->
+<section class="bay" id="orbits">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Black holes</span><h2>Orbits and light around a black hole</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="v3">
+          <div class="fallback" hidden>The 3D model needs WebGL and couldn’t start in this browser.</div>
+          <div class="hint">True shape of space · depth compressed<br>Drag to orbit</div>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="What to send">
+            <button class="btn eg" type="button" data-m3="probe" aria-pressed="true">Probe</button>
+            <button class="btn eg" type="button" data-m3="light" aria-pressed="false">Light rays</button>
+          </div>
+          <button class="btn solo" type="button" id="go3">Launch again</button>
+          <button class="btn solo" type="button" id="play3">Pause</button>
+        </div>
+        <div class="controls" id="probeCtl">
+          <label class="scrub" for="r3">Start distance <input type="range" id="r3" min="4" max="15" step="0.5" value="9"><output id="r3o">9 rs</output></label>
+          <label class="scrub" for="f3">Sideways speed <input type="range" id="f3" min="0.6" max="1.4" step="0.01" value="0.93"><output id="f3o">93%</output></label>
+        </div>
+        <div class="controls" id="lightCtl" hidden>
+          <label class="scrub" for="b3">Aim offset <input type="range" id="b3" min="1.2" max="6" step="0.01" value="2.62"><output id="b3o">2.62 rs</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b id="k3a">Closest approach</b><span id="r3a">—</span></div>
+          <div class="ro"><b id="k3b">Ellipse turns per lap</b><span id="r3b" class="eg">—</span></div>
+          <div class="ro"><b>Outcome</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Curve space and time around one compact mass and you get the Schwarzschild geometry. Karl Schwarzschild found this first exact solution of Einstein’s equations in 1915, while serving as a soldier on the Russian front.</p>
+        <p>The funnel is the true shape of space around the mass, a surface called Flamm’s paraboloid. Distances along it are real distances. The time part can’t be drawn, but every path here is computed from the full equations, time included. Distances are in units of <strong>r<sub>s</sub></strong>, the horizon’s radius.</p>
+        <p><strong>Probe.</strong> Far out, an orbit closes almost like Newton’s ellipse. Closer in, each lap overshoots, so the ellipse turns and traces a rosette. Mercury does this too, by 43 arcseconds a century, the first evidence that Einstein was right. Inside 3 r<sub>s</sub> (<span class="i">dashed ice ring</span>) no orbit is stable: give the probe a little less speed and it spirals in through the <span class="v">horizon</span>.</p>
+        <p><strong>Light.</strong> Light passing a mass bends. At 1.5 r<sub>s</sub> (<span class="v">dashed violet ring</span>) light can orbit, balanced on a knife-edge. Aim any closer than about 2.6 r<sub>s</sub> and light is captured. That boundary is the black hole’s shadow, photographed by the Event Horizon Telescope for M87* (2019) and for Sagittarius A* at the centre of our galaxy (2022).</p>
+        <div class="task"><b>Try this</b>Lower the probe’s speed until it dives inside the ice ring. Then switch to light rays and find the aim that loops the hole before escaping. It sits near 2.60 r<sub>s</sub>.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><span class="frac"><span>d²<var>u</var></span><span>d<var>φ</var>²</span></span> + <var>u</var> = <span class="frac"><span><var>GM</var></span><span><var>L</var>²</span></span> + <span class="frac"><span>3<var>GM</var></span><span><var>c</var>²</span></span><var>u</var>²</div>
+          <p>The orbit equation in Schwarzschild geometry, with <var>u</var> = 1/<var>r</var> and <var>L</var> the angular momentum per unit mass. Without the last term this is Newton’s equation, whose solutions are closed ellipses. The extra <var>u</var>² term makes orbits precess and allows the plunge. For light, drop the <var>GM</var>/<var>L</var>² term.</p>
+          <p>Key radii: the horizon at <var>r</var><sub>s</sub>; the photon sphere at 1.5 <var>r</var><sub>s</sub>; the innermost stable circular orbit at 3 <var>r</var><sub>s</sub>; the shadow’s edge at an aim of (√27/2) <var>r</var><sub>s</sub> ≈ 2.60 <var>r</var><sub>s</sub>. The funnel’s height is <var>z</var> = 2√(<var>r</var><sub>s</sub>(<var>r</var> − <var>r</var><sub>s</sub>)). The model integrates the equation with a 4th-order Runge–Kutta method.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Where curved spacetime shows itself</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1919 · Eclipse</div><h3>Starlight bent by the Sun</h3><p>During a total eclipse, Eddington’s expeditions measured stars near the Sun shifted by about 1.75 arcseconds, twice Newton’s prediction and just what Einstein predicted. Today gravitational lensing turns whole galaxy clusters into natural telescopes and maps dark matter.</p></div>
+      <div class="g"><div class="where">2015 · LIGO</div><h3>Ripples in spacetime</h3><p>On 14 September 2015, LIGO detected two black holes merging 1.3 billion light-years away. The wave stretched its 4 km arms by less than a thousandth of the width of a proton.</p></div>
+      <div class="g"><div class="where">2011 · Gravity Probe B</div><h3>Earth twists spacetime</h3><p>Four near-perfect quartz gyroscopes in orbit slowly turned as they were carried through Earth’s curved spacetime. They also confirmed frame-dragging: the spinning Earth drags spacetime around with it.</p></div>
+      <div class="g"><div class="where">Every day · GPS</div><h3>Relativity in your pocket</h3><p>Satellite clocks are deliberately tuned to tick slightly slow before launch, so that once in orbit they match clocks on the ground. Without general relativity, satellite navigation would drift by kilometres a day.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Spacetime tells matter how to move; matter tells spacetime how to <span class="a">curve</span>.</p>
+    <p class="cite">John Archibald Wheeler</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><span class="chip here" style="border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)">003 · Curved spacetime</span><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 003 · Geometry and gravity · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: geodesics on a curved surface ---------- */
+(function () {
+  const host = $('#v1'), kS = $('#k1'), gS = $('#g1'), kO = $('#k1o'), gO = $('#g1o'), playBtn = $('#play1');
+  const rR = $('#r1r'), rD = $('#r1d'), rG = $('#r1g'), rM = $('#r1m');
+  const st = { K: 0.35, g: 1.4, s: 0, hold: 0, playing: !REDUCE, az: -0.7, el: 0.7, drag: null };
+  const WP = 1.7, LP = 3.4, NU = 48, NV = 72, NL = 13;
+  const Vmax = () => st.K > 1e-5 ? Math.min(LP, Math.PI / 2 / Math.sqrt(st.K)) : LP;
+  function P(u, v, o) {
+    if (st.K < 1e-5) return o.set(u, 0, v);
+    const R = 1 / Math.sqrt(st.K), la = v / R, lo = u / R;
+    return o.set(R * Math.sin(lo) * Math.cos(la), -R + R * Math.cos(lo) * Math.cos(la), R * Math.sin(la));
+  }
+  function Nrm(p, o) {
+    if (st.K < 1e-5) return o.set(0, 1, 0);
+    const R = 1 / Math.sqrt(st.K);
+    return o.set(p.x / R, (p.y + R) / R, p.z / R);
+  }
+  const renderer = makeRenderer(host);
+  function readouts() {
+    const K = st.K, R = K > 1e-5 ? 1 / Math.sqrt(K) : Infinity;
+    setText(rR, isFinite(R) ? R.toFixed(2) : '∞ · flat');
+    setText(rD, st.s.toFixed(2));
+    const gap = K > 1e-5 ? Math.cos(st.s * Math.sqrt(K)) : 1;
+    setText(rG, `${Math.max(0, gap * 100).toFixed(0)}% of start`);
+    setText(rM, isFinite(R) ? `${(Math.PI / 2 * R).toFixed(2)} walked` : 'never');
+  }
+  if (!renderer) {
+    kS.addEventListener('input', () => { st.K = +kS.value; kO.value = st.K.toFixed(2); readouts(); });
+    readouts(); return;
+  }
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(36, 4 / 3, 0.05, 80);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(-2, 5, 2); scene.add(dl);
+  const cI = new THREE.Color(COL.ice), cE = new THREE.Color(COL.eigen), cB = new THREE.Color(COL['bay-2']);
+
+  const sPos = new Float32Array((NU + 1) * (NV + 1) * 3), idx = [];
+  for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = j * (NU + 1) + i, b = a + 1, c = a + NU + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  const sGeo = new THREE.BufferGeometry(); sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3)); sGeo.setIndex(idx);
+  scene.add(new THREE.Mesh(sGeo, new THREE.MeshStandardMaterial({ color: cB.clone().lerp(cI, 0.22), side: THREE.DoubleSide, roughness: 0.85, metalness: 0, transparent: true, opacity: 0.94 })));
+  const gPos = new Float32Array(2 * 3 * (NL * NV + NL * NU));
+  const gGeo = new THREE.BufferGeometry(); gGeo.setAttribute('position', new THREE.BufferAttribute(gPos, 3));
+  scene.add(new THREE.LineSegments(gGeo, new THREE.LineBasicMaterial({ color: cI, transparent: true, opacity: 0.32 })));
+  const wGeo = new THREE.SphereGeometry(0.075, 20, 14), wMat = new THREE.MeshBasicMaterial({ color: cE });
+  const walkers = [new THREE.Mesh(wGeo, wMat), new THREE.Mesh(wGeo, wMat)]; walkers.forEach(w => scene.add(w));
+  const TN = 220;
+  const trails = [0, 1].map(() => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TN * 3), 3)); const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: cE })); scene.add(l); return l; });
+  const guides = [0, 1].map(() => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TN * 3), 3)); const m = new THREE.LineDashedMaterial({ color: cE, dashSize: 0.06, gapSize: 0.06, transparent: true, opacity: 0.35 }); const ln = new THREE.Line(g, m); scene.add(ln); return ln; });
+  const gapGeo = new THREE.BufferGeometry(); gapGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(41 * 3), 3));
+  const gapLine = new THREE.Line(gapGeo, new THREE.LineBasicMaterial({ color: new THREE.Color(COL.ink), transparent: true, opacity: 0.8 })); scene.add(gapLine);
+  const tp = new THREE.Vector3(), tn = new THREE.Vector3(), target = new THREE.Vector3();
+
+  function rebuild() {
+    const V = Vmax();
+    for (let j = 0; j <= NV; j++) for (let i = 0; i <= NU; i++) {
+      const k = j * (NU + 1) + i; P(-WP + 2 * WP * i / NU, V * j / NV, tp);
+      sPos[3 * k] = tp.x; sPos[3 * k + 1] = tp.y; sPos[3 * k + 2] = tp.z;
+    }
+    sGeo.attributes.position.needsUpdate = true; sGeo.computeVertexNormals(); sGeo.computeBoundingSphere();
+    let o = 0;
+    const put = (u, v) => { P(u, v, tp); Nrm(tp, tn); gPos[o++] = tp.x + tn.x * 0.004; gPos[o++] = tp.y + tn.y * 0.004; gPos[o++] = tp.z + tn.z * 0.004; };
+    for (let l = 0; l < NL; l++) { const u = -WP + 2 * WP * l / (NL - 1); for (let j = 0; j < NV; j++) { put(u, V * j / NV); put(u, V * (j + 1) / NV); } }
+    for (let l = 0; l < NL; l++) { const v = V * l / (NL - 1); for (let i = 0; i < NU; i++) { put(-WP + 2 * WP * i / NU, v); put(-WP + 2 * WP * (i + 1) / NU, v); } }
+    gGeo.attributes.position.needsUpdate = true; gGeo.computeBoundingSphere();
+    // full planned path of each traveller, faint dashed
+    guides.forEach((ln, w) => {
+      const u = (w ? 1 : -1) * st.g / 2, a = ln.geometry.attributes.position.array;
+      for (let n = 0; n < TN; n++) { P(u, V * n / (TN - 1), tp); Nrm(tp, tn); a[3 * n] = tp.x + tn.x * 0.01; a[3 * n + 1] = tp.y + tn.y * 0.01; a[3 * n + 2] = tp.z + tn.z * 0.01; }
+      ln.geometry.attributes.position.needsUpdate = true; ln.computeLineDistances(); ln.geometry.computeBoundingSphere();
+    });
+    P(0, V * 0.45, target);
+  }
+  function placeWalkers() {
+    const V = Vmax(), s = Math.min(st.s, V);
+    walkers.forEach((m, w) => {
+      const u = (w ? 1 : -1) * st.g / 2;
+      P(u, s, tp); Nrm(tp, tn); m.position.copy(tp).addScaledVector(tn, 0.075);
+      const a = trails[w].geometry.attributes.position.array, n = Math.max(2, Math.round(TN * s / V));
+      for (let q = 0; q < n; q++) { P(u, s * q / (n - 1), tp); Nrm(tp, tn); a[3 * q] = tp.x + tn.x * 0.012; a[3 * q + 1] = tp.y + tn.y * 0.012; a[3 * q + 2] = tp.z + tn.z * 0.012; }
+      trails[w].geometry.setDrawRange(0, n); trails[w].geometry.attributes.position.needsUpdate = true; trails[w].geometry.computeBoundingSphere();
+    });
+    const a = gapGeo.attributes.position.array;
+    for (let q = 0; q <= 40; q++) { P(-st.g / 2 + st.g * q / 40, s, tp); Nrm(tp, tn); a[3 * q] = tp.x + tn.x * 0.03; a[3 * q + 1] = tp.y + tn.y * 0.03; a[3 * q + 2] = tp.z + tn.z * 0.03; }
+    gapGeo.attributes.position.needsUpdate = true; gapGeo.computeBoundingSphere();
+    gapLine.visible = st.s > 0.02 && st.s < V - 0.01;
+  }
+  function pressK() { $$('[data-k]').forEach(b => b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.k - st.K) < 0.005))); }
+  function setK(v) { st.K = v; kS.value = v; kO.value = v.toFixed(2); pressK(); rebuild(); if (st.s > Vmax()) st.s = Vmax(); }
+  kS.addEventListener('input', () => setK(+kS.value));
+  gS.addEventListener('input', () => { st.g = +gS.value; gO.value = st.g.toFixed(2); rebuild(); });
+  $$('[data-k]').forEach(b => b.addEventListener('click', () => { setK(+b.dataset.k); st.s = 0; st.hold = 0; }));
+  $('#walk1').addEventListener('click', () => { st.s = 0; st.hold = 0; if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  orbitCam(renderer.domElement, st);
+  sizer(host, renderer, cam);
+  rebuild();
+  if (REDUCE) st.s = Vmax() * 0.7;
+
+  function frame(dt) {
+    const V = Vmax();
+    if (st.playing) {
+      if (st.s < V) st.s = Math.min(V, st.s + dt * 0.42);
+      else { st.hold += dt; if (st.hold > 1.8) { st.s = 0; st.hold = 0; } }
+      if (!st.drag) st.az += dt * 0.04;
+    }
+    placeWalkers(); readouts();
+    const R = 5.4;
+    cam.position.set(target.x + R * Math.cos(st.el) * Math.sin(st.az), target.y + R * Math.sin(st.el), target.z + R * Math.cos(st.el) * Math.cos(st.az));
+    cam.lookAt(target);
+    renderer.render(scene, cam);
+  }
+  const S = { frame }; watch(host, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: clocks ---------- */
+(function () {
+  const cv = $('#c2'), hS = $('#h2'), hO = $('#h2o');
+  const rG = $('#r2g'), rH = $('#r2h'), rD = $('#r2d'), rL = $('#r2l');
+  const BODIES = {
+    earth: { name: 'Earth', rs: 8.87e-3, R: 6.371e6, ground: 'surface' },
+    sun:   { name: 'Sun', rs: 2953, R: 6.957e8, ground: 'surface' },
+    wd:    { name: 'White dwarf', rs: 3012, R: 5.84e6, ground: 'surface (Sirius B)' },
+    ns:    { name: 'Neutron star', rs: 4134, R: 1.2e4, ground: 'surface' },
+    bh:    { name: 'Black hole', rs: 29530, R: 29530 * 1.1, ground: 'hovering at 1.1 rs' }
+  };
+  const st = { body: 'earth', T: 0, t: 715 };
+  const alt = () => BODIES[st.body].R * Math.pow(10, -2 + 3.5 * st.t / 1000);
+  const slow = (rs, r) => -Math.expm1(0.5 * Math.log1p(-rs / r));          // 1 − rate, precise for tiny values
+  function fmtLen(m) {
+    if (m < 1) return (m * 100).toFixed(0) + ' cm';
+    if (m < 1000) return m.toFixed(0) + ' m';
+    if (m < 1e6) return (m / 1000).toFixed(m < 1e4 ? 1 : 0) + ' km';
+    return Math.round(m / 1000).toLocaleString('en-US') + ' km';
+  }
+  function fmtSlow(x) {
+    if (x >= 0.001) return `slower by ${(x * 100).toFixed(x >= 0.1 ? 0 : 2)}%`;
+    const e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e);
+    return `slower by ${m.toFixed(1)}×10${sup(e)}`;
+  }
+  function fmtDur(s) {
+    const a = Math.abs(s);
+    if (a < 1e-6) return (s * 1e9).toFixed(1) + ' ns';
+    if (a < 1e-3) return (s * 1e6).toFixed(1) + ' µs';
+    if (a < 1) return (s * 1e3).toFixed(1) + ' ms';
+    if (a < 120) return s.toFixed(1) + ' s';
+    if (a < 7200) return (s / 60).toFixed(1) + ' min';
+    if (a < 172800) return (s / 3600).toFixed(1) + ' hours';
+    if (a < 3.156e7 * 2) return (s / 86400).toFixed(0) + ' days';
+    return (s / 3.156e7).toFixed(1) + ' years';
+  }
+  function update() {
+    const B = BODIES[st.body], rg = B.R, rh = B.R + alt();
+    const sg = slow(B.rs, rg), sh = slow(B.rs, rh);
+    hO.value = `+${fmtLen(alt())}`;
+    setText(rG, fmtSlow(sg));
+    setText(rH, fmtSlow(sh));
+    const gain = Math.expm1(0.5 * (Math.log1p(-B.rs / rh) - Math.log1p(-B.rs / rg)));   // high rate ÷ ground rate − 1
+    setText(rD, fmtDur(gain * 86400));
+    setText(rL, fmtDur(gain * 86400 * 365.25 * 80));
+  }
+  function press() { $$('[data-body]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.body === st.body))); }
+  $$('[data-body]').forEach(b => b.addEventListener('click', () => { st.body = b.dataset.body; st.T = 0; press(); update(); }));
+  hS.addEventListener('input', () => { st.t = +hS.value; update(); });
+  $('#gps2').addEventListener('click', () => {
+    st.body = 'earth'; press();
+    st.t = Math.round((Math.log10(20.2e6 / 6.371e6) + 2) / 3.5 * 1000); hS.value = st.t; st.T = 0; update();
+  });
+  $('#rst2').addEventListener('click', () => { st.T = 0; });
+  update();
+
+  function dial(ctx, x, y, r, frac, col, name, sub, elapsed) {
+    ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * Math.PI * 2, r0 = i % 3 ? r * 0.88 : r * 0.8;
+      ctx.strokeStyle = i % 3 ? COL['ink-3'] : COL['ink-2'];
+      ctx.beginPath(); ctx.moveTo(x + Math.sin(a) * r0, y - Math.cos(a) * r0); ctx.lineTo(x + Math.sin(a) * r * 0.97, y - Math.cos(a) * r * 0.97); ctx.stroke();
+    }
+    const a = frac * Math.PI * 2;
+    ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.shadowColor = col; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(a) * r * 0.82, y - Math.cos(a) * r * 0.82); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.textAlign = 'center'; ctx.font = `10.5px ${MONO}`;
+    ctx.fillStyle = COL['ink-2']; ctx.fillText(name, x, y + r + 18);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(sub, x, y + r + 32);
+    ctx.fillStyle = col; ctx.font = `12px ${MONO}`; ctx.fillText(elapsed, x, y + r + 48);
+    ctx.textAlign = 'left';
+  }
+
+  function frame(dt) {
+    if (!REDUCE) st.T += dt;
+    const B = BODIES[st.body], rg = B.R, rh = B.R + alt();
+    const rateG = 1 - slow(B.rs, rg), rateH = 1 - slow(B.rs, rh);
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const top = h * 0.5, rD = Math.min(h * 0.13, w / 9), yD = 18 + rD + 6;
+    const xs = [w / 6, w / 2, 5 * w / 6], P = 6;
+    dial(ctx, xs[0], yD, rD, (st.T * rateG / P) % 1, COL.violet, 'GROUND', B.ground, `${(st.T * rateG).toFixed(2)} s`);
+    dial(ctx, xs[1], yD, rD, (st.T * rateH / P) % 1, COL.ice, 'HIGH', `+${fmtLen(alt())}`, `${(st.T * rateH).toFixed(2)} s`);
+    dial(ctx, xs[2], yD, rD, (st.T / P) % 1, COL.ink, 'FAR AWAY', 'no gravity', `${st.T.toFixed(2)} s`);
+
+    // chart: how much slower time runs at each height
+    const cT = top + 34, cB = h - 26, pl = 52, pr = 18;
+    const XMAX = Math.log10(1 + Math.pow(10, 1.5));
+    const X = r => pl + Math.log10(r / B.R) / XMAX * (w - pl - pr);
+    const ymin = { earth: -11, sun: -8, wd: -6, ns: -3, bh: -2 }[st.body], ymax = 0;
+    const Y = l => cT + (ymax - clamp(l, ymin, ymax)) / (ymax - ymin) * (cB - cT);
+    ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(0, top + 8); ctx.lineTo(w, top + 8); ctx.stroke();
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL['ink-3'];
+    ctx.fillText(`HOW MUCH SLOWER TIME RUNS · ${B.name.toUpperCase()} · LOG SCALE`, 14, top + 24);
+    ctx.textAlign = 'right';
+    const stepY = (ymax - ymin) > 8 ? 2 : 1;
+    for (let l = ymax; l >= ymin; l -= stepY) {
+      const y = Y(l);
+      ctx.strokeStyle = rgba(COL['rule-hi'], 0.6); ctx.beginPath(); ctx.moveTo(pl, y); ctx.lineTo(w - pr, y); ctx.stroke();
+      ctx.fillStyle = COL['ink-3']; ctx.fillText(l === 0 ? '1' : '10' + sup(l), pl - 6, y + 4);
+    }
+    ctx.textAlign = 'center';
+    [1, 2, 5, 10, 20].forEach(m => { if (Math.log10(m) <= XMAX) { const x = X(m * B.R); ctx.fillStyle = COL['ink-3']; ctx.fillText(m === 1 ? 'ground' : `${m}× dist`, x, h - 8); } });
+    ctx.textAlign = 'left';
+    // curve
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath();
+    for (let j = 0; j <= 200; j++) {
+      const r = B.R * Math.pow(10, XMAX * j / 200), y = Y(Math.log10(slow(B.rs, r)));
+      j ? ctx.lineTo(X(r), y) : ctx.moveTo(X(r), y);
+    }
+    ctx.stroke();
+    const mark = (r, col, lab) => {
+      const x = X(r), y = Y(Math.log10(slow(B.rs, r)));
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillText(lab, Math.min(x + 9, w - 60), y - 8);
+    };
+    mark(rg, COL.violet, 'ground');
+    mark(rh, COL.ice, 'high');
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: Schwarzschild orbits and light ---------- */
+(function () {
+  const host = $('#v3'), rS = $('#r3'), fS = $('#f3'), bS = $('#b3'), playBtn = $('#play3');
+  const rO = $('#r3o'), fO = $('#f3o'), bO = $('#b3o');
+  const kA = $('#k3a'), kB = $('#k3b'), rA = $('#r3a'), rB = $('#r3b'), rC = $('#r3c');
+  // units: G = c = M = 1, so rs = 2
+  const RMAX = 44, SC = 1 / 7.5, VZ = 0.9;
+  const Hf = r => 2 * Math.sqrt(2 * Math.max(0, r - 2));
+  const yOf = r => r >= RMAX ? 0 : (Hf(r) - Hf(RMAX)) * SC * VZ;
+  const st = { mode: 'probe', playing: !REDUCE, az: 0.4, el: 0.78, drag: null };
+  const pr = { u: 0, w: 0, phi: 0, L: 0, alive: false, out: '', rmin: 0, lastPeri: null, shift: null, laps: 0, tscale: 1, circ: false };
+  const lt = { b: 5.24, pts: [], cum: [], s: 0, wait: 0, captured: false, defl: 0 };
+
+  function rk4(u, w, h, massive, L) {
+    const f = (u, w) => [w, -u + (massive ? 1 / (L * L) : 0) + 3 * u * u];
+    const k1 = f(u, w), k2 = f(u + h / 2 * k1[0], w + h / 2 * k1[1]), k3 = f(u + h / 2 * k2[0], w + h / 2 * k2[1]), k4 = f(u + h * k3[0], w + h * k3[1]);
+    return [u + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]), w + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])];
+  }
+  function trace(bM) {
+    // light ray from far right, aimed with impact parameter bM (in M units)
+    let u = 1 / 50, w2 = 1 / (bM * bM) - u * u * (1 - 2 * u);
+    if (w2 < 0) return null;
+    let w = Math.sqrt(w2), phi = Math.asin(bM * u);
+    const pts = [[1 / u, phi]]; let captured = false;
+    for (let n = 0; n < 60000; n++) {
+      [u, w] = rk4(u, w, 0.003, false, 0); phi += 0.003;
+      if (n % 2 === 0) pts.push([1 / Math.max(u, 1e-6), phi]);
+      if (u >= 0.5) { captured = true; pts.push([2, phi]); break; }
+      if (u < 1 / 51 && w < 0) break;
+      if (phi > 7 * Math.PI) break;
+    }
+    const defl = captured ? null : (phi + Math.asin(Math.min(1, bM * u)) - Math.PI) * 180 / Math.PI;
+    return { pts, captured, defl };
+  }
+
+  function readProbe() {
+    kA.textContent = 'Closest approach'; kB.textContent = 'Ellipse turns per lap';
+    setText(rA, pr.rmin ? `${(pr.rmin / 2).toFixed(2)} rs` : '—');
+    setText(rB, pr.circ ? 'circular' : pr.shift == null ? 'measuring…' : `${(pr.shift * 180 / Math.PI).toFixed(1)}°`);
+    setText(rC, pr.out || (pr.laps ? `orbiting · lap ${pr.laps}` : 'in flight'));
+    rC.className = pr.out.startsWith('plunged') ? 'vi' : '';
+  }
+  function readLight() {
+    kA.textContent = 'Aim offset'; kB.textContent = 'Bent by';
+    setText(rA, `${(lt.b / 2).toFixed(2)} rs`);
+    if (lt.captured) { setText(rB, '—'); setText(rC, 'captured · inside the shadow'); rC.className = 'vi'; }
+    else {
+      setText(rB, `${lt.defl.toFixed(1)}°`);
+      const loops = Math.floor(lt.defl / 360);
+      setText(rC, loops >= 1 ? `circles ${loops > 1 ? loops + ' times' : 'once'}, escapes` : 'escapes');
+      rC.className = loops >= 1 ? 'eg' : '';
+    }
+  }
+
+  const renderer = makeRenderer(host);
+  function launch() {
+    const r0 = 2 * +rS.value, f = +fS.value;
+    rO.value = `${(+rS.value).toFixed(1).replace('.0', '')} rs`; fO.value = `${Math.round(f * 100)}%`;
+    const Lc = Math.sqrt(r0 / (1 - 3 / r0));
+    Object.assign(pr, { u: 1 / r0, w: 0, phi: 0, L: f * Lc, alive: true, out: '', rmin: r0, lastPeri: f > 1 ? 0 : null, shift: null, laps: 0, circ: Math.abs(f - 1) < 0.005, tscale: 2 * Math.PI * Math.pow(r0, 1.5) / 7 });
+    pr.prevW = 0; pr.n = 0;
+    if (trail) { trail.geometry.setDrawRange(0, 0); }
+    readProbe();
+  }
+  function aim() {
+    lt.b = 2 * +bS.value; bO.value = `${(+bS.value).toFixed(2)} rs`;
+    const t = trace(lt.b);
+    lt.pts = t.pts; lt.captured = t.captured; lt.defl = t.defl; lt.s = 0; lt.wait = 0;
+    if (beam) buildBeam();
+    readLight();
+  }
+  let trail = null, beam = null;
+  rS.addEventListener('input', launch); fS.addEventListener('input', launch); bS.addEventListener('input', aim);
+  $('#go3').addEventListener('click', () => { st.mode === 'probe' ? launch() : (lt.s = 0, lt.wait = 0); if (!st.playing) { st.playing = true; playLabel(playBtn, true); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  $$('[data-m3]').forEach(b => b.addEventListener('click', () => {
+    st.mode = b.dataset.m3;
+    $$('[data-m3]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('#probeCtl').hidden = st.mode !== 'probe'; $('#lightCtl').hidden = st.mode !== 'light';
+    if (groups) { groups.probe.visible = st.mode === 'probe'; groups.light.visible = st.mode === 'light'; }
+    st.mode === 'probe' ? (launch(), readProbe()) : aim();
+  }));
+  let groups = null;
+  launch();
+  if (!renderer) return;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(new THREE.Color(COL.bay), 9, 16);
+  const cam = new THREE.PerspectiveCamera(36, 4 / 3, 0.05, 80);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(3, 6, 2); scene.add(dl);
+  const cI = new THREE.Color(COL.ice), cE = new THREE.Color(COL.eigen), cV = new THREE.Color(COL.violet), cB = new THREE.Color(COL['bay-2']);
+  const W = (r, phi, lift, o) => o.set(r * Math.cos(phi) * SC, yOf(r) + lift, -r * Math.sin(phi) * SC);
+
+  // funnel
+  const NR = 90, NA = 128;
+  const pos = new Float32Array((NR + 1) * (NA + 1) * 3), col = new Float32Array((NR + 1) * (NA + 1) * 3), idx = [];
+  const tmp = new THREE.Color(), v3 = new THREE.Vector3();
+  for (let i = 0; i <= NR; i++) {
+    const r = 2 + (RMAX - 2) * Math.pow(i / NR, 2), y = yOf(r), d = clamp(-y / (-yOf(2)), 0, 1);
+    for (let j = 0; j <= NA; j++) {
+      const k = i * (NA + 1) + j, ph = j / NA * Math.PI * 2;
+      pos[3 * k] = r * Math.cos(ph) * SC; pos[3 * k + 1] = y; pos[3 * k + 2] = -r * Math.sin(ph) * SC;
+      tmp.copy(cB).lerp(cI, 0.08 + 0.32 * (1 - d)); if (r < 3) tmp.lerp(cV, 0.25 * (3 - r));
+      col[3 * k] = tmp.r; col[3 * k + 1] = tmp.g; col[3 * k + 2] = tmp.b;
+    }
+  }
+  for (let i = 0; i < NR; i++) for (let j = 0; j < NA; j++) { const a = i * (NA + 1) + j, b = a + 1, c = a + NA + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  const fGeo = new THREE.BufferGeometry(); fGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); fGeo.setAttribute('color', new THREE.BufferAttribute(col, 3)); fGeo.setIndex(idx); fGeo.computeVertexNormals();
+  scene.add(new THREE.Mesh(fGeo, new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.75, metalness: 0.05 })));
+  // grid rings and spokes
+  const gl = [];
+  [2.5, 4, 8, 10, 14, 20, 26, 32, 38, RMAX].forEach(r => { for (let j = 0; j < 128; j++) { gl.push(W(r, j / 128 * Math.PI * 2, 0.004, new THREE.Vector3()), W(r, (j + 1) / 128 * Math.PI * 2, 0.004, new THREE.Vector3())); } });
+  for (let s = 0; s < 24; s++) { const ph = s / 24 * Math.PI * 2; for (let i = 0; i < 60; i++) { const r1 = 2 + (RMAX - 2) * Math.pow(i / 60, 2), r2 = 2 + (RMAX - 2) * Math.pow((i + 1) / 60, 2); gl.push(W(r1, ph, 0.004, new THREE.Vector3()), W(r2, ph, 0.004, new THREE.Vector3())); } }
+  scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gl), new THREE.LineBasicMaterial({ color: cI, transparent: true, opacity: 0.18 })));
+  const ring = (r, color, dashed, op) => {
+    const pts = []; for (let j = 0; j <= 160; j++) pts.push(W(r, j / 160 * Math.PI * 2, 0.012, new THREE.Vector3()));
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 0.07, gapSize: 0.05, transparent: true, opacity: op }) : new THREE.LineBasicMaterial({ color, transparent: true, opacity: op });
+    const l = new THREE.Line(g, m); if (dashed) l.computeLineDistances(); scene.add(l); return l;
+  };
+  ring(2.02, cV, false, 1);     // horizon
+  ring(3, cV, true, 0.9);       // photon sphere
+  ring(6, cI, true, 0.8);       // ISCO
+  const hole = new THREE.Mesh(new THREE.CircleGeometry(2 * SC * 1.01, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(COL.void), side: THREE.DoubleSide }));
+  hole.rotation.x = -Math.PI / 2; hole.position.y = yOf(2) + 0.002; scene.add(hole);
+
+  groups = { probe: new THREE.Group(), light: new THREE.Group() };
+  scene.add(groups.probe); scene.add(groups.light); groups.light.visible = false;
+  // probe
+  const TN = 8000;
+  trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: cE }));
+  trail.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TN * 3), 3)); trail.geometry.setDrawRange(0, 0); trail.frustumCulled = false;
+  groups.probe.add(trail);
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.075, 20, 14), new THREE.MeshBasicMaterial({ color: cE })); groups.probe.add(dot);
+  // light
+  const FAN = [1.0, 1.6, 2.2, 2.5, 2.7, 3.2, 4, 5.2].map(b => b * 2);
+  FAN.forEach(bM => {
+    const t = trace(bM); if (!t) return;
+    const pts = t.pts.map(([r, ph]) => W(Math.min(r, 60), ph, 0.02, new THREE.Vector3()));
+    groups.light.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: cI, transparent: true, opacity: 0.45 })));
+  });
+  beam = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: cE })); beam.frustumCulled = false; groups.light.add(beam);
+  const photon = new THREE.Mesh(new THREE.SphereGeometry(0.07, 18, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color('#d2d1d5') })); groups.light.add(photon);
+  function buildBeam() {
+    const vs = lt.pts.map(([r, ph]) => W(Math.min(r, 60), ph, 0.03, new THREE.Vector3()));
+    beam.geometry.dispose(); beam.geometry = new THREE.BufferGeometry().setFromPoints(vs);
+    lt.v = vs; lt.cum = [0]; for (let i = 1; i < vs.length; i++) lt.cum.push(lt.cum[i - 1] + vs[i].distanceTo(vs[i - 1]));
+  }
+
+  function stepProbe(dt) {
+    if (!pr.alive) return;
+    let budget = dt * pr.tscale, guard = 0;
+    const arr = trail.geometry.attributes.position.array;
+    while (budget > 0 && guard++ < 6000) {
+      const uOld = pr.u, h = Math.min(0.006, budget * pr.L * uOld * uOld);
+      [pr.u, pr.w] = rk4(pr.u, pr.w, h, true, pr.L); pr.phi += h;
+      budget -= h / (pr.L * uOld * uOld);
+      const r = 1 / pr.u; pr.rmin = Math.min(pr.rmin, r);
+      if (pr.prevW > 0 && pr.w <= 0) { if (pr.lastPeri != null) pr.shift = pr.phi - pr.lastPeri - 2 * Math.PI; pr.lastPeri = pr.phi; pr.laps++; }
+      pr.prevW = pr.w;
+      if (pr.n % 3 === 0) {
+        let n = trail.geometry.drawRange.count;
+        if (n >= TN) { arr.copyWithin(0, 3 * (TN / 2)); n = TN / 2; }
+        W(Math.min(r, 60), pr.phi, 0.03, v3); arr[3 * n] = v3.x; arr[3 * n + 1] = v3.y; arr[3 * n + 2] = v3.z;
+        trail.geometry.setDrawRange(0, n + 1);
+      }
+      pr.n++;
+      if (pr.u >= 0.5) { pr.alive = false; pr.out = 'plunged through the horizon'; pr.u = 0.5; break; }
+      if (pr.u < 1 / 60 && pr.w < 0) { pr.alive = false; pr.out = 'escaped'; break; }
+    }
+    trail.geometry.attributes.position.needsUpdate = true;
+  }
+
+  orbitCam(renderer.domElement, st);
+  sizer(host, renderer, cam);
+  aim(); st.mode = 'probe'; launch();
+  if (REDUCE) stepProbe(8);
+
+  function frame(dt) {
+    if (st.playing) {
+      if (st.mode === 'probe') stepProbe(dt);
+      else if (lt.cum.length) {
+        const tot = lt.cum[lt.cum.length - 1];
+        if (lt.s < tot) lt.s += dt * 2.2; else { lt.wait += dt; if (lt.wait > 1) { lt.s = 0; lt.wait = 0; } }
+      }
+      if (!st.drag) st.az += dt * 0.035;
+    }
+    if (st.mode === 'probe') { W(Math.min(1 / pr.u, 60), pr.phi, 0.075, dot.position); readProbe(); }
+    else if (lt.cum.length) {
+      let i = 1; while (i < lt.cum.length - 1 && lt.cum[i] < lt.s) i++;
+      photon.position.copy(lt.v[Math.min(i, lt.v.length - 1)]);
+    }
+    const R = 9.5;
+    cam.position.set(R * Math.cos(st.el) * Math.sin(st.az), R * Math.sin(st.el) - 0.4, R * Math.cos(st.el) * Math.cos(st.az));
+    cam.lookAt(0, -0.9, 0);
+    renderer.render(scene, cam);
+  }
+  const S = { frame }; watch(host, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Global Consciousness Project</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 059 · Fringe science · 19 of 20</div>
+    <a class="navlink" href="058.html">← Φ 058</a>
+    <a class="navlink" href="060.html">Φ 060 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 059 · Fringe science · 19 of 20</p>
+    <h1>global <span class="eig">consciousness</span></h1>
+    <p class="gloss">FRINGE SCIENCE · the Global Consciousness Project — <em>a worldwide network of random number generators testing whether mass human attention leaves a trace in physical randomness</em></p>
+    <p class="thesis">In 1998 Roger Nelson, formerly of Princeton’s PEAR lab, set up random number generators in dozens of countries, each producing a stream of random bits every second. The hypothesis: when millions of people focus on the same event, a funeral, a disaster, New Year’s Eve, the generators everywhere should become slightly less random together. Every test was registered before the data were examined. After 17 years and about 500 events, the combined result stood at odds against chance of around a trillion to one. Here you can watch the network on 11 September 2001, see distant devices fall into step, and add up the whole formal series.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Parapsychology, physics of randomness, statistics</dd></div>
+    <div><dt>Models</dt><dd>The network on 9/11, correlations between distant eggs, the 500-event formal series</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 19 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 051 (pooling) and 054 (random generators).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>network deviation, events</span><span class="key"><i style="background:var(--ice)"></i>chance</span><span class="key"><i style="background:var(--violet)"></i>combined result</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="sept">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">11 September 2001</span><h2>The network on a day of shock</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The running deviation of the whole generator network over 11 September 2001. It wanders within the chance band in the early hours, then climbs steadily from the time of the attacks."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e1">Effect of mass attention <input type="range" id="e1" min="0" max="100" step="1" value="60"><output id="e1o">—</output></label>
+          <button class="btn solo" type="button" id="go1">Replay the day</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Time (New York)</b><span id="r1t">—</span></div>
+          <div class="ro"><b>Network deviation so far</b><span id="r1z" class="eg">—</span></div>
+          <div class="ro"><b>Odds of this by luck</b><span id="r1p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Each generator, nicknamed an “egg”, produces 200 random bits a second. Every second the project combines all the eggs into one number measuring how far they stray from chance together. On an ordinary day the running total wanders like a random walk inside the chance band.</p>
+        <p>On 11 September 2001 the eggs were running in about 40 locations around the world when the first plane struck at 8:46 in New York.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>The GCP reported that the network deviated strongly in the hours around the attacks, one of the largest deviations in its record, and published the analysis in <i>Foundations of Physics Letters</i> in 2002. An independent analysis by Dean Radin, using a different statistic, also found a marked departure from chance that day. The timing matters: the deviation followed the attacks, not the other way round, and on such a day the attention of much of humanity was fixed on a single event.</div>
+          <div class="con"><b>The case against</b>Researchers including Edwin May and James Spottiswoode found that the 9/11 result depended on the chosen window and statistic, and other reasonable choices gave weaker results.</div>
+        </div>
+        <div class="task"><b>Try this</b>Replay the day and watch where the line leaves the chance band. Then set the effect to zero and replay: an ordinary day stays inside the band.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">network variance each second: <var>Z</var><sub>s</sub>² − 1, summed over time</div>
+          <p>Each second the eggs’ <var>z</var>-scores are combined (Stouffer) and squared; with pure chance the running sum of <var>Z</var>² − 1 wanders around zero. The effect you set adds a small excess variance during the hours after 8:46, scaled from the published curve.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="paths">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Deeper structure, 2008</span><h2>Distant eggs fall into step</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A world map of generator locations. During major events, pairs of eggs thousands of kilometres apart show small correlations, drawn as lines between them; on ordinary days few pairs correlate."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Period">
+            <button class="btn" type="button" data-pd="ev" aria-pressed="true">During events</button>
+            <button class="btn" type="button" data-pd="ctl">Ordinary days</button>
+          </div>
+          <label class="scrub" for="c2s">Effect <input type="range" id="c2s" min="0" max="100" step="1" value="60"><output id="c2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Pairs correlating beyond chance</b><span id="r2a" class="eg">—</span></div>
+          <div class="ro"><b>Expected by chance</b><span id="r2b">—</span></div>
+          <div class="ro"><b>Typical distance between linked eggs</b><span id="r2c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>If mass attention affects randomness, what exactly changes? In 2008 Peter Bancel and Roger Nelson took the formal results apart in the <i>Journal of Scientific Exploration</i> to look for the structure inside them.</p>
+        <p>They found that the effect does not live inside single eggs, each of which stays close to random on its own. It appears as small correlations between <em>pairs</em> of eggs, often on different continents, during events, as if separated devices were responding to something they share.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Physical devices thousands of kilometres apart, built from independent electronic noise sources and shielded from each other, should never correlate. Bancel and Nelson reported that during events they did, consistently across the formal series, and that the effect showed in independent statistics computed from the same data, which is hard to explain by a single lucky choice of analysis.</div>
+          <div class="con"><b>The case against</b>Bancel later concluded, in 2017, that the overall pattern fits subtle selection by the experimenters better than a global effect.</div>
+        </div>
+        <div class="task"><b>Try this</b>Compare events with ordinary days and count the linked pairs. Lower the effect and watch the lines thin to what chance alone would give.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">pair correlation <var>r<sub>ij</sub></var> = mean(<var>z<sub>i</sub></var> × <var>z<sub>j</sub></var>)</div>
+          <p>A pair is drawn when its correlation is beyond the 95% chance range, so about 5% of pairs light up even with no effect. The effect adds a small shared signal to every egg during events. Locations are schematic.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="series">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">1998–2015</span><h2>Adding up 500 events</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="The cumulative result of about 500 pre-registered event tests from 1998 to 2015. The line climbs steadily away from the chance band, ending near seven standard deviations."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="r3">Shift per event <input type="range" id="r3" min="0" max="60" step="1" value="33"><output id="r3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Rerun the series</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Events tested</b><span id="r3n">—</span></div>
+          <div class="ro"><b>Combined score</b><span id="r3z" class="eg">—</span></div>
+          <div class="ro"><b>Odds by luck</b><span id="r3p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The project’s headline result combined all its formal tests. For each event, the start, end and statistic were written into a public registry <em>before</em> anyone looked at the data, the same safeguard used in clinical trials.</p>
+        <p>Individually most events showed only a small deviation. Added together, about 500 events gave a combined score near 7 standard deviations: odds against chance of roughly a trillion to one.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>A result this far from chance, built from pre-registered tests over 17 years, is among the strongest datasets in parapsychology. The effect is small and steady, an average shift of about a third of a standard deviation per event, and it accumulated across hundreds of very different events, from meditations to tragedies, exactly as a real but subtle influence would. No one has identified an ordinary physical cause, and the eggs behave as random in calibration runs.</div>
+          <div class="con"><b>The case against</b>The combined score shows something shifted the numbers, not what; choosing which events to test still involved human judgment, and the effect did not clearly grow with the size of an event’s audience.</div>
+        </div>
+        <div class="task"><b>Try this</b>Rerun the series at a shift of 0.33 and watch the line climb out of the chance band within a few years. Set the shift to zero and it stays inside.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">cumulative <var>Z</var> = Σ<var>z<sub>i</sub></var> / √<var>n</var>,&nbsp; mean shift 0.33 over 500 events → <var>Z</var> ≈ 0.33 × √500 ≈ 7.4</div>
+          <p>Each simulated event contributes a <var>z</var>-score drawn from a normal distribution shifted by the amount you set. The band shows where 95% of pure-chance series would be.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1997</div><h3>Field REG</h3><p>Pilot experiments took random generators to group events, such as the funeral of Princess Diana, and reported deviations.</p></div>
+      <div class="g"><div class="where">1998</div><h3>The network</h3><p>Roger Nelson launched the Global Consciousness Project with a handful of eggs, growing to about 70 hosts worldwide.</p></div>
+      <div class="g"><div class="where">2001</div><h3>11 September</h3><p>The GCP reported one of its strongest deviations around the attacks, later published in a physics journal.</p></div>
+      <div class="g"><div class="where">2015</div><h3>A trillion to one</h3><p>The formal series closed at about 500 pre-registered events, with a combined result near seven standard deviations.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Seventeen years of pre-registered tests produced a result <span class="a">a trillion to one against chance</span>; if it is real, shared human attention leaves a trace in the physical world.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><span class="chip here">059 · Global Consciousness</span><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 059 · Global Consciousness Project · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: 9/11 ---------- */
+(function () {
+  const cv = $('#c1'), ES = $('#e1'), EO = $('#e1o'), GB = $('#go1'), rT = $('#r1t'), rZ = $('#r1z'), rP = $('#r1p');
+  const M = 288, st = { seed: 6, k: 0, nz: [] };
+  function gen() { const r = mk(st.seed); st.nz = Array.from({ length: M }, () => gs(r)); st.k = 0; }
+  GB.addEventListener('click', () => { st.seed = [6, 26, 35, 17, 19][([6, 26, 35, 17, 19].indexOf(st.seed) + 1) % 5]; gen(); }); ES.addEventListener('input', () => st.k = M); gen();
+  function frame(dt) {
+    st.k = REDUCE ? M : Math.min(M, st.k + dt * 60); const k = Math.max(1, Math.floor(st.k)), e = +ES.value / 100; EO.value = `${ES.value}%`;
+    // 5-minute blocks from 00:00; each block's excess variance ~ N(0, 1) with drift after 8:46 (block 105)
+    let S = 0; const pts = []; for (let i = 0; i < k; i++) { const t = i / 12, drift = t >= 8.77 && t < 20 ? e / 0.6 * 0.6 * Math.exp(-(t - 8.77) / 9) : 0; S += st.nz[i] + drift; pts.push([i, S]); }
+    const z = S / Math.sqrt(k), hh = Math.floor(k / 12), mm = (k % 12) * 5;
+    setText(rT, `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`); setText(rZ, `z = ${z.toFixed(2)}`); setText(rP, z > 1 ? odds(z) : 'within chance');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 44, gy = 34, gw = w - gx - 16, gh = h - gy - 34, lim = Math.max(40, ...pts.map(p => Math.abs(p[1]) * 1.15)), X = i => gx + i / M * gw, Y = v => gy + gh * 0.62 - v / lim * gh * 0.58;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.ice, 0.15); ctx.beginPath(); for (let i = 0; i <= M; i += 4) ctx.lineTo(X(i), Y(1.96 * Math.sqrt(i))); for (let i = M; i >= 0; i -= 4) ctx.lineTo(X(i), Y(-1.96 * Math.sqrt(i))); ctx.fill();
+    dash(ctx, gx, Y(0), gx + gw, Y(0), rgba(COL.ink, 0.3));
+    [[8.77, '8:46 first plane'], [9.05, ''], [10.47, 'towers fall']].forEach(([t, l]) => { ctx.strokeStyle = rgba(COL.violet, 0.6); ctx.beginPath(); ctx.moveTo(X(t * 12), gy); ctx.lineTo(X(t * 12), gy + gh); ctx.stroke(); if (l) tag(ctx, l, X(t * 12) + 4, gy + 14 + (l === 'towers fall' ? 14 : 0), COL.violet); });
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); pts.forEach(([i, v], j) => j ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))); ctx.stroke(); ctx.lineWidth = 1;
+    [0, 6, 12, 18, 24].forEach(t => tag(ctx, `${t}:00`, X(t * 12), gy + gh + 14, COL['ink-3'], 'center'));
+    tag(ctx, 'CUMULATIVE NETWORK VARIANCE · 11 SEPTEMBER 2001 · BAND: 95% OF CHANCE DAYS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: correlated eggs ---------- */
+(function () {
+  const cv = $('#c2'), CS = $('#c2s'), CO = $('#c2o'), rA = $('#r2a'), rB = $('#r2b'), rC = $('#r2c');
+  const EG = [[-122, 37], [-104, 40], [-87, 42], [-74, 41], [-79, 44], [-99, 19], [-47, -23], [-58, -34], [-0.1, 51], [2, 49], [13, 52], [12, 42], [18, 59], [-3, 40], [24, 60], [37, 56], [28, -26], [31, 30], [35, 32], [55, 25], [77, 29], [72, 19], [103, 1], [114, 22], [121, 31], [139, 36], [127, 37], [151, -34], [174, -37], [145, -38]];
+  const st = { pd: 'ev', t: 0 };
+  segs('[data-pd]', b => st.pd = b.dataset.pd);
+  const P = EG.length * (EG.length - 1) / 2;
+  const km = (a, b) => { const R = 6371, t = Math.PI / 180, d = Math.sin(a[1] * t) * Math.sin(b[1] * t) + Math.cos(a[1] * t) * Math.cos(b[1] * t) * Math.cos((a[0] - b[0]) * t); return R * Math.acos(clamp(d, -1, 1)); };
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const e = +CS.value / 100, ev = st.pd === 'ev'; CO.value = `${CS.value}%`;
+    const r = mk(ev ? 17 + Math.floor(st.t / 2) : 99 + Math.floor(st.t / 2)), L = [];
+    for (let i = 0; i < EG.length; i++) for (let j = i + 1; j < EG.length; j++) { const p = 0.05 + (ev ? 0.07 * e : 0); if (r() < p) L.push([i, j]); }
+    const dist = L.length ? L.reduce((a, [i, j]) => a + km(EG[i], EG[j]), 0) / L.length : 0;
+    setText(rA, `${L.length} of ${P}`); setText(rB, `about ${Math.round(P * 0.05)} (5%)`); setText(rC, L.length ? `${Math.round(dist / 100) * 100} km` : '—');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const X = lon => 14 + (lon + 170) / 350 * (w - 28), Y = lat => 34 + (70 - lat) / 120 * (h - 48);
+    ctx.strokeStyle = rgba(COL.ink, 0.12); for (let lon = -150; lon <= 180; lon += 30) { ctx.beginPath(); ctx.moveTo(X(lon), 30); ctx.lineTo(X(lon), h - 10); ctx.stroke(); } for (let lat = -40; lat <= 60; lat += 20) { ctx.beginPath(); ctx.moveTo(14, Y(lat)); ctx.lineTo(w - 14, Y(lat)); ctx.stroke(); }
+    L.forEach(([i, j]) => { ctx.strokeStyle = rgba(ev ? COL.eigen : COL.ice, 0.45); ctx.beginPath(); ctx.moveTo(X(EG[i][0]), Y(EG[i][1])); ctx.lineTo(X(EG[j][0]), Y(EG[j][1])); ctx.stroke(); });
+    EG.forEach(([lo, la]) => { ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(X(lo), Y(la), 4, 0, Math.PI * 2); ctx.fill(); });
+    tag(ctx, ev ? 'PAIRS OF EGGS CORRELATING DURING EVENTS (SCHEMATIC)' : 'PAIRS OF EGGS CORRELATING ON ORDINARY DAYS (SCHEMATIC)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: 500 events ---------- */
+(function () {
+  const cv = $('#c3'), RS = $('#r3'), RO = $('#r3o'), GB = $('#go3'), rN = $('#r3n'), rZ = $('#r3z'), rP = $('#r3p');
+  const M = 500, st = { seed: 11, nz: [], k: 0 };
+  function gen() { const r = mk(st.seed); st.nz = Array.from({ length: M }, () => gs(r)); st.k = 0; }
+  GB.addEventListener('click', () => { st.seed++; gen(); }); RS.addEventListener('input', () => st.k = M); gen();
+  function frame(dt) {
+    st.k = REDUCE ? M : Math.min(M, st.k + dt * 120); const k = Math.max(1, Math.floor(st.k)), mu = +RS.value / 100; RO.value = mu.toFixed(2);
+    let S = 0; const pts = []; for (let i = 0; i < k; i++) { S += st.nz[i] + mu; pts.push([i + 1, S]); }
+    const Z = S / Math.sqrt(k); setText(rN, String(k)); setText(rZ, `${Z.toFixed(1)} standard deviations`); setText(rP, odds(Z));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 44, gy = 34, gw = w - gx - 16, gh = h - gy - 34, top = Math.max(60, 0.33 * M * 1.05, Math.abs(S) * 1.08), X = i => gx + i / M * gw, Y = v => gy + gh * 0.75 - v / top * gh * 0.72;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.ice, 0.15); ctx.beginPath(); for (let i = 0; i <= M; i += 5) ctx.lineTo(X(i), Y(1.96 * Math.sqrt(i))); for (let i = M; i >= 0; i -= 5) ctx.lineTo(X(i), Y(-1.96 * Math.sqrt(i))); ctx.fill();
+    dash(ctx, gx, Y(0), gx + gw, Y(0), rgba(COL.ink, 0.3)); dash(ctx, X(0), Y(0), X(M), Y(0.33 * M), rgba(COL.violet, 0.7)); tag(ctx, 'reported: ≈ 7.3σ', X(M) - 4, Y(0.33 * M) - 6, COL.violet, 'right');
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); pts.forEach(([i, v], j) => j ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))); ctx.stroke(); ctx.lineWidth = 1;
+    [[0, '1998'], [170, '2003'], [340, '2009'], [500, '2015']].forEach(([i, l]) => tag(ctx, l, X(i), gy + gh + 14, COL['ink-3'], 'center'));
+    tag(ctx, 'CUMULATIVE SUM OF EVENT SCORES · BAND: 95% OF PURE-CHANCE SERIES', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

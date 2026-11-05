@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Why Matter Is Solid</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 014 colour code: pink = spin up, violet = spin down, ice = energy levels and bosons. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/9}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.2}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 014 · Quantum series · 8 of 10</div>
+    <a class="navlink" href="013.html">← Φ 013</a>
+    <a class="navlink" href="015.html">Φ 015 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 014 · Quantum series · 8 of 10</p>
+    <h1>why matter is <span class="eig">solid</span></h1>
+    <p class="gloss">QUANTUM · exclusion principle — <em>no two electrons may share exactly the same quantum state</em></p>
+    <p class="thesis">Atoms are almost entirely empty space, so why don’t you sink through the floor? One rule, found by Wolfgang Pauli in 1925, stops electrons from piling on top of each other. That single rule builds the periodic table, gives chemistry its shape, and holds up dead stars.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum mechanics → chemistry → astrophysics</dd></div>
+    <div><dt>Models</dt><dd>Filling energy levels, building atoms 1 to 36, squeezing a box</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 8 of 10. Builds on spin (Φ 009) and uncertainty (Φ 008).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>spin up</span><span class="key"><i style="background:var(--violet)"></i>spin down</span><span class="key"><i style="background:var(--ice)"></i>levels, bosons</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="fill">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The rule</span><h2>Two kinds of particle, two ways to fill a ladder</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A ladder of energy levels in a box. Bosons all crowd onto the bottom rung. Fermions stack two per rung, one spin up and one spin down, filling the ladder upward."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Particle type">
+            <button class="btn" type="button" data-k1="boson" aria-pressed="false">Bosons</button>
+            <button class="btn eg" type="button" data-k1="fermion" aria-pressed="true">Fermions (electrons)</button>
+          </div>
+          <label class="scrub" for="n1">Particles <input type="range" id="n1" min="1" max="20" step="1" value="9"><output id="n1o">9</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Highest rung used</b><span id="r1h" class="eg">—</span></div>
+          <div class="ro"><b>Total energy</b><span id="r1e">—</span></div>
+          <div class="ro"><b>Same, for the other kind</b><span id="r1o">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Every particle in nature is one of two kinds. <span class="i">Bosons</span>, like photons, are sociable: any number can share the same state. Cooled down, they all crowd onto the lowest rung of the energy ladder. In 1995 physicists did this with atoms, making a Bose–Einstein condensate.</p>
+        <p><strong>Fermions</strong>, including electrons, protons and neutrons, obey Pauli’s <strong>exclusion principle</strong>: no two may be in the same state. A rung of the ladder has room for just two electrons, one spin <span class="a">up</span> and one spin <span class="v">down</span>. Every extra electron has to climb to the next empty rung.</p>
+        <p>So a pile of fermions can’t settle quietly at the bottom. It stacks up into a tall tower of energy, even at absolute zero. That tower, the <strong>Fermi sea</strong>, is what makes matter rigid.</p>
+        <div class="task"><b>Try this</b>Add particles as bosons, then switch to fermions. Compare how the total energy grows. Bosons rise in a straight line, while fermions climb far faster.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>E</var><sub><var>n</var></sub> = <var>n</var>² <var>E</var>₁,&nbsp; <var>ψ</var>(1, 2) = −<var>ψ</var>(2, 1)</div>
+          <p>The levels of a particle in a one-dimensional box grow as <var>n</var>². The wavefunction of identical fermions flips sign when two are swapped, so two fermions in the same state would cancel to zero. That is the exclusion principle. For <var>N</var> fermions the total energy grows roughly as <var>N</var>³, against <var>N</var> for bosons.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="table">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Chemistry</span><h2>Build the periodic table, one electron at a time</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="An atom with electrons filling shells, its place in the first four rows of the periodic table, and a chart of how hard it is to remove an electron from each element."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="z2">Electrons <input type="range" id="z2" min="1" max="36" step="1" value="10"><output id="z2o">10</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Jump to">
+            <button class="btn" type="button" data-z2="2">Helium</button>
+            <button class="btn" type="button" data-z2="11">Sodium</button>
+            <button class="btn" type="button" data-z2="18">Argon</button>
+            <button class="btn" type="button" data-z2="26">Iron</button>
+            <button class="btn" type="button" data-z2="29">Copper</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Element</b><span id="r2e" class="eg">—</span></div>
+          <div class="ro"><b>Electron arrangement</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Energy to remove one</b><span id="r2i">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>An atom is a ladder of electron states around a nucleus. Because of the exclusion principle, electrons fill it from the bottom up, in shells and sub-shells: 2 fit in the first shell, then 8, then 8 again, then 18.</p>
+        <p>That filling pattern <em>is</em> the periodic table. A full shell is stable and aloof: helium, neon, argon and krypton are the noble gases, and they hold their electrons tighter than anything near them. One electron past a full shell sits alone and loose: lithium, sodium and potassium give it up easily, which is why they react violently with water.</p>
+        <p>The chart shows the measured energy needed to pull off one electron. Its saw-tooth, with peaks at the noble gases and cliffs just after, is the exclusion principle written in data. Without it, every electron would drop into the lowest state, every atom would behave alike, and there would be no chemistry and no life.</p>
+        <div class="task"><b>Try this</b>Slide from 1 to 36 and watch the shells fill and the marker ride the saw-tooth. Look at chromium (24) and copper (29), where an electron jumps shells early because a half-full or full sub-shell is extra stable.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">1s → 2s → 2p → 3s → 3p → 4s → 3d → 4p</div>
+          <p>Each state is labelled by quantum numbers (<var>n</var>, <var>l</var>, <var>m</var>, <var>s</var>). A sub-shell with angular momentum <var>l</var> holds 2(2<var>l</var> + 1) electrons: s holds 2, p 6, d 10. The filling order follows the Madelung rule. Ionisation energies are measured values, in electronvolts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="squeeze">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Pushing back</span><h2>Squeeze fermions and they push back hard</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A box of 12 particles you can squeeze. As it shrinks, every energy rung rises. The fermion tower's energy shoots up far faster than the bosons', which is degeneracy pressure."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="l3">Box size <input type="range" id="l3" min="0.35" max="1" step="0.01" value="1"><output id="l3o">100%</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Fermion energy</b><span id="r3f" class="eg">—</span></div>
+          <div class="ro"><b>Boson energy</b><span id="r3b">—</span></div>
+          <div class="ro"><b>Fermions resist</b><span id="r3r" class="vi">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Squeeze a box and every rung of its energy ladder moves up. That is the uncertainty principle of Φ 008: confine something more tightly and its energy rises. For bosons on the bottom rung the cost is small. For fermions stacked high up the ladder, it is huge, because every particle in the tower has to rise.</p>
+        <p>That rising cost is a pressure, <strong>degeneracy pressure</strong>, and it has nothing to do with heat or with electric repulsion. It is why your hand doesn’t pass through a table: the electrons in both would have to share states, and the exclusion principle charges an enormous energy price. In 1967 Dyson and Lenard proved that without it, ordinary matter would collapse.</p>
+        <p>The same pressure holds up dead stars. A white dwarf packs about the Sun’s mass into a ball the size of the Earth, supported only by electron degeneracy pressure. Above about 1.4 solar masses, the <strong>Chandrasekhar limit</strong>, even that fails. The star collapses until neutrons, also fermions, take over as a neutron star.</p>
+        <div class="task"><b>Try this</b>Squeeze the box to a third of its size and compare the two energies. The ratio stays the same, but the fermions’ absolute energy cost dwarfs the bosons’.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>E</var><sub><var>n</var></sub> = <span class="frac"><span><var>n</var>²<var>h</var>²</span><span>8<var>mL</var>²</span></span>,&nbsp; <var>P</var><sub>deg</sub> ∝ <var>n</var><sub>e</sub><sup>5/3</sup></div>
+          <p>Every level scales as 1/<var>L</var>², so squeezing raises all of them. For a dense electron gas, degeneracy pressure grows as density to the 5/3 power, independent of temperature. Subrahmanyan Chandrasekhar showed in 1930 that relativity weakens this pressure in very massive white dwarfs, setting the limit near 1.4 solar masses (Nobel Prize, 1983).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Exclusion at every scale</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Electronics</div><h3>Metals, insulators, chips</h3><p>In a solid the electron ladders merge into bands. Whether the top of the Fermi sea lands inside a band or in a gap decides whether a material conducts, insulates or acts as a semiconductor, the basis of every chip.</p></div>
+      <div class="g"><div class="where">Cold atoms</div><h3>Bose–Einstein condensates</h3><p>Cornell, Wieman and Ketterle won the 2001 Nobel Prize for cooling atoms that behave as bosons until thousands of them shared one quantum state, a single giant matter wave.</p></div>
+      <div class="g"><div class="where">Astrophysics</div><h3>Neutron stars</h3><p>When electron pressure fails, electrons are pressed into protons to make neutrons. A neutron star, held up by neutron degeneracy pressure, squeezes more than the Sun’s mass into a city-sized ball.</p></div>
+      <div class="g"><div class="where">Everyday</div><h3>Why things have size</h3><p>The volume of everything you touch, the thickness of a sheet of paper or the bulk of a mountain, comes from electrons refusing to share states. Remove the rule and the world would shrink to a sliver.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Electrons <span class="a">refuse to share</span>. That one refusal stacks them into shells, writes the periodic table, and keeps the floor solid under your feet.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><span class="chip here">014 · Why matter is solid</span><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 014 · Exclusion · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+function arrow(ctx, x, y, up, col, s) {
+  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, y + (up ? s : -s)); ctx.lineTo(x, y - (up ? s : -s)); ctx.stroke();
+  ctx.beginPath(); const t = y - (up ? s : -s); ctx.moveTo(x, t - (up ? 3 : -3)); ctx.lineTo(x - 4, t + (up ? 3 : -3)); ctx.lineTo(x + 4, t + (up ? 3 : -3)); ctx.closePath(); ctx.fill();
+}
+const eF = N => { let e = 0; for (let k = 0; k < N; k++) { const n = Math.floor(k / 2) + 1; e += n * n; } return e; };
+
+/* ---------- BAY 01: filling the ladder ---------- */
+(function () {
+  const cv = $('#c1'), nS = $('#n1'), nO = $('#n1o');
+  const rH = $('#r1h'), rE = $('#r1e'), rO = $('#r1o');
+  const st = { kind: 'fermion' };
+  $$('[data-k1]').forEach(b => b.addEventListener('click', () => { st.kind = b.dataset.k1; $$('[data-k1]').forEach(x => { x.setAttribute('aria-pressed', String(x === b)); x.classList.toggle('eg', x === b && b.dataset.k1 === 'fermion'); }); }));
+  function frame() {
+    const N = +nS.value; nO.value = String(N);
+    const top = st.kind === 'fermion' ? Math.ceil(N / 2) : 1, E = st.kind === 'fermion' ? eF(N) : N, Eo = st.kind === 'fermion' ? N : eF(N);
+    setText(rH, `rung ${top}`); setText(rE, `${E} units`); setText(rO, `${Eo} units as ${st.kind === 'fermion' ? 'bosons' : 'fermions'}`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, lw = narrow ? w - 28 : w * 0.55, lx = 14, ly0 = h - 26, ly1 = 24, NL = 10;
+    const Y = n => ly0 - (n * n - 1) / (NL * NL - 1) * (ly0 - ly1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY LADDER (rungs grow as n²)', lx, 14);
+    for (let n = 1; n <= NL; n++) { ctx.strokeStyle = rgba(COL.ice, 0.55); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(lx + 30, Y(n)); ctx.lineTo(lx + lw, Y(n)); ctx.stroke(); ctx.fillStyle = COL['ink-3']; ctx.fillText(`n=${n}`, lx, Y(n) + 4); }
+    if (st.kind === 'fermion') {
+      for (let k = 0; k < N; k++) { const n = Math.floor(k / 2) + 1, up = k % 2 === 0; if (n > NL) continue; arrow(ctx, lx + 30 + lw * 0.3 + (up ? -14 : 14), Y(n) - 10, up, up ? COL.eigen : COL.violet, 8); }
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = COL.eigen; ctx.beginPath(); ctx.moveTo(lx + 30, Y(top) - 22); ctx.lineTo(lx + lw, Y(top) - 22); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = COL.eigen; ctx.fillText('top of the Fermi sea', lx + lw * 0.55, Y(top) - 26);
+    } else {
+      for (let k = 0; k < N; k++) { ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(lx + 50 + (k % 10) * Math.min(16, (lw - 40) / 10), Y(1) - 9 - Math.floor(k / 10) * 14, 5, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = COL.ice; ctx.fillText('all on the lowest rung', lx + lw * 0.55, Y(1) - 34);
+    }
+    // energy chart
+    const gx = narrow ? 40 : lx + lw + 50, gy = narrow ? h * 0.66 : 30, gw = narrow ? w - 54 : w - gx - 16, gh = narrow ? h - gy - 26 : h - 64;
+    if (narrow) return;
+    const EM = eF(20), X = n => gx + (n - 1) / 19 * gw, Yc = e => gy + (1 - e / EM) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('TOTAL ENERGY VS PARTICLES', gx, gy - 10);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); for (let n = 1; n <= 20; n++) { const y = Yc(eF(n)); n > 1 ? ctx.lineTo(X(n), y) : ctx.moveTo(X(n), y); } ctx.stroke();
+    ctx.strokeStyle = COL.ice; ctx.beginPath(); for (let n = 1; n <= 20; n++) { const y = Yc(n); n > 1 ? ctx.lineTo(X(n), y) : ctx.moveTo(X(n), y); } ctx.stroke();
+    ctx.fillStyle = COL.eigen; ctx.fillText('fermions', X(14), Yc(eF(14)) - 8); ctx.fillStyle = COL.ice; ctx.fillText('bosons', X(15), Yc(15) - 8);
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(N), Yc(st.kind === 'fermion' ? eF(N) : N), 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [1, 5, 10, 15, 20].forEach(n => ctx.fillText(String(n), X(n), gy + gh + 14)); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: building atoms ---------- */
+(function () {
+  const cv = $('#c2'), zS = $('#z2'), zO = $('#z2o');
+  const rE = $('#r2e'), rC = $('#r2c'), rI = $('#r2i');
+  const EL = 'H Hydrogen,He Helium,Li Lithium,Be Beryllium,B Boron,C Carbon,N Nitrogen,O Oxygen,F Fluorine,Ne Neon,Na Sodium,Mg Magnesium,Al Aluminium,Si Silicon,P Phosphorus,S Sulfur,Cl Chlorine,Ar Argon,K Potassium,Ca Calcium,Sc Scandium,Ti Titanium,V Vanadium,Cr Chromium,Mn Manganese,Fe Iron,Co Cobalt,Ni Nickel,Cu Copper,Zn Zinc,Ga Gallium,Ge Germanium,As Arsenic,Se Selenium,Br Bromine,Kr Krypton'.split(',').map(s => s.split(' '));
+  const IE = [13.60, 24.59, 5.39, 9.32, 8.30, 11.26, 14.53, 13.62, 17.42, 21.56, 5.14, 7.65, 5.99, 8.15, 10.49, 10.36, 12.97, 15.76, 4.34, 6.11, 6.56, 6.83, 6.75, 6.77, 7.43, 7.90, 7.88, 7.64, 7.73, 9.39, 6.00, 7.90, 9.79, 9.75, 11.81, 14.00];
+  const ORDER = [['1s', 1, 2], ['2s', 2, 2], ['2p', 2, 6], ['3s', 3, 2], ['3p', 3, 6], ['4s', 4, 2], ['3d', 3, 10], ['4p', 4, 6]];
+  function config(Z) {
+    const occ = {}; let left = Z;
+    for (const [n, , cap] of ORDER) { const k = Math.min(cap, left); if (k > 0) occ[n] = k; left -= k; }
+    if (Z === 24) { occ['4s'] = 1; occ['3d'] = 5; }
+    if (Z === 29) { occ['4s'] = 1; occ['3d'] = 10; }
+    return occ;
+  }
+  const SUP = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+  const cfgStr = occ => ['1s', '2s', '2p', '3s', '3p', '3d', '4s', '4p'].filter(k => occ[k]).map(k => k + String(occ[k]).split('').map(c => SUP[c]).join('')).join(' ');
+  const pos = Z => { if (Z === 1) return [1, 1]; if (Z === 2) return [1, 18]; if (Z <= 10) return [2, Z <= 4 ? Z - 2 : Z + 8]; if (Z <= 18) return [3, Z <= 12 ? Z - 10 : Z]; return [4, Z - 18]; };
+  $$('[data-z2]').forEach(b => b.addEventListener('click', () => { zS.value = b.dataset.z2; }));
+  function frame() {
+    const Z = +zS.value; zO.value = String(Z);
+    const occ = config(Z), [sym, name] = EL[Z - 1];
+    setText(rE, `${Z} · ${name} (${sym})`); setText(rC, cfgStr(occ)); setText(rI, `${IE[Z - 1].toFixed(2)} eV`);
+    $$('[data-z2]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.z2 === Z)));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    // atom
+    const R = narrow ? Math.min(w * 0.28, h * 0.2) : Math.min(w * 0.17, h * 0.27), cx = narrow ? w * 0.5 : 20 + R, cy = 20 + R;
+    ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+    for (let n = 1; n <= 4; n++) {
+      const r = R * n / 4; ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+      const els = []; ['s', 'p', 'd'].forEach(l => { const k = occ[`${n}${l}`] || 0; for (let i = 0; i < k; i++) els.push(i); });
+      const cap = n === 1 ? 2 : n === 2 ? 8 : 18, tot = els.length;
+      for (let i = 0; i < tot; i++) { const a = -Math.PI / 2 + (Math.floor(i / 2) + (i % 2) * 0.12) * 2 * Math.PI / Math.ceil(cap / 2); ctx.fillStyle = i % 2 ? COL.violet : COL.eigen; ctx.beginPath(); ctx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), 3.5, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.fillStyle = COL.ink; ctx.font = `20px ${MONO}`; ctx.textAlign = 'center'; ctx.fillText(sym, cx, cy + R + 28); ctx.font = `10.5px ${MONO}`; ctx.textAlign = 'left';
+    // mini periodic table
+    const tx = narrow ? 14 : cx + R + 30, ty = narrow ? cy + R + 44 : 20, tw = narrow ? w - 28 : w - tx - 14, cell = Math.min(tw / 18, 22);
+    for (let z = 1; z <= 36; z++) { const [p, g] = pos(z), x = tx + (g - 1) * cell, y = ty + (p - 1) * cell; const on = z === Z, noble = [2, 10, 18, 36].includes(z), alk = [3, 11, 19].includes(z); ctx.fillStyle = on ? COL.eigen : z < Z ? rgba(COL.ice, noble ? 0.5 : alk ? 0.18 : 0.3) : COL['bay-2']; ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2); if (cell > 17) { ctx.fillStyle = on ? COL.void : COL['ink-3']; ctx.font = `9px ${MONO}`; ctx.textAlign = 'center'; ctx.fillText(EL[z - 1][0], x + cell / 2, y + cell / 2 + 3); ctx.textAlign = 'left'; ctx.font = `10.5px ${MONO}`; } }
+    // ionisation chart
+    const gx = tx + 26, gy = ty + 4 * cell + 34, gw = tw - 30, gh = h - gy - 22;
+    if (gh < 30) return;
+    const X = z => gx + (z - 1) / 35 * gw, Y = v => gy + (1 - v / 26) * gh;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY TO REMOVE ONE ELECTRON (eV)', gx - 26, gy - 8);
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(gx, gy + gh); ctx.lineTo(gx + gw, gy + gh); ctx.stroke();
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 1.6; ctx.beginPath(); IE.forEach((v, k) => { k ? ctx.lineTo(X(k + 1), Y(v)) : ctx.moveTo(X(1), Y(v)); }); ctx.stroke();
+    [2, 10, 18, 36].forEach(z => { ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(EL[z - 1][0], X(z), Y(IE[z - 1]) - 6); ctx.textAlign = 'left'; });
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(Z), Y(IE[Z - 1]), 5, 0, Math.PI * 2); ctx.fill();
+    ctx.textAlign = 'right'; ctx.fillStyle = COL['ink-3']; ctx.fillText('25', gx - 4, Y(25) + 4); ctx.fillText('0', gx - 4, Y(0)); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: degeneracy pressure ---------- */
+(function () {
+  const cv = $('#c3'), lS = $('#l3'), lO = $('#l3o');
+  const rF = $('#r3f'), rB = $('#r3b'), rR = $('#r3r');
+  const N = 12, EF0 = eF(N);
+  function frame() {
+    const L = +lS.value; lO.value = `${Math.round(L * 100)}%`;
+    const s = 1 / (L * L), Ef = EF0 * s, Eb = N * s;
+    setText(rF, `${Ef.toFixed(0)} units`); setText(rB, `${Eb.toFixed(0)} units`); setText(rR, `${(Ef - Eb).toFixed(0)} units more`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, half = narrow ? w - 28 : (w - 42) / 2;
+    const EMAX = EF0 / (0.35 * 0.35), base = h - 24, topY = 30;
+    const Y = e => base - Math.min(1, e / EMAX) * (base - topY);
+    [['fermion', 14], ['boson', narrow ? -1 : 28 + half]].forEach(([kind, x0]) => {
+      if (x0 < 0) return;
+      const bw = half * L, bx = x0 + (half - bw) / 2;
+      ctx.strokeStyle = COL['ink-3']; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx, topY - 8); ctx.lineTo(bx, base); ctx.lineTo(bx + bw, base); ctx.lineTo(bx + bw, topY - 8); ctx.stroke();
+      ctx.fillStyle = COL['ink-3']; ctx.fillText(kind === 'fermion' ? 'FERMIONS · 12' : 'BOSONS · 12', x0, 16);
+      for (let n = 1; n <= 6; n++) { const y = Y(n * n * s); if (y < topY) break; ctx.strokeStyle = rgba(COL.ice, 0.5); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + 4, y); ctx.lineTo(bx + bw - 4, y); ctx.stroke(); }
+      if (kind === 'fermion') { for (let k = 0; k < N; k++) { const n = Math.floor(k / 2) + 1, y = Y(n * n * s); if (y < topY) continue; arrow(ctx, bx + bw / 2 + (k % 2 ? 9 : -9), y - 9, k % 2 === 0, k % 2 ? COL.violet : COL.eigen, 7); } }
+      else { for (let k = 0; k < N; k++) { ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(bx + bw / 2 + (k - N / 2 + 0.5) * Math.min(9, bw / 13), Y(s) - 7, 3.5, 0, Math.PI * 2); ctx.fill(); } }
+      const E = kind === 'fermion' ? Ef : Eb; ctx.fillStyle = kind === 'fermion' ? COL.eigen : COL.ice; ctx.textAlign = 'center'; ctx.fillText(`energy ${E.toFixed(0)}`, x0 + half / 2, base + 16); ctx.textAlign = 'left';
+    });
+    if (narrow) { ctx.fillStyle = COL.ice; ctx.fillText(`bosons in the same box: ${Eb.toFixed(0)} units`, 14, 32); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

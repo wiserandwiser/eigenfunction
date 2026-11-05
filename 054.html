@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Psychokinesis</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 054 · Fringe science · 14 of 20</div>
+    <a class="navlink" href="053.html">← Φ 053</a>
+    <a class="navlink" href="055.html">Φ 055 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 054 · Fringe science · 14 of 20</p>
+    <h1><span class="eig">psychokinesis</span></h1>
+    <p class="gloss">FRINGE SCIENCE · mind over matter — <em>the claim that intention alone can nudge physical events, from falling dice to electronic noise</em></p>
+    <p class="thesis">In 1934 a gambler told J. B. Rhine he could influence dice by willing them. Rhine took the claim into the laboratory, and the question has since moved from dice to random event generators driven by quantum noise. For nearly three decades Princeton’s engineering school hosted a laboratory devoted to it. The effects reported are tiny, a few extra hits in ten thousand, but they have appeared across hundreds of experiments and dozens of labs. Here you can control for loaded dice, watch intention bend a random walk, and ask how many hidden studies it would take to explain the result away.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Parapsychology, engineering, statistics</dd></div>
+    <div><dt>Models</dt><dd>Rotating dice targets, PEAR’s three intentions, the file-drawer test</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 14 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 051–053 (chance and pooling).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>intention, claimed effect</span><span class="key"><i style="background:var(--ice)"></i>chance, control runs</span><span class="key"><i style="background:var(--violet)"></i>die bias, opposite intention</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="dice">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Rhine’s dice, 1934–</span><h2>Willing the dice, with the bias removed</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A bar chart of how often a target face comes up in 60,000 dice throws. The target rotates through all six faces so any physical bias in the dice cancels; the remaining excess above one in six is the claimed effect of intention."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e1">Claimed effect <input type="range" id="e1" min="0" max="20" step="1" value="6"><output id="e1o">—</output></label>
+          <label class="scrub" for="b1">Dice imperfection <input type="range" id="b1" min="0" max="30" step="1" value="15"><output id="b1o">—</output></label>
+          <div class="seg" role="group" aria-label="Target face">
+            <button class="btn" type="button" data-tg="six">Always aim for six</button>
+            <button class="btn" type="button" data-tg="rot" aria-pressed="true">Rotate the target face</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Target hit rate</b><span id="r1h" class="eg">—</span></div>
+          <div class="ro"><b>Chance</b><span id="r1c">—</span></div>
+          <div class="ro"><b>Excess left after bias cancels</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Rhine’s volunteers threw dice, by hand and later by machine, while concentrating on a chosen face. Early results came out above chance, and critics raised the obvious problem: real dice are slightly imperfect. On cheap dice the six face, with the most pips drilled out, is a little lighter and lands face up more often.</p>
+        <p>The fix is to rotate the target so that every face is aimed for equally often. Any physical bias then helps on some throws and hurts on others, and cancels out. What survives rotation cannot come from the dice themselves.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 1991 Dean Radin and Diane Ferrari pooled 148 dice experiments by 52 investigators, from 1935 to 1987, covering about 2.6 million throws, in the <i>Journal of Scientific Exploration</i>. They found an overall effect far beyond chance, and it remained significant in the studies that balanced the target faces, which removes the die-bias explanation. Rhine’s team also found that hits declined down each record sheet, a fatigue pattern typical of human performance, not of loaded dice.</div>
+          <div class="con"><b>The case against</b>The balanced, better-controlled studies showed much smaller effects than the early ones, and critics argue that smaller effects under tighter control is a warning sign.</div>
+        </div>
+        <div class="task"><b>Try this</b>Set the effect to zero and aim for six: imperfect dice alone fake an effect. Now rotate the target, and the fake disappears. Finally restore the claimed effect and see what is left once bias can no longer help.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">P(face <var>k</var>) = ⅙ + bias × (<var>k</var> − 3.5) / 2.5,&nbsp; target hit = P(target) + effect</div>
+          <p>Each run throws 60,000 simulated dice. The claimed effect adds extra target hits per 1,000 throws, whichever face is the target. With rotation, the bias terms average to zero across the six faces.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="reg">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">PEAR, 1979–2007</span><h2>Three intentions, one machine</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Three running totals from a random event generator: one while operators intend high numbers, one while they intend low, and one baseline with no intention. The high and low traces drift apart in the directions intended while the baseline wanders near zero."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e2">Effect per trial <input type="range" id="e2" min="0" max="20" step="1" value="2"><output id="e2o">—</output></label>
+          <label class="scrub" for="n2">Number of trials <input type="range" id="n2" min="0" max="100" step="1" value="85"><output id="n2o">—</output></label>
+          <button class="btn solo" type="button" id="go2">New run</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>High minus low, in standard errors</b><span id="r2s" class="eg">—</span></div>
+          <div class="ro"><b>Baseline runs</b><span id="r2z">—</span></div>
+          <div class="ro"><b>Odds of the separation by luck</b><span id="r2n">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A random event generator turns electronic or quantum noise into a stream of random bits, like millions of coin tosses. In 1979 Robert Jahn, dean of engineering at Princeton, founded the Princeton Engineering Anomalies Research lab, PEAR, with the psychologist Brenda Dunne. Volunteers sat at the machine and, in alternating runs, tried to push the count of 1s up, push it down, or leave it alone.</p>
+        <p>The design is its own control: the same people, the same machine and the same day, with only the intention changing.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Over twelve years and 91 operators, PEAR reported that the high and low runs drifted apart in the intended directions while the baseline runs behaved like chance, with odds against chance of more than ten thousand to one. Each operator showed a consistent personal “signature”. In 1989 Dean Radin and Roger Nelson pooled nearly 600 such experiments from many labs in <i>Foundations of Physics</i> and found the same small effect, while the control runs stayed at chance.</div>
+          <div class="con"><b>The case against</b>A large three-lab replication run by PEAR with German partners in 2000 did not reproduce the main effect, and much of PEAR’s total came from a few operators.</div>
+        </div>
+        <div class="task"><b>Try this</b>Keep the effect at 2 per 10,000 and slide the trials up and down. With few trials the three traces tangle; with millions, high and low separate while the baseline stays in the chance band.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">drift = effect × <var>N</var>,&nbsp; noise ≈ ½√<var>N</var>,&nbsp; separation <var>z</var> = (<var>D</var><sub>high</sub> − <var>D</var><sub>low</sub>) / √(2 × <var>N</var>/4)</div>
+          <p>The effect is the extra probability of a 1 per bit when intending high, and the same deficit when intending low. Drift grows in proportion to the trials, noise only with their square root, so a real effect always emerges in the end.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="drawer">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The literature</span><h2>How big is the drawer?</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Histograms of study results for random event generator experiments, compared with control runs. The experimental studies sit slightly to the right of zero while control runs centre on zero. A readout shows how many unpublished null studies would be needed to cancel the combined result."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="t3">True effect <input type="range" id="t3" min="0" max="10" step="1" value="3"><output id="t3o">—</output></label>
+          <label class="scrub" for="f3">Studies <input type="range" id="f3" min="50" max="400" step="10" value="380"><output id="f3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Combined result</b><span id="r3p" class="eg">—</span></div>
+          <div class="ro"><b>Control runs</b><span id="r3l">—</span></div>
+          <div class="ro"><b>Null studies needed to cancel it</b><span id="r3t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Hundreds of random event generator studies have been published. In 2006 Holger Bösch, Fiona Steinkamp and Emil Boller combined 380 of them in <i>Psychological Bulletin</i>, one of psychology’s most selective journals. The overall effect was tiny but statistically significant.</p>
+        <p>The usual worry with a pooled result is the “file drawer”: unexciting studies left unpublished. The question is how many would be needed. If the answer is a handful, the result is fragile; if it is thousands, it is hard to explain away.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Replying in the same journal, Dean Radin, Roger Nelson, York Dobyns and Joop Houtkooper argued that cancelling the result would take thousands of missing studies, far more than a small field could have run and hidden. They pointed out that the control runs in these experiments sit at chance, so the equipment itself is not biased, and that the effect appears across many independent laboratories.</div>
+          <div class="con"><b>The case against</b>Bösch and colleagues noted that the smallest studies show the largest effects, a pattern that publication bias can produce, and the effect is close to zero in the very largest studies.</div>
+        </div>
+        <div class="task"><b>Try this</b>At 380 studies, read off how many null studies would be needed to cancel the combined result. Lower the true effect to zero and watch the experimental studies line up with the control runs.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">combined <var>Z</var> = Σ<var>z<sub>i</sub></var> / √<var>k</var>,&nbsp; fail-safe <var>N</var> = (Σ<var>z<sub>i</sub></var>)² / 2.706 − <var>k</var></div>
+          <p>Rosenthal’s fail-safe number is how many unpublished studies averaging exactly chance would pull the combined result back to the edge of significance. The true-effect slider sets how far above zero each simulated study’s expected <var>z</var>-score sits; the control runs share the same random noise with no effect.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1934</div><h3>Rhine’s dice</h3><p>J. B. Rhine begins dice-throwing tests of “PK” at Duke University after a gambler claims he can influence the fall.</p></div>
+      <div class="g"><div class="where">1979</div><h3>PEAR opens</h3><p>Robert Jahn, dean of engineering at Princeton, founds a laboratory to test mind–machine interactions with random event generators.</p></div>
+      <div class="g"><div class="where">1989</div><h3>Foundations of Physics</h3><p>Dean Radin and Roger Nelson’s meta-analysis of nearly 600 random generator experiments reports a small, consistent effect.</p></div>
+      <div class="g"><div class="where">1998</div><h3>The Global Consciousness Project</h3><p>Roger Nelson extends the idea to a worldwide network of generators, the subject of Φ 059.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">With dice bias cancelled and control runs at chance, <span class="a">intention still seems to tilt randomness</span> by a tiny amount, a result its supporters say has survived decades of pooling.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><span class="chip here">054 · Psychokinesis</span><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 054 · Psychokinesis · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: dice ---------- */
+(function () {
+  const cv = $('#c1'), ES = $('#e1'), EO = $('#e1o'), BS = $('#b1'), BO = $('#b1o'), rH = $('#r1h'), rC = $('#r1c'), rM = $('#r1m');
+  const st = { tg: 'rot', cnt: [0, 0, 0, 0, 0, 0], hits: 0, tc: [0, 0, 0, 0, 0, 0] };
+  segs('[data-tg]', b => { st.tg = b.dataset.tg; roll(); });
+  [ES, BS].forEach(s => s.addEventListener('input', roll));
+  function roll() { const r = mk(3 + +BS.value * 7 + +ES.value), b = +BS.value / 1000, e = +ES.value / 1000; st.cnt = [0, 0, 0, 0, 0, 0]; st.tc = [0, 0, 0, 0, 0, 0]; st.hits = 0;
+    for (let i = 0; i < 60000; i++) { const tgt = st.tg === 'six' ? 5 : i % 6, P = [1, 2, 3, 4, 5, 6].map(k => 1 / 6 + b * (k - 3.5) / 2.5); P[tgt] += e; const s = P.reduce((a, v) => a + v, 0); let u = r() * s, f = 0; while (f < 5 && u > P[f]) { u -= P[f]; f++; } st.cnt[f]++; if (f === tgt) { st.hits++; st.tc[tgt]++; } } }
+  roll();
+  function frame() {
+    EO.value = `+${ES.value} per 1,000`; BO.value = `${(+BS.value / 10).toFixed(1)}%`;
+    const hr = st.hits / 60000, ex = hr - 1 / 6;
+    setText(rH, `${(hr * 100).toFixed(2)}%`); setText(rC, '16.67%'); setText(rM, st.tg === 'rot' ? `${ex >= 0 ? '+' : '−'}${Math.abs(ex * 1000).toFixed(1)} per 1,000 (${odds(ex / Math.sqrt(1 / 6 * 5 / 6 / 60000))})` : 'bias and effect mixed: rotate to separate');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 44, gy = 34, gw = w - gx - 16, gh = h - gy - 50, bw = gw / 6, Yp = p => gy + gh - (p - 0.135) / 0.065 * gh, Y = c => Yp(c / 60000);
+    frame0(ctx, gx, gy, gw, gh);
+    if (st.tg === 'rot') {
+      // per-face: target hits when that face was the target (10,000 targets each)
+      st.tc.forEach((c, k) => { const x = gx + k * bw + bw * 0.18, ww = bw * 0.64, p = c / 10000, pb = 1 / 6 + (+BS.value / 1000) * (k + 1 - 3.5) / 2.5, yB = Yp(pb);
+        ctx.fillStyle = rgba(COL.ice, 0.5); ctx.fillRect(x, Yp(Math.min(p, pb)), ww, gy + gh - Yp(Math.min(p, pb)));
+        if (p > pb) { ctx.fillStyle = COL.eigen; ctx.fillRect(x, Yp(p), ww, yB - Yp(p)); }
+        ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 3, yB); ctx.lineTo(x + ww + 3, yB); ctx.stroke(); ctx.lineWidth = 1;
+        tag(ctx, `${(p * 100).toFixed(1)}%`, x + ww / 2, Math.min(Yp(p), yB) - 6, COL['ink-3'], 'center'); tag(ctx, `face ${k + 1}`, x + ww / 2, gy + gh + 16, COL['ink-2'], 'center'); });
+      const mean = st.hits / 60000; ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx, Yp(mean)); ctx.lineTo(gx + gw, Yp(mean)); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, `aimed-for average ${(mean * 100).toFixed(2)}%`, gx + 6, Yp(mean) - 6, COL.eigen);
+      tag(ctx, 'HITS WHEN EACH FACE WAS THE TARGET · VIOLET TICK: THAT FACE’S BIAS', 14, 18);
+    } else {
+      st.cnt.forEach((c, k) => { const x = gx + k * bw + bw * 0.18, ww = bw * 0.64; ctx.fillStyle = k === 5 ? COL.eigen : rgba(COL.ink, 0.35); ctx.fillRect(x, Y(c), ww, gy + gh - Y(c)); tag(ctx, `${(c / 600).toFixed(1)}%`, x + ww / 2, Y(c) - 5, COL['ink-3'], 'center'); tag(ctx, `face ${k + 1}`, x + ww / 2, gy + gh + 16, COL['ink-2'], 'center'); });
+      tag(ctx, 'HOW OFTEN EACH FACE CAME UP · ALWAYS AIMING FOR SIX', 14, 18);
+    }
+    dash(ctx, gx, Yp(1 / 6), gx + gw, Yp(1 / 6), COL.ice); tag(ctx, '1 in 6', gx + gw - 6, Yp(1 / 6) + 13, COL.ice, 'right'); [0.14, 0.16, 0.18, 0.2].forEach(p => tag(ctx, `${Math.round(p * 100)}%`, gx - 5, Yp(p) + 4, COL['ink-3'], 'right'));
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: PEAR ---------- */
+(function () {
+  const cv = $('#c2'), ES = $('#e2'), EO = $('#e2o'), NS = $('#n2'), NO = $('#n2o'), GB = $('#go2'), rS = $('#r2s'), rZ = $('#r2z'), rN = $('#r2n');
+  const st = { seed: 21, tr: [], N: 0, grow: 0 };
+  function run() { const r = mk(st.seed), e = +ES.value * 1e-4, N = Math.round(10 ** (3 + 5 * +NS.value / 100)), K = 300, n = N / K; st.N = N;
+    st.tr = [1, -1, 0].map(dir => { let D = 0; const pts = [[0, 0]]; for (let i = 1; i <= K; i++) { D += dir * e * n + 0.5 * Math.sqrt(n) * gs(r); pts.push([i * n, D]); } return pts; }); st.grow = 0; }
+  [ES, NS].forEach(s => s.addEventListener('input', run)); GB.addEventListener('click', () => { st.seed += 9; run(); }); run();
+  function frame(dt) {
+    st.grow = REDUCE ? 1 : Math.min(1, st.grow + dt * 0.7);
+    EO.value = +ES.value ? `${ES.value} in 10,000` : 'none'; NO.value = nfmt(st.N);
+    const N = st.N, end = t => t[t.length - 1][1], z = (end(st.tr[0]) - end(st.tr[1])) / Math.sqrt(2 * N / 4), zb = end(st.tr[2]) / Math.sqrt(N / 4);
+    setText(rS, `z = ${z.toFixed(2)}`); setText(rZ, `z = ${zb.toFixed(2)} (${Math.abs(zb) < 1.96 ? 'within chance' : 'outside chance'})`); setText(rN, odds(z));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 50, gy = 30, gw = w - gx - 16, gh = h - gy - 36, lim = Math.max(2.6 * 0.5 * Math.sqrt(N), ...st.tr.flat().map(p => Math.abs(p[1]) * 1.15)), X = n => gx + n / N * gw, Y = d => gy + gh / 2 - d / lim * gh / 2;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.ice, 0.15); ctx.beginPath(); for (let i = 0; i <= 100; i++) { const n = i / 100 * N; ctx.lineTo(X(n), Y(1.96 * 0.5 * Math.sqrt(n))); } for (let i = 100; i >= 0; i--) { const n = i / 100 * N; ctx.lineTo(X(n), Y(-1.96 * 0.5 * Math.sqrt(n))); } ctx.fill();
+    dash(ctx, gx, Y(0), gx + gw, Y(0), rgba(COL.ink, 0.3));
+    const m = Math.max(2, Math.round(301 * st.grow));
+    [[st.tr[2], COL.ice, 'baseline'], [st.tr[1], COL.violet, 'intend low'], [st.tr[0], COL.eigen, 'intend high']].forEach(([t, c, l]) => { ctx.strokeStyle = c; ctx.lineWidth = 1.8; ctx.beginPath(); t.slice(0, m).forEach(([n, d], i) => i ? ctx.lineTo(X(n), Y(d)) : ctx.moveTo(X(n), Y(d))); ctx.stroke(); ctx.lineWidth = 1; });
+    [['intend high', COL.eigen], ['intend low', COL.violet], ['no intention', COL.ice]].forEach(([l, c], i) => { ctx.fillStyle = c; ctx.fillRect(gx + 10, gy + 12 + i * 15, 14, 3); tag(ctx, l, gx + 30, gy + 17 + i * 15, c); });
+    tag(ctx, '0', X(0) + 4, gy + gh + 14); tag(ctx, nfmt(N) + ' trials', gx + gw, gy + gh + 14, COL['ink-3'], 'right');
+    tag(ctx, 'CUMULATIVE DEVIATION FROM CHANCE · BAND: 95% OF PURE-CHANCE RUNS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: file drawer ---------- */
+(function () {
+  const cv = $('#c3'), TS = $('#t3'), TO = $('#t3o'), FS = $('#f3'), FO = $('#f3o'), rP = $('#r3p'), rL = $('#r3l'), rT = $('#r3t');
+  const r0 = mk(77), base = Array.from({ length: 400 }, () => [gs(r0), gs(r0)]);
+  function frame() {
+    const mu = +TS.value / 10, k = +FS.value; TO.value = `${(mu).toFixed(1)} in z per study`; FO.value = String(k);
+    const E = base.slice(0, k).map(([a]) => mu + a), C = base.slice(0, k).map(([, b]) => b);
+    const sz = E.reduce((a, v) => a + v, 0), Z = sz / Math.sqrt(k), Zc = C.reduce((a, v) => a + v, 0) / Math.sqrt(k), fs = Math.max(0, Math.round(sz * sz / 2.706 - k));
+    setText(rP, `Z = ${Z.toFixed(1)} · ${odds(Z)}`); setText(rL, `Z = ${Zc.toFixed(1)} (${Math.abs(Zc) < 1.96 ? 'at chance' : 'off chance'})`); setText(rT, Z > 1.645 ? `about ${fs.toLocaleString('en')}` : 'none: not significant');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 40, gw = w - gx - 16, X = z => gx + (z + 4) / 8 * gw, bins = 32, bwid = 8 / bins;
+    const hist = a => { const c = Array(bins).fill(0); a.forEach(z => c[clamp(Math.floor((z + 4) / bwid), 0, bins - 1)]++); return c; };
+    const HE = hist(E), HC = hist(C), peak = Math.max(...HE, ...HC) * 1.15;
+    const rows = [[HC, 'CONTROL RUNS', COL.ice, 34, Zc], [HE, 'INTENTION RUNS', COL.eigen, 34 + (h - 60) / 2, Z]];
+    rows.forEach(([H, l, c, y0, zz]) => { const gh = (h - 60) / 2 - 26, Y = v => y0 + 16 + gh - v / peak * gh; frame0(ctx, gx, y0 + 16, gw, gh); tag(ctx, l, gx, y0 + 10, c);
+      H.forEach((v, i) => { ctx.fillStyle = rgba(c, 0.7); ctx.fillRect(X(-4 + i * bwid) + 1, Y(v), gw / bins - 2, y0 + 16 + gh - Y(v)); });
+      const m = zz / Math.sqrt(k); dash(ctx, X(0), y0 + 16, X(0), y0 + 16 + gh, rgba(COL.ink, 0.45)); ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(m), y0 + 16); ctx.lineTo(X(m), y0 + 16 + gh); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, `average z ${m >= 0 ? '+' : '−'}${Math.abs(m).toFixed(2)}`, X(m) + 6, y0 + 30, COL.violet); });
+    [-2, 0, 2].forEach(z => tag(ctx, `z ${z}`, X(z), h - 10, COL['ink-3'], 'center'));
+    tag(ctx, `${k} STUDIES · EACH BAR: STUDIES WITH THAT RESULT`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Standard Model</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 035 colour code: violet = quarks, ice = leptons, pink = force carriers, white = the Higgs. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1{aspect-ratio:4/5.2}#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 035 · Particles & forces · 1 of 6</div>
+    <a class="navlink" href="034.html">← Φ 034</a>
+    <a class="navlink" href="036.html">Φ 036 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 035 · Particles &amp; forces · 1 of 6</p>
+    <h1>the standard <span class="eig">model</span></h1>
+    <p class="gloss">PARTICLES &amp; FORCES · fundamental physics — <em>seventeen particles and three forces that explain everything we’ve ever measured, except gravity</em></p>
+    <p class="thesis">Everything you have ever touched is made of just three particles: up quarks, down quarks and electrons. Add a handful of heavier cousins, a few force-carrying particles and the Higgs, and you have the Standard Model, the most precisely tested theory in science. This lesson is a map of the whole thing.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Particle physics</dd></div>
+    <div><dt>Models</dt><dd>The particle chart, building protons from quarks, the strength of the forces</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 1 of 6. Builds on the quantum series (Φ 007–016).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--violet)"></i>quarks</span><span class="key"><i style="background:var(--ice)"></i>leptons</span><span class="key"><i style="background:var(--eigen)"></i>force carriers</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="chart">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The chart</span><h2>Seventeen particles</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The Standard Model chart: three generations of quarks and leptons, the force-carrying bosons and the Higgs. Tap a tile to see its mass, charge and spin, and where it sits on a mass scale spanning twelve powers of ten."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Step through">
+            <button class="btn" type="button" id="prev1">‹ prev</button>
+            <button class="btn" type="button" id="next1">next ›</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Particle</b><span id="r1n" class="eg">—</span></div>
+          <div class="ro"><b>Mass · charge · spin</b><span id="r1m">—</span></div>
+          <div class="ro"><b>Found</b><span id="r1f">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The matter particles, <strong>fermions</strong>, come in two families. <span class="v">Quarks</span> feel the strong force and are always locked inside larger particles. <span class="i">Leptons</span>, like the electron and the ghostly neutrinos, do not.</p>
+        <p>Both come in <strong>three generations</strong>, each a heavier copy of the one before. Ordinary matter uses only the first. The muon, discovered in 1936, prompted Isidor Rabi to ask “Who ordered that?”, and nobody yet knows why nature repeats itself three times.</p>
+        <p>The <span class="a">bosons</span> carry the forces: the photon for electromagnetism, eight gluons for the strong force, and the W and Z for the weak force that powers radioactive decay. The Higgs boson, found in 2012, is the visible ripple of the field that gives particles their mass (Φ 036). Their masses span more than twelve powers of ten, from neutrinos under an electronvolt to the top quark, as heavy as a gold atom.</p>
+        <div class="task"><b>Try this</b>Tap through the chart. Find the lightest and the heaviest, and see where each lands on the mass ladder.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">SU(3)<sub>colour</sub> × SU(2)<sub>L</sub> × U(1)<sub>Y</sub></div>
+          <p>The Standard Model’s symmetry group (Φ 040). Masses from the Particle Data Group, rounded: quark masses are scheme-dependent estimates, since free quarks can’t be weighed. Neutrino masses are known only to be tiny; KATRIN limits the electron neutrino to below about 0.45 eV. 1 GeV is roughly a proton’s mass.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="build">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Building matter</span><h2>Make a proton from quarks</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Three quark slots. Choose up, down or strange quarks to build a particle; the resulting charge and name appear, and the mass of the proton is compared with the tiny mass of the quarks inside it."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Recipe">
+            <button class="btn" type="button" data-rec="uud" aria-pressed="true">u u d</button>
+            <button class="btn" type="button" data-rec="udd">u d d</button>
+            <button class="btn" type="button" data-rec="uuu">u u u</button>
+            <button class="btn" type="button" data-rec="uds">u d s</button>
+            <button class="btn" type="button" data-rec="sss">s s s</button>
+            <button class="btn" type="button" data-rec="uD">u + anti-d</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>You made</b><span id="r2n" class="eg">—</span></div>
+          <div class="ro"><b>Charge</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Mass from the quarks themselves</b><span id="r2m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Quarks have charges in thirds: an up quark carries +⅔, a down quark −⅓. Two ups and a down make +1, the <strong>proton</strong>; one up and two downs make 0, the <strong>neutron</strong>. Every atomic nucleus is built from these two.</p>
+        <p>Quarks also carry a second kind of charge, called <span class="v">colour</span>: red, green or blue (nothing to do with real colours). Only colour-neutral combinations exist on their own: three quarks, one of each colour, or a quark paired with an antiquark of the matching anticolour.</p>
+        <p>The surprise is the mass. The three quarks in a proton add up to about 9 MeV, but the proton weighs 938 MeV. About <strong>99% of its mass</strong> is the energy of the gluon field and the frantic motion binding the quarks together (<var>E</var> = <var>mc</var>²). Most of the mass of your body is bound-up energy.</p>
+        <div class="task"><b>Try this</b>Build a proton and a neutron, then a strange baryon. Compare the quark masses with the particle’s mass each time.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>Q</var>(u) = +⅔,&nbsp; <var>Q</var>(d) = <var>Q</var>(s) = −⅓,&nbsp; <var>m</var><sub>p</sub> ≈ 938.3 MeV ≫ 2<var>m</var><sub>u</sub> + <var>m</var><sub>d</sub> ≈ 9 MeV</div>
+          <p>Hadron masses and lifetimes from the Particle Data Group. Quark masses here are the “current” masses (u 2.2, d 4.7, s 93 MeV). Lattice QCD calculations on supercomputers now reproduce the proton’s mass from first principles to within about 2%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="forces">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The forces</span><h2>Strengths that change with energy</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="The strengths of the electromagnetic, weak and strong forces plotted against collision energy from a few GeV to beyond 10 to the 16 GeV. The strong force weakens, the electromagnetic force strengthens, and the three nearly but not quite meet."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e3">Collision energy <input type="range" id="e3" min="0" max="1000" step="1" value="60"><output id="e3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Strong</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Weak</b><span id="r3w">—</span></div>
+          <div class="ro"><b>Electromagnetic</b><span id="r3e">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Forces act by exchanging particles: two electrons repel by trading photons, quarks stick together by trading gluons. The strength of each force is set by a number, its <strong>coupling</strong>. At everyday energies the strong force is about a hundred times stronger than electromagnetism, which in turn is far stronger than the weak force.</p>
+        <p>But couplings change with energy. Empty space is a froth of short-lived virtual particles. Around an electron they screen its charge, so electromagnetism grows <em>stronger</em> as you probe closer. Gluons, which carry colour themselves, have the opposite effect: the strong force grows <em>weaker</em> at high energy. This is <span class="i">asymptotic freedom</span>, which won the 2004 Nobel Prize.</p>
+        <p>Run the three forward and they approach each other around 10<sup>15</sup>–10<sup>16</sup> GeV, as if they were once a single force. In the Standard Model alone they just miss. Whether a deeper theory makes them meet is one of physics’ big open questions.</p>
+        <div class="task"><b>Try this</b>Slide the energy up and watch the strong force weaken. Find where the lines come closest.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">1/α<sub><var>i</var></sub>(<var>Q</var>) = 1/α<sub><var>i</var></sub>(<var>M</var><sub>Z</sub>) − (<var>b</var><sub><var>i</var></sub>/2π) ln(<var>Q</var>/<var>M</var><sub>Z</sub>),&nbsp; <var>b</var> = (41/10, −19/6, −7)</div>
+          <p>One-loop running with Standard Model coefficients, starting from measured values at the Z mass (91.2 GeV): 1/α₁ ≈ 59.0 (in grand-unified normalisation), 1/α₂ ≈ 29.6, 1/α₃ ≈ 8.5. Gravity is left out: it is about 10³⁶ times weaker than electromagnetism between two protons and has no accepted quantum theory.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1897</div><h3>The electron</h3><p>J. J. Thomson found that cathode rays were made of tiny charged particles, the first elementary particle discovered.</p></div>
+      <div class="g"><div class="where">1964–1968</div><h3>Quarks</h3><p>Murray Gell-Mann and George Zweig proposed quarks to bring order to the particle zoo. Electron-scattering experiments at SLAC found point-like particles inside the proton in 1968.</p></div>
+      <div class="g"><div class="where">1983</div><h3>W and Z</h3><p>CERN’s proton–antiproton collider found the carriers of the weak force at the predicted masses, confirming electroweak unification.</p></div>
+      <div class="g"><div class="where">1995 · 2012</div><h3>Top and Higgs</h3><p>Fermilab found the top quark in 1995. CERN’s Large Hadron Collider found the Higgs boson in 2012, completing the Standard Model.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Seventeen particles explain all known matter and forces except gravity; most of your mass is not the particles themselves but the <span class="a">energy binding quarks</span> together.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><span class="chip here">035 · Standard Model</span><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 035 · Seventeen particles · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* name, symbol, mass (eV), charge, spin, found, kind, column, row */
+const PTS = [
+  ['up quark', 'u', 2.2e6, '+2/3', '1/2', '1968', 'q', 0, 0], ['charm quark', 'c', 1.27e9, '+2/3', '1/2', '1974', 'q', 1, 0], ['top quark', 't', 172.7e9, '+2/3', '1/2', '1995', 'q', 2, 0],
+  ['down quark', 'd', 4.7e6, '−1/3', '1/2', '1968', 'q', 0, 1], ['strange quark', 's', 93e6, '−1/3', '1/2', '1968', 'q', 1, 1], ['bottom quark', 'b', 4.18e9, '−1/3', '1/2', '1977', 'q', 2, 1],
+  ['electron', 'e', 0.511e6, '−1', '1/2', '1897', 'l', 0, 2], ['muon', 'μ', 105.7e6, '−1', '1/2', '1936', 'l', 1, 2], ['tau', 'τ', 1.777e9, '−1', '1/2', '1975', 'l', 2, 2],
+  ['electron neutrino', 'νₑ', 0.4, '0', '1/2', '1956', 'l', 0, 3], ['muon neutrino', 'νμ', 0.4, '0', '1/2', '1962', 'l', 1, 3], ['tau neutrino', 'ντ', 0.4, '0', '1/2', '2000', 'l', 2, 3],
+  ['gluon', 'g', 0, '0', '1', '1979', 'b', 3, 0], ['photon', 'γ', 0, '0', '1', '1905–23', 'b', 3, 1], ['Z boson', 'Z', 91.19e9, '0', '1', '1983', 'b', 3, 2], ['W boson', 'W', 80.37e9, '±1', '1', '1983', 'b', 3, 3],
+  ['Higgs boson', 'H', 125.1e9, '0', '0', '2012', 'h', 4, 0]
+];
+const KCOL = { q: COL.violet, l: COL.ice, b: COL.eigen, h: '#d2d1d5' };
+const fmtE = m => m === 0 ? '0 (massless)' : m < 1e3 ? `under ${m} eV` : m < 1e6 ? `${(m / 1e3).toFixed(0)} keV` : m < 1e9 ? `${(m / 1e6).toFixed(m < 1e7 ? 2 : 1)} MeV` : `${(m / 1e9).toFixed(m < 1e10 ? 2 : 1)} GeV`;
+
+/* ---------- BAY 01: the chart ---------- */
+(function () {
+  const cv = $('#c1'), rN = $('#r1n'), rM = $('#r1m'), rF = $('#r1f');
+  const st = { sel: 0, hits: [] };
+  const info = () => { const p = PTS[st.sel]; setText(rN, `${p[0]} (${p[1]})`); setText(rM, `${fmtE(p[2])} · ${p[3]} · spin ${p[4]}`); setText(rF, p[5]); };
+  $('#prev1').addEventListener('click', () => { st.sel = (st.sel + PTS.length - 1) % PTS.length; info(); });
+  $('#next1').addEventListener('click', () => { st.sel = (st.sel + 1) % PTS.length; info(); });
+  cv.addEventListener('click', ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, h = st.hits.find(q => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (h) { st.sel = h.i; info(); } });
+  info();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h);
+    const narrow = w < 560, gw = narrow ? w - 24 : w * 0.56, gh = narrow ? h * 0.62 : h - 40, cs = Math.min(gw / 5, gh / 4) - 6, ox = 12, oy = 26;
+    st.hits = [];
+    ctx.font = `10px ${MONO}`; ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ['I', 'II', 'III', 'FORCE', 'HIGGS'].forEach((l, i) => ctx.fillText(l, ox + i * (cs + 6) + cs / 2, 18)); ctx.textAlign = 'left';
+    PTS.forEach((p, i) => {
+      const x = ox + p[7] * (cs + 6), y = oy + p[8] * (cs + 6), c = KCOL[p[6]], sel = i === st.sel;
+      ctx.fillStyle = rgba(c === '#d2d1d5' ? COL.ink : c, sel ? 0.4 : 0.14); ctx.fillRect(x, y, cs, cs);
+      ctx.strokeStyle = sel ? '#d2d1d5' : rgba(c === '#d2d1d5' ? COL.ink : c, 0.7); ctx.lineWidth = sel ? 2 : 1; ctx.strokeRect(x + 0.5, y + 0.5, cs - 1, cs - 1); ctx.lineWidth = 1;
+      ctx.fillStyle = COL.ink; ctx.font = `600 ${Math.max(14, cs * 0.34)}px ${MONO}`; ctx.textAlign = 'center'; ctx.fillText(p[1], x + cs / 2, y + cs * 0.58);
+      ctx.font = `${Math.max(8, Math.min(10, cs * 0.13))}px ${MONO}`; ctx.fillStyle = COL['ink-3']; ctx.fillText(p[2] ? fmtE(p[2]).replace('under ', '<') : '0', x + cs / 2, y + cs - 6); ctx.textAlign = 'left';
+      st.hits.push({ i, x, y, w: cs, h: cs });
+    });
+    // mass ladder (log)
+    const lx = narrow ? 30 : w * 0.6 + 20, lw = narrow ? w - 60 : w * 0.4 - 50, ly = narrow ? oy + 4 * (cs + 6) + 40 : 40, lh = narrow ? h - ly - 30 : h - 80;
+    const M0 = -1, M1 = 12, Y = m => narrow ? 0 : ly + lh - (Math.log10(m) - M0) / (M1 - M0) * lh, X = m => lx + (Math.log10(m) - M0) / (M1 - M0) * lw;
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL['ink-3'];
+    if (narrow) {
+      ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + lw, ly); ctx.stroke();
+      [[1, '1 eV'], [1e6, 'MeV'], [1e9, 'GeV']].forEach(([m, l]) => { ctx.fillText(l, X(m) - 10, ly + 16); });
+      PTS.forEach((p, i) => { if (!p[2]) return; ctx.fillStyle = i === st.sel ? '#d2d1d5' : rgba(KCOL[p[6]] === '#d2d1d5' ? COL.ink : KCOL[p[6]], 0.7); ctx.beginPath(); ctx.arc(X(p[2]), ly - 6 - (i % 3) * 7, i === st.sel ? 5 : 3, 0, Math.PI * 2); ctx.fill(); });
+      ctx.fillText('MASS · LOG SCALE', lx, ly - 32);
+    } else {
+      ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx, ly + lh); ctx.stroke();
+      [[1, '1 eV'], [1e3, '1 keV'], [1e6, '1 MeV'], [1e9, '1 GeV'], [1e12, '1 TeV']].forEach(([m, l]) => { ctx.fillStyle = COL['ink-3']; ctx.fillText(l, lx - 44, Y(m) + 4); ctx.strokeStyle = rgba(COL.ink, 0.1); ctx.beginPath(); ctx.moveTo(lx, Y(m)); ctx.lineTo(lx + lw, Y(m)); ctx.stroke(); });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('MASS · LOG SCALE', lx, ly - 14);
+      PTS.forEach((p, i) => { if (!p[2]) return; const y = Y(p[2]), x = lx + 14 + (p[7]) * (lw / 5), on = i === st.sel; ctx.fillStyle = on ? '#d2d1d5' : rgba(KCOL[p[6]] === '#d2d1d5' ? COL.ink : KCOL[p[6]], 0.8); ctx.beginPath(); ctx.arc(x, y, on ? 5 : 3.5, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = on ? COL.ink : COL['ink-3']; ctx.fillText(p[1], x + 7, y + 4); });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('photon, gluon: massless', lx + 6, ly + lh + 18);
+    }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: build a hadron ---------- */
+(function () {
+  const cv = $('#c2'), rN = $('#r2n'), rC = $('#r2c'), rM = $('#r2m');
+  const Q = { u: [2 / 3, 2.2], d: [-1 / 3, 4.7], s: [-1 / 3, 93], D: [1 / 3, 4.7] };
+  const H = { uud: ['proton', 938.3, 'stable (at least 10³⁴ years)'], udd: ['neutron', 939.6, 'about 15 minutes when free'], uuu: ['Δ⁺⁺ (delta)', 1232, '10⁻²³ seconds'], uds: ['Λ⁰ (lambda)', 1115.7, '2.6 × 10⁻¹⁰ s'], sss: ['Ω⁻ (omega)', 1672.5, '8.2 × 10⁻¹¹ s · predicted by Gell-Mann in 1962'], uD: ['π⁺ (pion)', 139.6, '2.6 × 10⁻⁸ s'] };
+  const st = { rec: 'uud', t: 0 };
+  $$('[data-rec]').forEach(b => b.addEventListener('click', () => { st.rec = b.dataset.rec; $$('[data-rec]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  const frac = v => { const n = Math.round(v * 3); return n === 0 ? '0' : n % 3 === 0 ? `${n > 0 ? '+' : ''}${n / 3}` : `${n > 0 ? '+' : '−'}${Math.abs(n)}/3`; };
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const qs = st.rec === 'uD' ? ['u', 'D'] : st.rec.split(''), hd = H[st.rec];
+    const charge = qs.reduce((s, q) => s + Q[q][0], 0), qm = qs.reduce((s, q) => s + Q[q][1], 0);
+    setText(rN, `${hd[0]} · lives ${hd[2]}`); setText(rC, frac(charge)); setText(rM, `${qm.toFixed(0)} MeV of ${hd[1]} MeV (${(qm / hd[1] * 100).toFixed(1)}%)`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, cx = narrow ? w / 2 : w * 0.32, cy = narrow ? h * 0.32 : h / 2, R = Math.min(narrow ? w * 0.32 : w * 0.24, (narrow ? h * 0.3 : h * 0.4));
+    // the bag with gluon field
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R); g.addColorStop(0, rgba(COL.eigen, 0.18)); g.addColorStop(1, rgba(COL.eigen, 0.02)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = rgba(COL.ink, 0.25); ctx.stroke();
+    const colours = qs.length === 3 ? ['#e393b4', '#5a8fb3', '#9fabf3'] : ['#e393b4', '#5a8fb3'];
+    const pos = qs.map((q, i) => { const a = st.t * 0.9 + i * 2 * Math.PI / qs.length, rr = R * 0.45 * (1 + 0.15 * Math.sin(st.t * 3 + i)); return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]; });
+    // gluon springs between quarks
+    for (let i = 0; i < pos.length; i++) for (let j = i + 1; j < pos.length; j++) { const [x1, y1] = pos[i], [x2, y2] = pos[j]; ctx.strokeStyle = rgba(COL.eigen, 0.75); ctx.lineWidth = 1.5; ctx.beginPath(); for (let k = 0; k <= 30; k++) { const f = k / 30, x = x1 + (x2 - x1) * f, y = y1 + (y2 - y1) * f, nx = -(y2 - y1), ny = x2 - x1, nl = Math.hypot(nx, ny) || 1, wv = Math.sin(f * Math.PI * 10 + st.t * 8) * 4; k ? ctx.lineTo(x + nx / nl * wv, y + ny / nl * wv) : ctx.moveTo(x, y); } ctx.stroke(); ctx.lineWidth = 1; }
+    qs.forEach((q, i) => { const [x, y] = pos[i]; ctx.fillStyle = colours[i]; ctx.beginPath(); ctx.arc(x, y, 15, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#080907'; ctx.font = `bold 13px ${MONO}`; ctx.textAlign = 'center'; ctx.fillText(q === 'D' ? 'd̄' : q, x, y + 4); ctx.textAlign = 'left'; ctx.font = `10.5px ${MONO}`; });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(qs.length === 3 ? 'red + green + blue = colour-neutral' : 'colour + anticolour = neutral', 14, 18);
+    // mass bar
+    const bx = narrow ? 24 : w * 0.62, by = narrow ? h * 0.7 : h * 0.3, bw = narrow ? w - 48 : w * 0.34, bh = 26;
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('WHERE THE MASS COMES FROM', bx, by - 12);
+    const full = hd[1]; ctx.fillStyle = rgba(COL.eigen, 0.6); ctx.fillRect(bx, by, bw, bh); ctx.fillStyle = COL.violet; ctx.fillRect(bx, by, Math.max(2, qm / full * bw), bh);
+    ctx.fillStyle = COL.violet; ctx.fillText(`quarks’ own mass: ${qm.toFixed(0)} MeV`, bx, by + bh + 16); ctx.fillStyle = COL.eigen; ctx.fillText(`binding energy: ${(full - qm).toFixed(0)} MeV`, bx, by + bh + 32);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: running couplings ---------- */
+(function () {
+  const cv = $('#c3'), eS = $('#e3'), eO = $('#e3o');
+  const rS = $('#r3s'), rW = $('#r3w'), rE = $('#r3e');
+  const MZ = 91.19, A0 = [59.0, 29.6, 8.5], B = [41 / 10, -19 / 6, -7];
+  const inv = (i, Q) => A0[i] - B[i] / (2 * Math.PI) * Math.log(Q / MZ);
+  const L0 = 1, L1 = 18, Qof = v => Math.pow(10, L0 + (L1 - L0) * v / 1000);
+  function frame() {
+    const Q = Qof(+eS.value); eO.value = Q < 1e3 ? `${Q.toFixed(0)} GeV` : `10${sup(Math.round(Math.log10(Q)))} GeV`;
+    const a3 = 1 / inv(2, Q), a2 = 1 / inv(1, Q), a1 = 1 / inv(0, Q), aem = 1 / (inv(0, Q) * 5 / 3 + inv(1, Q)); // 1/α_em = (5/3)/α1 + 1/α2
+    setText(rS, `α = ${a3.toFixed(3)} (1/${(1 / a3).toFixed(0)})`); setText(rW, `α = ${a2.toFixed(3)} (1/${(1 / a2).toFixed(0)})`); setText(rE, `α = 1/${(1 / aem).toFixed(1)}`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 48, gy = 22, gw = w - gx - 16, gh = h - gy - 44, X = l => gx + (l - L0) / (L1 - L0) * gw, Y = v => gy + gh - v / 64 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [0, 20, 40, 60].forEach(v => ctx.fillText(String(v), gx - 6, Y(v) + 4)); ctx.textAlign = 'center';
+    [2, 5, 8, 11, 14, 17].forEach(l => ctx.fillText(`10${sup(l)}`, X(l), gy + gh + 14)); ctx.fillText('COLLISION ENERGY (GeV) · LOG SCALE', gx + gw / 2, gy + gh + 30); ctx.textAlign = 'left';
+    ctx.fillText('1 / STRENGTH · LOWER = STRONGER', gx + 6, gy + 14);
+    ctx.fillStyle = rgba(COL.ice, 0.08); ctx.fillRect(X(15), gy, X(16.5) - X(15), gh); ctx.fillStyle = COL['ink-3']; ctx.fillText('near-meeting', X(15) + 4, gy + 30);
+    [[0, COL.ice, 'electromagnetic (hypercharge)'], [1, COL.violet, 'weak'], [2, COL.eigen, 'strong']].forEach(([i, c, l]) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 100; k++) { const lg = L0 + (L1 - L0) * k / 100, v = inv(i, 10 ** lg); k ? ctx.lineTo(X(lg), Y(v)) : ctx.moveTo(X(lg), Y(v)); } ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = c; ctx.fillText(l, X(2.2), Y(inv(i, 10 ** 2.2)) - 6); });
+    const lq = Math.log10(Q); ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(lq), gy); ctx.lineTo(X(lq), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    [[4.13, 'LHC'], [16, 'unification?']].forEach(([l, t]) => { ctx.fillStyle = COL['ink-3']; ctx.fillText(t, X(l) - 10, gy + gh - 8); });
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

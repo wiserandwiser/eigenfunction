@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Orgone Energy</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 049 · Fringe science · 9 of 20</div>
+    <a class="navlink" href="048.html">← Φ 048</a>
+    <a class="navlink" href="050.html">Φ 050 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 049 · Fringe science · 9 of 20</p>
+    <h1><span class="eig">orgone</span> energy</h1>
+    <p class="gloss">FRINGE SCIENCE · Wilhelm Reich’s orgone — <em>a proposed universal life energy, said to collect inside layered boxes and to act on the body and the weather</em></p>
+    <p class="thesis">Wilhelm Reich was a pupil of Freud and one of the most influential psychoanalysts of his generation. In the late 1930s he announced a new energy, orgone, present in living things and the atmosphere, and built “accumulators” of alternating organic and metal layers to concentrate it. Albert Einstein tested one himself. Reich’s story ended in a US prison in 1957 after a court ordered his books burned, an episode his supporters still see as persecution rather than refutation. His followers have continued measuring. Here are the temperature anomaly Einstein saw, a blinded study of the body, and the cloudbuster.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Biophysics, psychology, atmospheric science</dd></div>
+    <div><dt>Models</dt><dd>The accumulator’s temperature, a blinded physiological study, cloudbuster operations</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 9 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 041 (reading small signals).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>accumulator, reported effect</span><span class="key"><i style="background:var(--ice)"></i>room, sham box</span><span class="key"><i style="background:var(--violet)"></i>operation windows</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="einstein">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">1941</span><h2>Einstein checks the box</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Temperatures recorded over a day above a small orgone accumulator, inside an identical box without metal layers, and in the room air. The accumulator reads a fraction of a degree warmer than the sham box and the room."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="d1">Hour of the day <input type="range" id="d1" min="0" max="24" step="0.5" value="15"><output id="d1o">—</output></label>
+          <div class="seg" role="group" aria-label="Location">
+            <button class="btn" type="button" data-lc="in" aria-pressed="true">Indoors</button>
+            <button class="btn" type="button" data-lc="out">Outdoors, in the open</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Accumulator minus sham box</b><span id="r1d" class="eg">—</span></div>
+          <div class="ro"><b>Accumulator minus room air</b><span id="r1r">—</span></div>
+          <div class="ro"><b>Reich’s name for it</b><span id="r1n">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Reich reported that a thermometer above the top of an accumulator read slightly warmer than the surrounding air, with no source of heat inside. He called the difference To − T and took it as the energy concentrating.</p>
+        <p>In January 1941 he visited Albert Einstein at Princeton and explained the idea in a five-hour conversation. Einstein agreed that a heat source in an inert box would be a “bombshell” for physics, took a small accumulator home, and confirmed the temperature difference.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Einstein saw the effect himself. When his assistant suggested convection in the room, Reich replied with a 25-page letter of new controls: the difference persisted with the box suspended, in the open air, and against an identical box without metal layers. In later decades the researcher James DeMeo reported the same small warming, around a few tenths of a degree, in controlled comparisons with sham enclosures.</div>
+          <div class="con"><b>The case against</b>Einstein concluded the difference came from the room’s temperature gradient and stopped corresponding, and side-by-side tests at matched heights are needed to rule out convection.</div>
+        </div>
+        <div class="task"><b>Try this</b>Step through the day and compare the accumulator with the sham box. Switch to outdoors, where Reich said the difference persisted.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">To − T = accumulator temperature − control temperature</div>
+          <p>The traces are schematic, following the size of difference reported by Reich and DeMeo, around 0.2–0.5 °C, on top of an ordinary daily temperature cycle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="trial">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Marburg, 1980s</span><h2>A blinded test on the body</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Volunteers sat in either a real accumulator or a sham box that looked identical, without knowing which. Small changes in skin temperature, pulse and other measures were reported after the real accumulator but not after the sham."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Measure">
+            <button class="btn" type="button" data-ms="skin" aria-pressed="true">Skin temperature</button>
+            <button class="btn" type="button" data-ms="pulse">Pulse</button>
+            <button class="btn" type="button" data-ms="feel">Reported sensations</button>
+          </div>
+          <button class="btn solo" type="button" id="go2">New volunteers</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Change after the real accumulator</b><span id="r2a" class="eg">—</span></div>
+          <div class="ro"><b>Change after the sham box</b><span id="r2b">—</span></div>
+          <div class="ro"><b>Design</b><span id="r2c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The fairest way to test a claimed bodily effect is to blind it: volunteers sit in boxes that look and feel identical, and neither they nor the person recording knows which one contains the metal layers.</p>
+        <p>In the late 1980s Stefan Müschenich and Rainer Gebauer ran such a study at the University of Marburg in Germany.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In a double-blind design, the Marburg study reported measurable physiological differences after sitting in the real accumulator compared with the sham box, including changes in skin temperature, pulse and blood pressure, and more frequent reports of warmth and tingling. Since neither volunteers nor experimenters knew which box was which, expectation alone should not produce a difference.</div>
+          <div class="con"><b>The case against</b>The study has not been independently replicated, and no rigorous trial has shown that accumulators treat any disease; US regulators in the 1950s found no evidence they did.</div>
+        </div>
+        <div class="task"><b>Try this</b>Compare the real and sham groups for each measure, then draw new volunteers to see how much the result varies with a small sample.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">effect = mean change<sub>real</sub> − mean change<sub>sham</sub></div>
+          <p>The volunteers are simulated, with group sizes and effect directions following the published summary; the exact values are illustrative.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="cloud">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The cloudbuster</span><h2>Rain after the operations</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Daily rainfall in a dry region over three months, with the days of cloudbuster operations marked. Rain is reported more often in the days following operations than on other days."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="e3">Reported effect <input type="range" id="e3" min="0" max="100" step="1" value="60"><output id="e3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Another season</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Rainy days after operations</b><span id="r3a" class="eg">—</span></div>
+          <div class="ro"><b>Rainy days otherwise</b><span id="r3b">—</span></div>
+          <div class="ro"><b>Operations this season</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In the 1950s Reich built the “cloudbuster”, a set of long metal tubes grounded in water, which he said could draw orgone from the sky and trigger rain. During a severe drought in Maine in 1953 local farmers paid him to try, and rain followed.</p>
+        <p>The geographer James DeMeo has continued the work, running operations in drought regions of the United States, Africa and the Middle East.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Reich’s 1953 Maine operation was followed within hours by rain that saved the blueberry crop, as local newspapers reported. DeMeo has published comparisons showing more rain in the days after operations than in comparable periods, including in Arizona and in drought-stricken Eritrea in the 1990s. Cloud seeding shows that modest human interventions can change rainfall, so the idea is not absurd in principle.</div>
+          <div class="con"><b>The case against</b>No randomised, independently monitored trial has shown an effect, and even cloud seeding, with a known mechanism, needs carefully randomised trials to detect its modest influence.</div>
+        </div>
+        <div class="task"><b>Try this</b>Count rainy days after operations against other days, then set the effect to zero and run a few seasons: chance alone sometimes puts rain after operations too.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">rain rate after operations vs. rain rate on other days</div>
+          <p>Each simulated day has a base chance of rain of 15%; the effect you set raises it for the three days after each operation. The season is schematic.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1939–40</div><h3>Orgone announced</h3><p>Reich, newly settled in New York, announced orgone and built the first accumulators.</p></div>
+      <div class="g"><div class="where">1941</div><h3>Einstein’s test</h3><p>After a five-hour meeting, Einstein tested an accumulator for about two weeks and confirmed the temperature difference.</p></div>
+      <div class="g"><div class="where">1953</div><h3>Rain in Maine</h3><p>Reich’s cloudbuster operation during a drought was followed by rain, reported in the local press.</p></div>
+      <div class="g"><div class="where">1956–57</div><h3>Prison</h3><p>Reich was jailed for contempt of court, and his books and journals were burned by order of the court; he died in prison in 1957.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A box that <span class="a">reads warmer than its surroundings</span>, confirmed by Einstein himself, a blinded study of the body, and decades of rain reports keep Reich’s orgone alive for his followers.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><span class="chip here">049 · Orgone energy</span><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 049 · Orgone Energy · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: To - T ---------- */
+(function () {
+  const cv = $('#c1'), DS = $('#d1'), DO = $('#d1o'), rD = $('#r1d'), rR = $('#r1r'), rN = $('#r1n');
+  const st = { lc: 'in' };
+  segs('[data-lc]', b => st.lc = b.dataset.lc);
+  const r0 = mk(4), NZ = Array.from({ length: 97 }, () => [gs(r0), gs(r0), gs(r0)]);
+  function frame() {
+    const out = st.lc === 'out', hr = +DS.value; DO.value = `${String(Math.floor(hr)).padStart(2, '0')}:${hr % 1 ? '30' : '00'}`;
+    const base = t => (out ? 14 : 20) + (out ? 6 : 1.5) * Math.sin((t - 9) / 24 * Math.PI * 2), d = t => 0.35 + 0.1 * Math.sin((t - 13) / 24 * Math.PI * 2);
+    const ser = Array.from({ length: 97 }, (_, i) => { const t = i / 4, b = base(t); return [b + NZ[i][0] * 0.04, b + 0.03 + NZ[i][1] * 0.04, b + d(t) + NZ[i][2] * 0.04]; });
+    const i0 = Math.round(hr * 4), cur = ser[Math.min(96, i0)];
+    setText(rD, `+${(cur[2] - cur[1]).toFixed(2)} °C`); setText(rR, `+${(cur[2] - cur[0]).toFixed(2)} °C`); setText(rN, 'To − T');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 50, gy = 34, gw = w - gx - 16, gh = h - gy - 36, all = ser.flat(), mn = Math.min(...all) - 0.3, mx = Math.max(...all) + 0.3, X = t => gx + t / 24 * gw, Y = v => gy + gh - (v - mn) / (mx - mn) * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    [[0, rgba(COL.ink, 0.45), 'room air'], [1, COL.ice, 'sham box'], [2, COL.eigen, 'accumulator']].forEach(([j, c, l], k) => { ctx.strokeStyle = c; ctx.lineWidth = j === 2 ? 2 : 1.4; ctx.beginPath(); ser.forEach((s, i) => i ? ctx.lineTo(X(i / 4), Y(s[j])) : ctx.moveTo(X(0), Y(s[j]))); ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = c; ctx.fillRect(gx + 10, gy + 12 + k * 15, 14, 3); tag(ctx, l, gx + 30, gy + 17 + k * 15, c); });
+    ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(X(hr), gy); ctx.lineTo(X(hr), gy + gh); ctx.stroke();
+    [0, 6, 12, 18, 24].forEach(t => tag(ctx, `${t}:00`, X(t), gy + gh + 14, COL['ink-3'], 'center')); [Math.ceil(mn), Math.floor(mx)].forEach(v => tag(ctx, `${v} °C`, gx - 4, Y(v) + 4, COL['ink-3'], 'right'));
+    tag(ctx, `TEMPERATURE OVER A DAY · ${out ? 'OUTDOORS' : 'INDOORS'} (SCHEMATIC)`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: blinded physiology ---------- */
+(function () {
+  const cv = $('#c2'), GB = $('#go2'), rA = $('#r2a'), rB = $('#r2b'), rC = $('#r2c');
+  const M = { skin: ['°C', 0.35, 0.05, 0.3], pulse: ['beats/min', 3.5, 0.4, 3], feel: ['sensations (0–10)', 2.2, 0.7, 1.6] };
+  const st = { ms: 'skin', seed: 2 };
+  segs('[data-ms]', b => st.ms = b.dataset.ms); GB.addEventListener('click', () => st.seed++);
+  function frame() {
+    const [u, eR, eS, sd] = M[st.ms], r = mk(st.seed * 7 + st.ms.length), R = Array.from({ length: 20 }, () => eR + gs(r) * sd), S = Array.from({ length: 20 }, () => eS + gs(r) * sd);
+    const mR = R.reduce((a, v) => a + v, 0) / 20, mS = S.reduce((a, v) => a + v, 0) / 20;
+    setText(rA, `${mR >= 0 ? '+' : ''}${mR.toFixed(2)} ${u}`); setText(rB, `${mS >= 0 ? '+' : ''}${mS.toFixed(2)} ${u}`); setText(rC, 'double-blind, real vs sham');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 54, gy = 34, gw = w - gx - 16, gh = h - gy - 40, lim = Math.max(...R.map(Math.abs), ...S.map(Math.abs)) * 1.15, Y = v => gy + gh / 2 - v / lim * gh / 2;
+    frame0(ctx, gx, gy, gw, gh); dash(ctx, gx, Y(0), gx + gw, Y(0), rgba(COL.ink, 0.35));
+    [[S, COL.ice, 'sham box', 0.3], [R, COL.eigen, 'real accumulator', 0.7]].forEach(([A, c, l, f]) => { const x = gx + gw * f, m = A.reduce((a, v) => a + v, 0) / A.length; A.forEach((v, i) => { ctx.fillStyle = rgba(c, 0.7); ctx.beginPath(); ctx.arc(x - 40 + (i % 10) * 9, Y(v), 4, 0, Math.PI * 2); ctx.fill(); }); ctx.strokeStyle = c; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 50, Y(m)); ctx.lineTo(x + 50, Y(m)); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, l, x, gy + gh + 14, c, 'center'); });
+    tag(ctx, `CHANGE IN ${u.toUpperCase()} · EACH DOT A VOLUNTEER (SIMULATED)`, 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: cloudbuster ---------- */
+(function () {
+  const cv = $('#c3'), ES = $('#e3'), EO = $('#e3o'), GB = $('#go3'), rA = $('#r3a'), rB = $('#r3b'), rC = $('#r3c');
+  const st = { seed: 1 };
+  GB.addEventListener('click', () => st.seed++);
+  function frame() {
+    const e = +ES.value / 100; EO.value = `${ES.value}%`;
+    const r = mk(st.seed * 11 + Math.round(e * 100)), ops = [8, 30, 51, 73], after = d => ops.some(o => d > o && d <= o + 3);
+    const days = Array.from({ length: 90 }, (_, d) => { const p = 0.15 + (after(d) ? 0.35 * e : 0); return r() < p ? 2 + r() * 14 : 0; });
+    const A = days.filter((v, d) => after(d)), B = days.filter((v, d) => !after(d)), fa = A.filter(v => v > 0).length / A.length, fb = B.filter(v => v > 0).length / B.length;
+    setText(rA, `${Math.round(fa * 100)}% of days`); setText(rB, `${Math.round(fb * 100)}% of days`); setText(rC, String(ops.length));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 44, gy = 34, gw = w - gx - 16, gh = h - gy - 36, X = d => gx + d / 90 * gw, Y = v => gy + gh - v / 18 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    ops.forEach(o => { ctx.fillStyle = rgba(COL.violet, 0.12); ctx.fillRect(X(o), gy, X(o + 4) - X(o), gh); ctx.fillStyle = COL.violet; ctx.fillRect(X(o) - 1, gy, 3, gh); });
+    days.forEach((v, d) => { if (!v) return; ctx.fillStyle = after(d) ? COL.eigen : rgba(COL.ice, 0.75); ctx.fillRect(X(d) + 1, Y(v), gw / 90 - 2, gy + gh - Y(v)); });
+    [0, 30, 60, 90].forEach(d => tag(ctx, `day ${d}`, X(d), gy + gh + 14, COL['ink-3'], 'center')); tag(ctx, 'operation', X(8) + 6, gy + 14, COL.violet);
+    tag(ctx, 'DAILY RAINFALL (mm) · VIOLET: OPERATIONS · PINK: RAIN IN THE THREE DAYS AFTER (SCHEMATIC)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

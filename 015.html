@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>How a Quantum Computer Works</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 015 colour code: pink = the answer and amplitudes that help, violet = negative amplitudes and errors, ice = the machine. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/9}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4}}
+h1 .eig{transform:none}
+.gates{display:flex;flex-wrap:wrap;gap:6px}
+.gates .btn{border:1px solid var(--rule-hi);min-width:44px;font-size:12px}
+.gates .btn.m{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 55%,transparent)}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 015 · Quantum series · 9 of 10</div>
+    <a class="navlink" href="014.html">← Φ 014</a>
+    <a class="navlink" href="016.html">Φ 016 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 015 · Quantum series · 9 of 10</p>
+    <h1>quantum <span class="eig">computing</span></h1>
+    <p class="gloss">QUANTUM · computation — <em>steering waves of probability so wrong answers cancel and right ones add up</em></p>
+    <p class="thesis">A quantum computer doesn’t try every answer at once. That is the popular myth. It sets up interference, the effect from Φ 007, so the waves pointing at wrong answers cancel out and the right answer gets louder. And it has to finish before decoherence (Φ 012) wipes the slate.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum information → computer science</dd></div>
+    <div><dt>Models</dt><dd>A qubit you program with gates, Grover’s search, the error-correction threshold</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 9 of 10. Uses superposition, entanglement and decoherence.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>the answer</span><span class="key"><i style="background:var(--violet)"></i>negative amplitude, error</span><span class="key"><i style="background:var(--ice)"></i>the machine</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="qubit">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The qubit</span><h2>Program a qubit with gates</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A qubit drawn as an arrow on a sphere, with its chances of reading 0 or 1 and a histogram of repeated measurements. Gates rotate the arrow."></canvas></div>
+        <div class="gates">
+          <button class="btn" type="button" data-g="H">H</button>
+          <button class="btn" type="button" data-g="X">X</button>
+          <button class="btn" type="button" data-g="Z">Z</button>
+          <button class="btn" type="button" data-g="S">S</button>
+          <button class="btn" type="button" data-g="T">T</button>
+          <button class="btn m" type="button" id="meas1">Measure 200 times</button>
+          <button class="btn" type="button" id="reset1">Reset to 0</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Gates applied</b><span id="r1g">—</span></div>
+          <div class="ro"><b>Chance of 0 · 1</b><span id="r1p" class="eg">—</span></div>
+          <div class="ro"><b>Last 200 readings</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A classical bit is 0 or 1. A <strong>qubit</strong> is an arrow on a sphere: north is 0, south is 1, and everywhere else is a superposition. Read it and you always get a plain 0 or 1, with odds set by how far north or south the arrow points.</p>
+        <p>Gates are rotations. <strong>X</strong> flips the arrow over, a quantum NOT. <strong>H</strong> (Hadamard) swings 0 onto the equator, an even superposition. <strong>Z</strong>, <strong>S</strong> and <strong>T</strong> spin the arrow around the vertical axis. They change the <em>phase</em>, which leaves the odds of 0 and 1 untouched.</p>
+        <p>So why bother with phase? Try H, then Z, then H. The first H makes a 50/50 superposition, and Z changes nothing you could measure. Yet the final H now gives a certain 1 instead of a certain 0. The hidden phase decided the outcome through interference. Every quantum algorithm is built from tricks like this.</p>
+        <div class="task"><b>Try this</b>Reset, then try H, H: back to 0. Reset, then H, Z, H: now 1. Measure after each to check.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">|<var>ψ</var>⟩ = <var>α</var>|0⟩ + <var>β</var>|1⟩,&nbsp; <var>H</var> = <span class="frac"><span>1</span><span>√2</span></span><span style="font-size:.8em">[</span>1&nbsp;&nbsp;1 ; 1&nbsp;−1<span style="font-size:.8em">]</span></div>
+          <p>The odds are |<var>α</var>|² and |<var>β</var>|². The gates: <var>X</var> swaps the amplitudes; <var>Z</var> multiplies <var>β</var> by −1; <var>S</var> by <var>i</var>; <var>T</var> by <var>e</var><sup><var>i</var>π/4</sup>. The identity <var>HZH</var> = <var>X</var> shows how a phase flip becomes a bit flip through interference.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="grover">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">An algorithm</span><h2>Grover’s search: amplify the right answer</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Bars showing the amplitude of every possible answer. The hidden right answer's bar grows with each round of marking and inverting, while the others shrink."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="How many items">
+            <button class="btn" type="button" data-n2="16" aria-pressed="true">16 items</button>
+            <button class="btn" type="button" data-n2="64" aria-pressed="false">64</button>
+            <button class="btn" type="button" data-n2="256" aria-pressed="false">256</button>
+          </div>
+          <label class="check" for="show2" style="display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)"><input type="checkbox" id="show2" style="accent-color:var(--eigen)"> Reveal the answer</label>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="or2">1 · Mark it</button>
+          <button class="btn solo" type="button" id="di2">2 · Flip about the average</button>
+          <button class="btn solo" type="button" id="st2" style="color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 55%,transparent)">Do one full round</button>
+          <button class="btn solo" type="button" id="rs2">New search</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Rounds</b><span id="r2r">0</span></div>
+          <div class="ro"><b>Chance of reading the answer</b><span id="r2p" class="eg">—</span></div>
+          <div class="ro"><b>Best number of rounds</b><span id="r2b">—</span></div>
+          <div class="ro"><b>Classical average guesses</b><span id="r2c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Searching an unsorted list of <var>N</var> items for one marked item takes a classical computer about <var>N</var>/2 tries on average. Lov Grover found in 1996 that a quantum computer needs only about √<var>N</var> rounds.</p>
+        <p>Start with every answer equally likely: all the bars the same height. Each round has two moves. First the <strong>oracle</strong> marks the right answer by flipping its amplitude <span class="v">upside down</span>, a phase change you couldn’t see by measuring. Then a <strong>flip about the average</strong> reflects every bar through the mean. The marked bar, now far below the average, bounces up high above it, and every other bar shrinks a little.</p>
+        <p>Repeat, and the right answer’s bar grows round by round, through interference rather than luck. For 16 items, 3 rounds give a 96% chance of reading it. Do too many rounds and it overshoots and shrinks again, like pushing a swing at the wrong moment.</p>
+        <div class="task"><b>Try this</b>Step through one round slowly, mark then flip, to see the mechanism. Then run full rounds and stop at the best number. Push past it to see the overshoot.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>k</var><sub>best</sub> ≈ <span class="frac"><span>π</span><span>4</span></span>√<var>N</var>,&nbsp; <var>P</var>(<var>k</var>) = sin²((2<var>k</var> + 1)<var>θ</var>), sin <var>θ</var> = 1/√<var>N</var></div>
+          <p>Each round rotates the state by 2<var>θ</var> towards the answer in a two-dimensional plane. The oracle is the reflection <var>a</var><sub><var>x</var></sub> → −<var>a</var><sub><var>x</var></sub> on the marked item, and the diffusion step is <var>a</var><sub><var>i</var></sub> → 2<var>ā</var> − <var>a</var><sub><var>i</var></sub>. The quadratic speed-up is proven optimal for unstructured search.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="errors">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The hard part</span><h2>Error correction and the threshold</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A log-log chart of logical error rate against physical error rate for several code sizes. The lines cross at the threshold: below it, bigger codes help; above it, they hurt."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="p3">Physical error rate <input type="range" id="p3" min="0" max="1000" step="1" value="560"><output id="p3o">—</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Code size">
+            <button class="btn" type="button" data-d3="3">Size 3</button>
+            <button class="btn" type="button" data-d3="5">5</button>
+            <button class="btn" type="button" data-d3="7" aria-pressed="true">7</button>
+            <button class="btn" type="button" data-d3="11">11</button>
+            <button class="btn" type="button" data-d3="17">17</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Logical error rate</b><span id="r3l" class="eg">—</span></div>
+          <div class="ro"><b>Qubits per logical qubit</b><span id="r3q">—</span></div>
+          <div class="ro"><b>Bigger code helps?</b><span id="r3h">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Real qubits make mistakes, roughly one in every few hundred to a few thousand operations. Big algorithms need billions of operations, so errors must be fixed on the fly. But you can’t copy a qubit to back it up, and looking at it destroys it.</p>
+        <p>The answer is <strong>quantum error correction</strong>. Spread one <em>logical</em> qubit across many physical ones, and check only <em>shared</em> properties, like “do these two agree?”. That reveals errors without reading the data. In the leading design, the surface code, a code of size <var>d</var> uses about 2<var>d</var>² physical qubits.</p>
+        <p>There is a catch, called the <strong>threshold</strong>. More qubits means more places for errors. If the hardware is good enough, below roughly 1% error per step, each increase in size cuts the logical error dramatically. Above it, bigger codes make things worse. In late 2024 Google’s Willow chip showed the logical error falling by about half with each step up in code size, clear evidence of working below threshold.</p>
+        <p>That is the road to useful machines, including the ones that could break today’s encryption. Peter Shor’s 1994 algorithm factors large numbers, and a 2025 estimate put breaking RSA-2048 at under a million noisy qubits running for about a week. Φ 016 picks up that thread.</p>
+        <div class="task"><b>Try this</b>Set the physical error just below the threshold and step the code size up: the logical error plunges. Then move above the threshold and watch bigger codes lose.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>p</var><sub>L</sub> ≈ <var>A</var> <span style="font-size:.8em">(</span><var>p</var> / <var>p</var><sub>th</sub><span style="font-size:.8em">)</span><sup>(<var>d</var>+1)/2</sup></div>
+          <p>The standard approximate scaling for a distance-<var>d</var> surface code, with <var>p</var><sub>th</sub> ≈ 1% and <var>A</var> ≈ 0.1. A code of distance <var>d</var> corrects up to ⌊(<var>d</var> − 1)/2⌋ errors per round, so failure needs about (<var>d</var> + 1)/2 errors, hence the exponent. Qubit count: <var>d</var>² data qubits plus <var>d</var>² − 1 check qubits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>What quantum computers are for</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Chemistry</div><h3>Simulating molecules</h3><p>Molecules are quantum systems, and classical computers struggle to simulate them exactly. Designing catalysts, batteries and drugs is the application physicists expect to pay off first.</p></div>
+      <div class="g"><div class="where">Cryptography</div><h3>Shor’s algorithm</h3><p>Factoring large numbers underpins RSA encryption. Shor’s algorithm does it exponentially faster than any known classical method, which is why the world is moving to new “post-quantum” codes now.</p></div>
+      <div class="g"><div class="where">Hardware</div><h3>Many competing designs</h3><p>Superconducting circuits, trapped ions, neutral atoms held by lasers, photons and spin qubits in silicon are all in the race. Each trades speed, quality and how easily it scales.</p></div>
+      <div class="g"><div class="where">Reality check</div><h3>Not faster at everything</h3><p>Quantum computers won’t speed up email, video or most everyday code. They help only problems with structure that interference can exploit, and even Grover gives just a square-root gain.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A quantum computer doesn’t try every answer at once. It <span class="a">choreographs interference</span> so the right answer rings loudest, and it fights errors fast enough to finish.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><span class="chip here">015 · Quantum computing</span><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 015 · Quantum computing · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: one qubit ---------- */
+(function () {
+  const cv = $('#c1');
+  const rG = $('#r1g'), rP = $('#r1p'), rM = $('#r1m');
+  const st = { a: [1, 0], b: [0, 0], seq: [], shots: null, shown: [0, 0, 1] };
+  const R2 = Math.SQRT1_2, cm = (p, q) => [p[0] * q[0] - p[1] * q[1], p[0] * q[1] + p[1] * q[0]];
+  const G = {
+    X: () => { const t = st.a; st.a = st.b; st.b = t; },
+    Z: () => { st.b = [-st.b[0], -st.b[1]]; },
+    S: () => { st.b = cm(st.b, [0, 1]); },
+    T: () => { st.b = cm(st.b, [R2, R2]); },
+    H: () => { const a = st.a, b = st.b; st.a = [R2 * (a[0] + b[0]), R2 * (a[1] + b[1])]; st.b = [R2 * (a[0] - b[0]), R2 * (a[1] - b[1])]; }
+  };
+  const bv = () => { const re = st.a[0] * st.b[0] + st.a[1] * st.b[1], im = st.a[0] * st.b[1] - st.a[1] * st.b[0]; return [2 * re, 2 * im, st.a[0] ** 2 + st.a[1] ** 2 - st.b[0] ** 2 - st.b[1] ** 2]; };
+  function upd() {
+    setText(rG, st.seq.length ? st.seq.slice(-10).join(' ') : 'none');
+    const p0 = st.a[0] ** 2 + st.a[1] ** 2; setText(rP, `${Math.round(p0 * 100)}% · ${Math.round((1 - p0) * 100)}%`);
+    setText(rM, st.shots ? `${st.shots[0]} zeros · ${st.shots[1]} ones` : 'press Measure');
+  }
+  $$('[data-g]').forEach(b => b.addEventListener('click', () => { G[b.dataset.g](); st.seq.push(b.dataset.g); st.shots = null; upd(); }));
+  $('#meas1').addEventListener('click', () => { const p0 = st.a[0] ** 2 + st.a[1] ** 2; let z = 0; for (let k = 0; k < 200; k++) if (Math.random() < p0) z++; st.shots = [z, 200 - z]; upd(); });
+  $('#reset1').addEventListener('click', () => { st.a = [1, 0]; st.b = [0, 0]; st.seq = []; st.shots = null; upd(); });
+  upd();
+  function frame(dt) {
+    const tgt = bv(); for (let k = 0; k < 3; k++) st.shown[k] += (tgt[k] - st.shown[k]) * Math.min(1, dt * 8);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, R = narrow ? Math.min(w * 0.3, h * 0.22) : Math.min(w * 0.2, h * 0.36), cx = narrow ? w / 2 : 30 + R, cy = narrow ? 30 + R : h / 2;
+    ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.ellipse(cx, cy, R, R * 0.3, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    const P = ([x, y, z]) => [cx + R * (y - 0.35 * x), cy + R * (0.21 * x - z)];
+    ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText('0', cx, cy - R - 6); ctx.fillText('1', cx, cy + R + 14); ctx.textAlign = 'left';
+    [[1, 0, 0, '+x'], [0, 1, 0, '+y']].forEach(([x, y, z, l]) => { const [px, py] = P([x, y, z]); ctx.strokeStyle = rgba(COL['ink-3'], 0.6); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke(); });
+    const [px, py] = P(st.shown);
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 3.5; ctx.shadowColor = COL.ice; ctx.shadowBlur = 10; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+    // odds bars and histogram
+    const bx = narrow ? 24 : cx + R + 60, by = narrow ? cy + R + 40 : 40, bw = narrow ? w - 48 : w - bx - 24, bh = narrow ? h - by - 30 : h - 90;
+    const p0 = st.a[0] ** 2 + st.a[1] ** 2;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('CHANCE OF READING', bx, by - 10);
+    [[p0, '0'], [1 - p0, '1']].forEach(([p, l], k) => { const x = bx + k * bw / 2 + bw * 0.08, ww = bw * 0.34; ctx.fillStyle = rgba(COL.eigen, 0.85); ctx.fillRect(x, by + bh - p * bh, ww, p * bh); ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(x + 0.5, by + 0.5, ww - 1, bh - 1); ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(`|${l}⟩ ${Math.round(p * 100)}%`, x + ww / 2, by + bh + 16); ctx.textAlign = 'left';
+      if (st.shots) { const f = st.shots[k] / 200; ctx.strokeStyle = '#d2d1d5'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 4, by + bh - f * bh); ctx.lineTo(x + ww + 4, by + bh - f * bh); ctx.stroke(); } });
+    if (st.shots) { ctx.fillStyle = '#d2d1d5'; ctx.fillText('white line: share of 200 real readings', bx, by + bh + 32); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: Grover ---------- */
+(function () {
+  const cv = $('#c2'), show = $('#show2');
+  const rR = $('#r2r'), rP = $('#r2p'), rB = $('#r2b'), rC = $('#r2c');
+  const st = { N: 16, a: null, target: 0, rounds: 0, stage: 0, shown: null, hist: [] };
+  function reset() { st.a = new Float64Array(st.N).fill(1 / Math.sqrt(st.N)); st.target = Math.floor(Math.random() * st.N); st.rounds = 0; st.stage = 0; st.shown = Float64Array.from(st.a); st.hist = [[0, 1 / st.N]]; upd(); }
+  const oracle = () => { st.a[st.target] = -st.a[st.target]; st.stage = 1; };
+  const diffuse = () => { let m = 0; for (const v of st.a) m += v; m /= st.N; for (let i = 0; i < st.N; i++) st.a[i] = 2 * m - st.a[i]; st.stage = 0; st.rounds++; st.hist.push([st.rounds, st.a[st.target] ** 2]); };
+  function upd() {
+    setText(rR, String(st.rounds) + (st.stage === 1 ? ' + marked' : ''));
+    setText(rP, `${(st.a[st.target] ** 2 * 100).toFixed(1)}%`);
+    setText(rB, `${Math.floor(Math.PI / 4 * Math.sqrt(st.N))}`); setText(rC, `${st.N / 2}`);
+    $$('[data-n2]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.n2 === st.N)));
+  }
+  $$('[data-n2]').forEach(b => b.addEventListener('click', () => { st.N = +b.dataset.n2; reset(); }));
+  $('#or2').addEventListener('click', () => { if (st.stage === 0) { oracle(); upd(); } });
+  $('#di2').addEventListener('click', () => { if (st.stage === 1) { diffuse(); upd(); } });
+  $('#st2').addEventListener('click', () => { if (st.stage === 1) diffuse(); else { oracle(); diffuse(); } upd(); });
+  $('#rs2').addEventListener('click', reset);
+  reset();
+  function frame(dt) {
+    for (let i = 0; i < st.N; i++) st.shown[i] += (st.a[i] - st.shown[i]) * Math.min(1, dt * 7);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    const gx = 14, gy = 26, gw = narrow ? w - 28 : w * 0.68, gh = narrow ? h * 0.58 : h - 52, mid = gy + gh * 0.58, sc = gh * 0.55;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`AMPLITUDE OF EACH OF ${st.N} POSSIBLE ANSWERS`, gx, gy - 10);
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(gx, mid); ctx.lineTo(gx + gw, mid); ctx.stroke();
+    let m = 0; for (const v of st.shown) m += v; m /= st.N;
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = rgba(COL.ice, 0.7); ctx.beginPath(); ctx.moveTo(gx, mid - m * sc); ctx.lineTo(gx + gw, mid - m * sc); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.ice; ctx.fillText('average', gx + gw - 54, mid - m * sc - 5);
+    const bw = gw / st.N;
+    for (let i = 0; i < st.N; i++) {
+      const v = st.shown[i], isT = i === st.target && show.checked;
+      ctx.fillStyle = v < 0 ? COL.violet : isT ? COL.eigen : rgba(COL.ice, 0.75);
+      const y = v >= 0 ? mid - v * sc : mid; ctx.fillRect(gx + i * bw + bw * 0.12, y, Math.max(1, bw * 0.76), Math.abs(v) * sc);
+    }
+    // probability over rounds
+    const cx = narrow ? 30 : gx + gw + 36, cy = narrow ? gy + gh + 30 : gy, cw = narrow ? w - 44 : w - cx - 14, ch = narrow ? h - cy - 20 : gh;
+    const KM = Math.max(6, Math.floor(Math.PI / 2 * Math.sqrt(st.N)) + 1), th = Math.asin(1 / Math.sqrt(st.N));
+    const X = k => cx + k / KM * cw, Y = p => cy + (1 - p) * ch;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('CHANCE OF THE ANSWER', cx, cy - 10);
+    ctx.strokeStyle = rgba(COL.eigen, 0.5); ctx.lineWidth = 1.5; ctx.beginPath(); for (let k = 0; k <= KM * 4; k++) { const kk = k / 4, y = Y(Math.sin((2 * kk + 1) * th) ** 2); k ? ctx.lineTo(X(kk), y) : ctx.moveTo(X(kk), y); } ctx.stroke();
+    st.hist.forEach(([k, p]) => { if (k <= KM) { ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(k), Y(p), 4, 0, Math.PI * 2); ctx.fill(); } });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('rounds →', cx + cw - 60, cy + ch + 14);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: threshold ---------- */
+(function () {
+  const cv = $('#c3'), pS = $('#p3'), pO = $('#p3o');
+  const rL = $('#r3l'), rQ = $('#r3q'), rH = $('#r3h');
+  const PTH = 0.01, A = 0.1, DS = [3, 5, 7, 11, 17];
+  const st = { d: 7 };
+  const pOf = v => Math.pow(10, -4 + 2.5 * v / 1000);         // 0.01% .. ~3%
+  const pL = (p, d) => Math.min(0.5, A * Math.pow(p / PTH, (d + 1) / 2));
+  const fmt = x => { if (x >= 0.01) return `${(x * 100).toFixed(1)}%`; const e = Math.floor(Math.log10(x)); return `${(x / 10 ** e).toFixed(1)}×10${sup(e)}`; };
+  $$('[data-d3]').forEach(b => b.addEventListener('click', () => { st.d = +b.dataset.d3; $$('[data-d3]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame() {
+    const p = pOf(+pS.value); pO.value = `${(p * 100).toFixed(p < 0.001 ? 3 : 2)}%`;
+    setText(rL, `${fmt(pL(p, st.d))} per round`); setText(rQ, `${2 * st.d * st.d - 1}`);
+    const helps = p < PTH; setText(rH, helps ? 'yes · below threshold' : 'no · above threshold'); rH.className = helps ? 'eg' : 'vi';
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 58, gy = 26, gw = w - gx - 20, gh = h - gy - 40;
+    const LX0 = -4, LX1 = -1.5, LY0 = -16, LY1 = 0;
+    const X = q => gx + (Math.log10(q) - LX0) / (LX1 - LX0) * gw, Y = v => gy + (LY1 - clamp(Math.log10(v), LY0, LY1)) / (LY1 - LY0) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('LOGICAL ERROR AGAINST PHYSICAL ERROR · LOG–LOG', gx, gy - 10);
+    ctx.textAlign = 'right'; [0, -4, -8, -12, -16].forEach(e => { ctx.fillText(e ? `10${sup(e)}` : '1', gx - 6, Y(10 ** e) + 4); ctx.strokeStyle = rgba(COL['rule-hi'], 0.5); ctx.beginPath(); ctx.moveTo(gx, Y(10 ** e)); ctx.lineTo(gx + gw, Y(10 ** e)); ctx.stroke(); });
+    ctx.textAlign = 'center'; [1e-4, 1e-3, 1e-2].forEach(q => ctx.fillText(`${q * 100}%`, X(q), gy + gh + 14)); ctx.textAlign = 'left';
+    ctx.fillStyle = rgba(COL.violet, 0.07); ctx.fillRect(X(PTH), gy, gx + gw - X(PTH), gh);
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(X(PTH), gy); ctx.lineTo(X(PTH), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.violet; ctx.fillText('threshold', X(PTH) + 4, gy + 14);
+    DS.forEach(d => {
+      const on = d === st.d; ctx.strokeStyle = on ? COL.eigen : rgba(COL.ice, 0.45); ctx.lineWidth = on ? 2.4 : 1.2; ctx.beginPath();
+      for (let k = 0; k <= 100; k++) { const q = 10 ** (LX0 + (LX1 - LX0) * k / 100), y = Y(pL(q, d)); k ? ctx.lineTo(X(q), y) : ctx.moveTo(X(q), y); } ctx.stroke();
+      const q0 = 10 ** (LX0 + 0.04), yl = Y(pL(q0, d)); if (yl < gy + gh - 4) { ctx.fillStyle = on ? COL.eigen : COL['ink-3']; ctx.fillText(`size ${d}`, X(q0) + 4, yl - 4); }
+    });
+    ctx.strokeStyle = rgba('#d2d1d5', 0.5); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(p), gy); ctx.lineTo(X(p), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(p), Y(pL(p, st.d)), 5, 0, Math.PI * 2); ctx.fill();
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

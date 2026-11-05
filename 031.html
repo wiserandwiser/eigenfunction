@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Chips at the Atomic Edge</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 031 colour code: ice = electrons and current, pink = the gate and light, violet = leakage through tunnelling. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/9.5}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp3{aspect-ratio:4/4.8}#vp2{aspect-ratio:4/3.8}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 031 · Breakthrough technology · 5 of 8</div>
+    <a class="navlink" href="030.html">← Φ 030</a>
+    <a class="navlink" href="032.html">Φ 032 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 031 · Breakthrough technology · 5 of 8</p>
+    <h1>chips at the <span class="eig">atomic edge</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · computing — <em>a hundred billion switches on a fingernail, printed with light, and now meeting quantum mechanics head-on</em></p>
+    <p class="thesis">Every computer is built from transistors, tiny switches that turn a current on and off. For 60 years engineers have halved their size every few years, and a top chip now holds over 100 billion of them. But the smallest parts are only a few dozen atoms across, where electrons start to tunnel straight through a switch that is meant to be off.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Semiconductor devices, lithography</dd></div>
+    <div><dt>Models</dt><dd>A transistor shrinking until it leaks, Moore’s law, printing with extreme ultraviolet light</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 5 of 8. Uses tunnelling (Φ 002).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>current</span><span class="key"><i style="background:var(--eigen)"></i>gate · light</span><span class="key"><i style="background:var(--violet)"></i>tunnelling leak</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="switch">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The switch</span><h2>Shrink a transistor until it leaks</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The energy barrier in a transistor between source and drain. Raising the gate voltage lowers the barrier so electrons flow. Shortening the channel lets electrons tunnel through even when the switch is off, shown on a graph of current against gate voltage."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="L1">Gate length <input type="range" id="L1" min="15" max="300" step="1" value="200"><output id="L1o">—</output></label>
+          <label class="scrub" for="V1">Gate voltage <input type="range" id="V1" min="0" max="70" step="1" value="0"><output id="V1o">—</output></label>
+          <div class="seg" role="group" aria-label="Transistor shape">
+            <button class="btn" type="button" data-arch="planar">Planar</button>
+            <button class="btn" type="button" data-arch="fin" aria-pressed="true">FinFET</button>
+            <button class="btn" type="button" data-arch="gaa">Gate-all-around</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Switch is</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>On ÷ off current</b><span id="r1r">—</span></div>
+          <div class="ro"><b>Off-state leakage mostly by</b><span id="r1l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A transistor is a channel of silicon between a <strong>source</strong> and a <strong>drain</strong>, with a <span class="a">gate</span> electrode above it. Electrons in the source face an energy barrier. Voltage on the gate lowers the barrier and electrons pour over: the switch is on. Remove it and the barrier rises: off.</p>
+        <p>Even when “off”, a few electrons have enough thermal energy to get over, which sets a hard limit on how sharply a transistor can switch at room temperature. As the channel shortens, the drain starts to pull the barrier down too, and the gate loses control. Below about 5 nanometres a new leak opens: electrons <span class="v">tunnel</span> straight through the barrier (Φ 002).</p>
+        <p>The industry’s answer has been to wrap the gate around the channel. First the <strong>FinFET</strong> (2011), a fin of silicon gripped on three sides; now <strong>gate-all-around</strong> nanosheets (2022 onwards), gripped on all four. Each grip gives the gate firmer control at shorter lengths.</p>
+        <div class="task"><b>Try this</b>Flip the switch on and off at 20 nm. Then shrink to 3 nm and see the off current rise. Compare planar with gate-all-around.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>I</var> ∝ <var>e</var><sup>−Φ/<var>kT</var></sup> + <var>e</var><sup>−2<var>L</var>√(2<var>m</var>*Φ)/ħ</sup>,&nbsp; Φ = Φ₀ − α<var>V</var><sub>g</sub> − <var>V</var><sub>d</sub><var>e</var><sup>−<var>L</var>/λ</sup>/2</div>
+          <p>A teaching model: over-the-barrier current plus WKB tunnelling through it, with gate control α and a “natural length” λ that shrinks as the gate wraps further round (planar 12 nm, FinFET 6 nm, gate-all-around 4 nm). The thermal limit is 60 mV of gate voltage per tenfold change in current at room temperature. Chip makers want on/off ratios above about 10⁵.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="moore">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Moore’s law</span><h2>Fifty years of doubling</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Transistors per chip on a logarithmic scale from 1971 to today, for landmark processors, with a doubling-every-two-years trend line."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="y2">Year <input type="range" id="y2" min="1971" max="2025" step="1" value="2025"><output id="y2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Landmark chip</b><span id="r2c" class="eg">—</span></div>
+          <div class="ro"><b>Transistors</b><span id="r2n">—</span></div>
+          <div class="ro"><b>Growth since the Intel 4004</b><span id="r2g">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1965 Gordon Moore noticed that the number of components on a chip was doubling every year; in 1975 he revised it to every two years. That observation became a target the whole industry planned around, and it held for half a century.</p>
+        <p>Intel’s 4004 of 1971 had 2,300 transistors. Today’s largest chips have tens to hundreds of billions, a growth of over ten million times. No other technology has improved this fast for this long.</p>
+        <p>Node names like “3 nm” no longer measure anything physical. The tightest gate spacing on such a chip is about 45–50 nm, and the smallest metal wires sit about 20–24 nm apart. Density still improves, but more slowly and at rising cost. Much of the progress now comes from stacking chips and packaging several dies together.</p>
+        <div class="task"><b>Try this</b>Slide through the years and compare each landmark chip against the trend line.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>N</var>(<var>t</var>) ≈ 2,300 × 2<sup>(<var>t</var> − 1971)/2</sup></div>
+          <p>Published transistor counts for landmark processors. Recent GPUs combine two dies in one package. The dashed line is a doubling every two years starting from the 4004.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="euv">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Printing with light</span><h2>Extreme ultraviolet lithography</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A pattern of lines on a mask and the image a lens projects onto the wafer. If the lines are finer than the light can resolve, the projected image washes out to a flat grey and nothing prints."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Light source">
+            <button class="btn" type="button" data-src="0">Mercury 365 nm</button>
+            <button class="btn" type="button" data-src="1">ArF 193 nm</button>
+            <button class="btn" type="button" data-src="2">ArF immersion</button>
+            <button class="btn" type="button" data-src="3" aria-pressed="true">EUV 13.5 nm</button>
+            <button class="btn" type="button" data-src="4">High-NA EUV</button>
+          </div>
+          <label class="scrub" for="p3">Line pitch <input type="range" id="p3" min="10" max="400" step="1" value="40"><output id="p3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Finest pitch this light can print</b><span id="r3m" class="eg">—</span></div>
+          <div class="ro"><b>Image contrast</b><span id="r3c">—</span></div>
+          <div class="ro"><b>Result</b><span id="r3r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Chips are printed like photographs. Light shines through a mask, a lens shrinks the pattern, and it exposes a light-sensitive coating on the silicon wafer. The finest detail a lens can form is limited by <strong>diffraction</strong>: roughly the wavelength divided by the lens’s light-gathering power, its numerical aperture (NA).</p>
+        <p>For two decades the industry squeezed 193 nm light with every trick: immersing the lens in water to raise NA, and exposing each layer two or four times. Then came <span class="a">extreme ultraviolet</span> at 13.5 nm. Making it means hitting 50,000 falling droplets of molten tin per second with a powerful laser, turning each into a plasma hotter than the Sun’s surface.</p>
+        <p>EUV is absorbed by almost everything, air and glass included, so the whole machine runs in a vacuum and focuses with mirrors made of alternating layers of molybdenum and silicon. Only the Dutch company ASML makes these machines; each costs a couple of hundred million dollars, and the new High-NA versions roughly twice that.</p>
+        <div class="task"><b>Try this</b>Choose 193 nm light and shrink the pitch until the lines wash out. Then switch to EUV and see how much finer you can go.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">pitch<sub>min</sub> = λ / (2 NA),&nbsp; <var>I</var>(<var>x</var>) = |Σ<sub><var>m</var></sub> <var>a</var><sub><var>m</var></sub> <var>e</var><sup>2π<var>imx</var>/<var>p</var></sup>|² over orders the lens accepts</div>
+          <p>Lines and spaces of equal width, imaged with tilted (off-axis) illumination so two diffraction orders can just fit through the lens; each order is kept only if the lens accepts it. Real lithography adds partial coherence, resist chemistry and mask corrections. NA values: mercury lamps about 0.65, dry ArF 0.93, immersion 1.35, EUV 0.33, High-NA EUV 0.55.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1947</div><h3>The first transistor</h3><p>John Bardeen, Walter Brattain and William Shockley at Bell Labs built a point-contact transistor from germanium. Nobel Prize, 1956.</p></div>
+      <div class="g"><div class="where">1958–59</div><h3>The integrated circuit</h3><p>Jack Kilby and Robert Noyce independently put several components on one piece of semiconductor, the start of the microchip.</p></div>
+      <div class="g"><div class="where">2019</div><h3>EUV in production</h3><p>After more than two decades of development, EUV lithography entered mass production for the most advanced chips, first in smartphones.</p></div>
+      <div class="g"><div class="where">Next</div><h3>Stacking</h3><p>Chip makers are moving into the third dimension: stacking memory on logic, bonding dies face to face, and planning transistors stacked on top of each other.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Transistors have shrunk until <span class="a">quantum tunnelling</span> leaks through them; wrapping the gate around the channel and printing with extreme ultraviolet light keep the shrinking going, slowly.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><span class="chip here">031 · Chips at the edge</span><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 031 · Switches all the way down · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const fmtBig = n => n >= 1e9 ? `${(n / 1e9).toFixed(n < 1e10 ? 1 : 0)} billion` : n >= 1e6 ? `${(n / 1e6).toFixed(n < 1e7 ? 1 : 0)} million` : n.toLocaleString('en-US');
+const expo = v => (([m, e]) => `${m} × 10${sup(+e)}`)(v.toExponential(1).split('e'));
+
+/* ---------- BAY 01: the shrinking switch ---------- */
+(function () {
+  const cv = $('#c1'), LS = $('#L1'), LO = $('#L1o'), VS = $('#V1'), VO = $('#V1o');
+  const rS = $('#r1s'), rR = $('#r1r'), rL = $('#r1l');
+  const ARCH = { planar: [0.7, 12, 'planar'], fin: [0.88, 6, 'FinFET'], gaa: [0.95, 4, 'gate-all-around'] };
+  const kT = 0.0259, VD = 0.7, PHI0 = 0.6;
+  const st = { arch: 'fin', E: [] };
+  for (let i = 0; i < 40; i++) st.E.push({ x: Math.random() * 0.25, y: Math.random(), state: 0, t: 0 });
+  $$('[data-arch]').forEach(b => b.addEventListener('click', () => { st.arch = b.dataset.arch; $$('[data-arch]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  const phiOf = (Vg, L) => { const [a, lam] = ARCH[st.arch]; return Math.max(0.02, PHI0 - a * Vg - VD * 0.5 * Math.exp(-L / lam)); };
+  const parts = (Vg, L) => { const p = phiOf(Vg, L); return [Math.exp(-p / kT), Math.exp(-4.58 * L * Math.sqrt(p))]; };
+  const Id = (Vg, L) => { const [a, b] = parts(Vg, L); return a + b; };
+  function frame(dt) {
+    const L = +LS.value / 10, Vg = +VS.value / 100; LO.value = `${L.toFixed(L < 10 ? 1 : 0)} nm`; VO.value = `${Vg.toFixed(2)} V`;
+    const on = Id(0.7, L), off = Id(0, L), ratio = on / off, [th, tu] = parts(0, L), I = Id(Vg, L);
+    setText(rS, Vg > 0.35 ? 'on' : I / off > 30 ? 'partly on' : 'off');
+    setText(rR, `${expo(ratio)}${ratio > 1e5 ? ' · good' : ratio > 1e3 ? ' · leaky' : ' · barely a switch'}`);
+    setText(rL, tu > th ? 'tunnelling through the barrier' : 'electrons hopping over the barrier');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, bw = narrow ? w : w * 0.55, bh = narrow ? h * 0.5 : h;
+    // barrier diagram: source | channel (length ∝ L) | drain
+    const gx = 20, gw = bw - 40, base = bh * 0.7, sc = bh * 0.55, phi = phiOf(Vg, L);
+    const chW = Math.max(6, Math.min(gw * 0.6, L / 30 * gw * 0.6)), c0 = gx + (gw - chW) / 2, c1 = c0 + chW;
+    const yE = e => base - e * sc;
+    ctx.fillStyle = rgba(COL.eigen, 0.18); ctx.fillRect(c0, yE(PHI0 + 0.15), chW, 10); ctx.fillStyle = COL.eigen; ctx.fillText('gate', c0 + chW / 2 - 12, yE(PHI0 + 0.15) - 4);
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx, yE(0)); ctx.lineTo(c0 - 6, yE(0)); ctx.lineTo(c0 + 4, yE(phi)); ctx.lineTo(c1 - 4, yE(phi)); ctx.lineTo(c1 + 6, yE(-VD * 0.5)); ctx.lineTo(gx + gw, yE(-VD * 0.5)); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('source', gx, base + 34); ctx.fillText('drain', gx + gw - 34, base + 34 + VD * 0.5 * sc * 0); ctx.fillText(`channel ${L.toFixed(1)} nm`, c0 + chW / 2 - 40, base + 34);
+    // electrons: hop over (thermal) when barrier low, tunnel when channel is short
+    const pOver = Math.min(1, Math.exp(-phi / kT) * 4e4), pTun = Math.min(1, Math.exp(-4.58 * L * Math.sqrt(phi)) * 4e4);
+    st.E.forEach(e => {
+      if (!REDUCE) {
+        if (e.state === 0) { e.x += (Math.random() - 0.5) * dt * 0.4; e.x = clamp(e.x, 0, 0.3); if (Math.random() < dt * 3 * (pOver + pTun)) { e.state = Math.random() < pOver / (pOver + pTun + 1e-30) ? 1 : 2; e.t = 0; } }
+        else { e.t += dt * 1.2; if (e.t > 1) { e.state = 0; e.x = Math.random() * 0.25; } }
+      }
+      const sx = gx + e.x * (c0 - gx) / 0.3, y0 = yE(0) - 4 - e.y * 30;
+      let x = sx, y = y0;
+      if (e.state === 1) { x = sx + (gx + gw - sx) * e.t; y = e.t < 0.5 ? y0 - Math.sin(e.t * Math.PI) * (phi * sc + 8) : y0 + (e.t - 0.5) * VD * sc; }
+      if (e.state === 2) { x = sx + (gx + gw - sx) * e.t; y = y0 + Math.max(0, e.t - 0.6) * VD * sc; }
+      ctx.fillStyle = e.state === 2 ? COL.violet : COL.ice; ctx.beginPath(); ctx.arc(x, y, 2.6, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ELECTRON ENERGY ALONG THE TRANSISTOR', 14, 18);
+    ctx.fillStyle = COL.ice; ctx.fillText('● over the barrier', 14, 34); ctx.fillStyle = COL.violet; ctx.fillText('● tunnelling through', 140, 34);
+    // I–V curve (log)
+    const px = narrow ? 56 : bw + 56, py = narrow ? bh + 16 : 30, pw = (narrow ? w : w - bw) - 72, ph = (narrow ? h - bh : h) - (narrow ? 50 : 70);
+    const X = v => px + v / 0.7 * pw, L0 = -12, L1 = 0.5, Y = I => py + ph - (Math.log10(I) - L0) / (L1 - L0) * ph;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(px + 0.5, py + 0.5, pw, ph);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [-12, -8, -4, 0].forEach(e => ctx.fillText(`10${sup(e)}`, px - 6, Y(10 ** e) + 4)); ctx.textAlign = 'center'; [0, 0.35, 0.7].forEach(v => ctx.fillText(`${v} V`, X(v), py + ph + 14)); ctx.fillText('GATE VOLTAGE', px + pw / 2, py + ph + 28); ctx.textAlign = 'left';
+    ctx.fillText('CURRENT · LOG', px + 6, py + 14);
+    ctx.strokeStyle = rgba(COL.ice, 0.25); ctx.beginPath(); for (let i = 0; i <= 70; i++) { const v = i / 100, y = Y(Id(v, 20)); i ? ctx.lineTo(X(v), y) : ctx.moveTo(X(v), y); } ctx.stroke();
+    ctx.fillStyle = rgba(COL.ice, 0.5); ctx.fillText('20 nm', X(0.05), Y(Id(0.05, 20)) + 14);
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 70; i++) { const v = i / 100, y = Y(Id(v, L)); i ? ctx.lineTo(X(v), y) : ctx.moveTo(X(v), y); } ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(Vg), Y(I), 4.5, 0, Math.PI * 2); ctx.fill();
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: Moore's law ---------- */
+(function () {
+  const cv = $('#c2'), yS = $('#y2'), yO = $('#y2o');
+  const rC = $('#r2c'), rN = $('#r2n'), rG = $('#r2g');
+  const D = [[1971, 2300, 'Intel 4004'], [1978, 29000, 'Intel 8086'], [1985, 275000, 'Intel 386'], [1989, 1.2e6, 'Intel 486'], [1993, 3.1e6, 'Pentium'], [2000, 4.2e7, 'Pentium 4'], [2006, 2.91e8, 'Core 2 Duo'], [2008, 7.31e8, 'Core i7'], [2013, 1e9, 'Apple A7'], [2016, 1.53e10, 'Nvidia P100'], [2020, 1.18e10, 'Apple A14'], [2021, 5.7e10, 'Apple M1 Max'], [2022, 8e10, 'Nvidia H100'], [2023, 9.2e10, 'Apple M3 Max'], [2024, 2.08e11, 'Nvidia B200 (2 dies)']];
+  function frame() {
+    const yr = +yS.value; yO.value = String(yr);
+    const cur = D.filter(d => d[0] <= yr).pop();
+    setText(rC, `${cur[2]} (${cur[0]})`); setText(rN, fmtBig(cur[1])); setText(rG, `about ${fmtBig(Math.round(cur[1] / 2300))}×`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 50, gy = 20, gw = w - gx - 16, gh = h - gy - 40, X = y => gx + (y - 1970) / 56 * gw, Y = n => gy + gh - (Math.log10(n) - 3) / 9 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [3, 6, 9, 12].forEach(e => ctx.fillText(`10${sup(e)}`, gx - 6, Y(10 ** e) + 4)); ctx.textAlign = 'center'; [1970, 1980, 1990, 2000, 2010, 2020].forEach(y => ctx.fillText(String(y), X(y), gy + gh + 14)); ctx.textAlign = 'left';
+    ctx.fillText('TRANSISTORS PER CHIP · LOG SCALE', gx + 6, gy + 14);
+    ctx.strokeStyle = rgba(COL.eigen, 0.6); ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(X(1971), Y(2300)); ctx.lineTo(X(2026), Y(2300 * Math.pow(2, 55 / 2))); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.eigen; ctx.fillText('doubling every 2 years', X(1981), Y(2300 * Math.pow(2, 10 / 2)) - 18);
+    D.forEach(d => { const on = d[0] <= yr; ctx.fillStyle = d === cur ? '#d2d1d5' : on ? COL.ice : rgba(COL.ice, 0.2); ctx.beginPath(); ctx.arc(X(d[0]), Y(d[1]), d === cur ? 5 : 3.2, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL.ink; const lx = X(cur[0]); ctx.textAlign = lx > w * 0.6 ? 'right' : 'left'; ctx.fillText(cur[2], lx + (lx > w * 0.6 ? -10 : 10), Y(cur[1]) + 4); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: lithography ---------- */
+(function () {
+  const cv = $('#c3'), pS = $('#p3'), pO = $('#p3o');
+  const rM = $('#r3m'), rC = $('#r3c'), rR = $('#r3r');
+  const SRC = [['Mercury lamp', 365, 0.65], ['ArF, dry', 193, 0.93], ['ArF immersion', 193, 1.35], ['EUV', 13.5, 0.33], ['High-NA EUV', 13.5, 0.55]];
+  const st = { k: 3 };
+  $$('[data-src]').forEach(b => b.addEventListener('click', () => { st.k = +b.dataset.src; $$('[data-src]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function image(x, p, lam, NA) {
+    // two-beam off-axis imaging of an equal lines/spaces grating: keep orders whose spread fits in 2·NA
+    let re = 0.5, im = 0, kept = [0];
+    for (let m = 1; m <= 7; m += 2) { const u = m * lam / p / (2 * NA); if (u > 1) break; const a = Math.sin(m * Math.PI / 2) / (m * Math.PI) * 2 * Math.pow(1 - u, 0.6); re += a * Math.cos(2 * Math.PI * m * x / p); kept.push(m); }
+    return { v: Math.max(0, re), kept };
+  }
+  function frame() {
+    const p = +pS.value, [name, lam, NA] = SRC[st.k]; pO.value = `${p} nm`;
+    const pmin = lam / (2 * NA);
+    let mx = -9, mn = 9; for (let i = 0; i <= 100; i++) { const v = image(i / 100 * p, p, lam, NA).v; mx = Math.max(mx, v); mn = Math.min(mn, v); }
+    const contrast = mx - mn < 1e-6 ? 0 : (mx - mn) / (mx + mn);
+    setText(rM, `${pmin.toFixed(pmin < 20 ? 1 : 0)} nm (λ/2NA)`); setText(rC, `${Math.round(contrast * 100)}%`);
+    setText(rR, contrast < 0.05 ? 'nothing prints: uniform grey' : contrast < 0.4 ? 'prints poorly' : 'clean lines print');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 20, gw = w - 40, span = 4.5 * p, X = x => gx + x / span * gw;
+    // mask
+    const my = 34, mh = h * 0.14;
+    for (let x = 0; x < span; x += p) { ctx.fillStyle = rgba(COL.ink, 0.85); ctx.fillRect(X(x), my, X(x + p / 2) - X(x), mh); }
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, my + 0.5, gw, mh);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`MASK · ${p} nm PITCH (shown at wafer scale)`, gx, my - 8);
+    // light rays (schematic)
+    const ly0 = my + mh + 8, ly1 = h * 0.42;
+    ctx.fillStyle = rgba(COL.eigen, 0.12); ctx.beginPath(); ctx.moveTo(gx + gw * 0.2, ly0); ctx.lineTo(gx + gw * 0.8, ly0); ctx.lineTo(gx + gw * 0.62, ly1); ctx.lineTo(gx + gw * 0.38, ly1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = COL.eigen; ctx.fillText(`${name} · λ = ${lam} nm · NA ${NA}`, gx + gw * 0.38, (ly0 + ly1) / 2 + 4);
+    // aerial image
+    const iy = h * 0.46, ih = h * 0.3;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, iy + 0.5, gw, ih);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i <= 400; i++) { const x = i / 400 * span, v = image(x - p / 4, p, lam, NA).v, y = iy + ih - clamp(v, 0, 1.2) / 1.2 * (ih - 6); i ? ctx.lineTo(X(x), y) : ctx.moveTo(X(x), y); }
+    ctx.stroke(); ctx.lineWidth = 1;
+    const thr = 0.5; ctx.strokeStyle = rgba(COL.ink, 0.35); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(gx, iy + ih - thr / 1.2 * (ih - 6)); ctx.lineTo(gx + gw, iy + ih - thr / 1.2 * (ih - 6)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('LIGHT REACHING THE WAFER · DASHED = RESIST THRESHOLD', gx, iy - 6);
+    // printed result
+    const ry = iy + ih + 14, rh = h - ry - 10;
+    for (let i = 0; i < 400; i++) { const x = i / 400 * span, v = image(x - p / 4, p, lam, NA).v; ctx.fillStyle = contrast < 0.05 ? rgba(COL.violet, 0.25) : v > thr ? rgba(COL.ice, 0.85) : rgba(COL.violet, 0.25); ctx.fillRect(X(x), ry, gw / 400 + 0.6, rh); }
+    ctx.fillStyle = COL['ink-2']; ctx.fillText('printed pattern', gx + 4, ry + rh - 4);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

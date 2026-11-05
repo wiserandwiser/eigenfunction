@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Electric Universe</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 045 · Fringe science · 5 of 20</div>
+    <a class="navlink" href="044.html">← Φ 044</a>
+    <a class="navlink" href="046.html">Φ 046 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 045 · Fringe science · 5 of 20</p>
+    <h1>electric <span class="eig">universe</span></h1>
+    <p class="gloss">FRINGE SCIENCE · the Electric Universe — <em>the claim that electric currents in plasma, not gravity alone, shape the cosmos and help power the stars</em></p>
+    <p class="thesis">More than 99% of the visible universe is plasma, gas so hot that its electrons are free, and plasma carries electric currents. The Electric Universe, promoted since the 1990s by Wallace Thornhill, David Talbott and the Thunderbolts Project, argues that astronomy has been slow to take this seriously. History offers support: currents in space were once dismissed and later measured, and the Sun’s outer atmosphere is still hundreds of times hotter than its surface for reasons that are debated. Here you can switch on the currents that light the aurora, climb through the Sun’s atmosphere, and watch currents twist plasma into a spiral.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Plasma physics, space physics, astrophysics</dd></div>
+    <div><dt>Models</dt><dd>Birkeland currents, the corona’s temperature, interacting current filaments</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 5 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 017–026 (astrophysics) and 037 (neutrinos).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>currents, electrical heating</span><span class="key"><i style="background:var(--ice)"></i>gravity-only prediction</span><span class="key"><i style="background:var(--violet)"></i>plasma, fields</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="sun">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Birkeland, 1908 · confirmed 1966</span><h2>Currents that light the sky</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Earth with its magnetic field lines. Electric currents flow down field lines into the polar regions and back out, lighting the auroral ovals; a stronger solar wind drives larger currents and brighter, wider aurorae."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="s1">Solar wind strength <input type="range" id="s1" min="0" max="100" step="1" value="55"><output id="s1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Current into the auroral zones</b><span id="r1i" class="eg">—</span></div>
+          <div class="ro"><b>Proposed</b><span id="r1p">—</span></div>
+          <div class="ro"><b>Confirmed by satellite</b><span id="r1c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1908 the Norwegian physicist Kristian Birkeland argued, from polar expeditions and laboratory experiments with a magnetised sphere in a vacuum chamber, that the aurora is powered by electric currents flowing from space along Earth’s magnetic field lines.</p>
+        <p>For half a century most British and American physicists rejected the idea, holding that space was an insulating vacuum that could not carry such currents.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 1966 magnetometers on a US Navy satellite detected the field-aligned currents Birkeland had predicted, now called Birkeland currents and known to carry millions of amperes. The episode is the Electric Universe’s model case: electrical effects in space were dismissed on theoretical grounds and then measured. Proponents argue that the same currents, scaled up, run through the solar system and the galaxy, and that the field has still not fully absorbed the lesson.</div>
+          <div class="con"><b>The case against</b>Mainstream space physics fully accepts Birkeland currents today; the disagreement is about whether currents on larger scales do what the Electric Universe claims.</div>
+        </div>
+        <div class="task"><b>Try this</b>Strengthen the solar wind and watch the currents grow and the aurorae spread towards the equator.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">current along a field line ≈ millions of amperes in total during storms</div>
+          <p>The simulation scales the total field-aligned current from about one to ten million amperes with solar wind strength, in line with measured values from quiet to stormy conditions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="charge">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The corona</span><h2>Hotter further from the fire</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Temperature against height above the Sun's visible surface. It falls to about 4,000 kelvin, then jumps to over a million kelvin in the corona, while a Sun heated only from inside would be expected to get steadily cooler outward."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="h2">Height above the surface <input type="range" id="h2" min="0" max="100" step="1" value="70"><output id="h2o">—</output></label>
+          <button class="btn solo" type="button" id="g2" aria-pressed="true">Show heating from inside only: on</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Temperature here</b><span id="r2t" class="eg">—</span></div>
+          <div class="ro"><b>Surface</b><span id="r2s">—</span></div>
+          <div class="ro"><b>Layer</b><span id="r2l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A fire is hottest at its centre and cooler as you move away. The Sun’s visible surface, at about 5,800 K, is far cooler than its core, as expected. But just above the surface the temperature falls only to about 4,000 K and then climbs, reaching more than a million kelvin in the corona.</p>
+        <p>The physicist Bengt Edlén showed in the 1940s that strange green lines in the corona came from iron atoms stripped of thirteen electrons, which needs temperatures of a million degrees or more.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Heating from inside cannot make the outer layer hotter than the surface beneath it; something must deliver energy from outside or within the corona itself. The engineer Ralph Juergens proposed in 1972 that the Sun behaves like the anode of a giant electrical discharge, with currents heating its upper atmosphere just as discharges heat gas in the laboratory. After eighty years, the coronal heating problem is still listed as one of the major open questions in solar physics.</div>
+          <div class="con"><b>The case against</b>Solar physicists attribute the heating to magnetic energy released in waves and small flares, and probes such as Parker Solar Probe have measured some of these processes; solar neutrinos also show fusion powers the core.</div>
+        </div>
+        <div class="task"><b>Try this</b>Climb from the surface into the corona and watch the temperature fall, then soar. Compare with the dashed curve for a Sun heated only from inside.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">heat flows from hot to cold: with heating only from inside, <var>T</var> should fall with height</div>
+          <p>The observed curve is a smoothed version of standard solar atmosphere models; the dashed curve is a schematic of steady cooling outward.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="comet">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Peratt, 1986</span><h2>Currents that build a spiral</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Two parallel filaments of electric current in plasma attract each other, rotate around their common centre and draw the surrounding plasma into trailing spiral arms, resembling a galaxy."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="i3">Current in each filament <input type="range" id="i3" min="0" max="100" step="1" value="60"><output id="i3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Start again</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Pull between the filaments</b><span id="r3a" class="eg">—</span></div>
+          <div class="ro"><b>Shape forming</b><span id="r3b">—</span></div>
+          <div class="ro"><b>Gravity used</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Parallel electric currents attract each other. In plasma, currents tend to bunch into filaments, which are seen everywhere from lightning and laboratory pinches to the threads of the solar corona and long filaments in interstellar space.</p>
+        <p>Anthony Peratt of Los Alamos National Laboratory, a collaborator of the Nobel laureate Hannes Alfvén, ran large computer simulations of two such filaments interacting, using only electromagnetic forces.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Peratt’s simulations, published in <i>IEEE Transactions on Plasma Science</i> in 1986, produced shapes strikingly like galaxies: double radio sources, then spiral arms trailing from a rotating core, with flat rotation curves arising naturally from the electromagnetic forces. Plasma behaves the same way over enormous ranges of scale, so Electric Universe proponents argue that what a laboratory pinch does in a nanosecond, a galactic current can do over millions of years, without invoking unseen dark matter.</div>
+          <div class="con"><b>The case against</b>Large-scale magnetic fields in galaxies are measured to be weak, far below what would be needed for electromagnetism to outweigh gravity on these scales.</div>
+        </div>
+        <div class="task"><b>Try this</b>Increase the current and watch the filaments draw together, spin up and wrap the surrounding plasma into arms.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">force per metre between parallel currents = μ₀ <var>I</var>₁ <var>I</var>₂ / (2π <var>d</var>)</div>
+          <p>The animation is schematic: two current filaments attract and orbit, and tracer particles in the surrounding plasma are dragged by their rotating field. It illustrates Peratt’s result, not his full particle simulation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1908</div><h3>Birkeland’s currents</h3><p>Kristian Birkeland proposed that electric currents from space power the aurora.</p></div>
+      <div class="g"><div class="where">1966</div><h3>Currents measured</h3><p>Satellite magnetometers detected the field-aligned currents Birkeland had predicted.</p></div>
+      <div class="g"><div class="where">1970</div><h3>Alfvén’s Nobel</h3><p>Hannes Alfvén won the Nobel Prize for plasma physics, and spent his later career arguing that plasma shapes the cosmos.</p></div>
+      <div class="g"><div class="where">1986</div><h3>Galaxies from currents</h3><p>Anthony Peratt’s simulations of interacting current filaments produced spiral, galaxy-like forms.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Currents in space were <span class="a">dismissed, then measured</span>; the corona’s heat is still debated, and the Electric Universe argues electricity deserves a bigger place in astronomy.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><span class="chip here">045 · Electric Universe</span><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 045 · Electric Universe · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: Birkeland currents ---------- */
+(function () {
+  const cv = $('#c1'), SS = $('#s1'), SO = $('#s1o'), rI = $('#r1i'), rP = $('#r1p'), rC = $('#r1c');
+  const st = { t: 0 };
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const s = +SS.value / 100, I = 1 + 9 * s; SO.value = s < 0.3 ? 'quiet' : s < 0.7 ? 'moderate' : 'storm';
+    setText(rI, `about ${I.toFixed(1)} million amperes`); setText(rP, '1908, Birkeland'); setText(rC, '1966');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cx = w * 0.55, cy = h / 2 + 8, R = Math.min(w, h) * 0.13;
+    // field lines (dipole)
+    for (let L = 2; L <= 6; L++) { [-1, 1].forEach(side => { ctx.strokeStyle = rgba(COL.violet, 0.3); ctx.beginPath(); for (let a = -Math.PI / 2 + 0.25; a <= Math.PI / 2 - 0.25; a += 0.02) { const r = L * R * Math.cos(a) ** 2; if (r < R) continue; const x = cx + side * r * Math.cos(a), y = cy - r * Math.sin(a); ctx.lineTo(x, y); } ctx.stroke(); }); }
+    // currents flowing along an L shell
+    const Lc = 3.2 + 1.5 * (1 - s); [-1, 1].forEach(side => { for (let k = 0; k < 14; k++) { const f = ((st.t * 0.4 + k / 14) % 1), a = (f * 2 - 1) * (Math.PI / 2 - 0.3), r = Lc * R * Math.cos(a) ** 2; if (r < R) continue; ctx.fillStyle = rgba(COL.eigen, 0.4 + 0.5 * s); ctx.beginPath(); ctx.arc(cx + side * r * Math.cos(a), cy - r * Math.sin(a), 2 + 2 * s, 0, Math.PI * 2); ctx.fill(); } });
+    // earth and auroral ovals
+    ctx.fillStyle = rgba(COL.ice, 0.35); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = COL.ice; ctx.stroke();
+    const lat = Math.acos(Math.sqrt(1 / Lc)); [-1, 1].forEach(p => { ctx.strokeStyle = rgba(COL.eigen, 0.5 + 0.5 * s); ctx.lineWidth = 2 + 4 * s; ctx.beginPath(); ctx.ellipse(cx, cy - p * R * Math.sin(lat), R * Math.cos(lat), 4, 0, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1; });
+    // solar wind from the left
+    for (let k = 0; k < 12; k++) { const f = (st.t * (0.3 + s) + k / 12) % 1, y = 40 + k / 12 * (h - 70); ctx.strokeStyle = rgba(COL.violet, 0.5); ctx.beginPath(); ctx.moveTo(14 + f * w * 0.25, y); ctx.lineTo(14 + f * w * 0.25 + 14, y); ctx.stroke(); }
+    tag(ctx, 'solar wind →', 14, h - 12, COL.violet); tag(ctx, 'auroral ovals', cx, cy - R - 16, COL.eigen, 'center');
+    tag(ctx, 'PINK: CURRENTS ALONG EARTH’S FIELD LINES (SCHEMATIC)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: corona ---------- */
+(function () {
+  const cv = $('#c2'), HS = $('#h2'), HO = $('#h2o'), GB = $('#g2'), rT = $('#r2t'), rS = $('#r2s'), rL = $('#r2l');
+  const st = { inside: true };
+  GB.addEventListener('click', () => { st.inside = !st.inside; GB.setAttribute('aria-pressed', String(st.inside)); GB.textContent = `Show heating from inside only: ${st.inside ? 'on' : 'off'}`; });
+  // height in km (log-ish axis 0..10,000 km)
+  const T = z => z < 500 ? 5800 - 1800 * z / 500 : z < 2000 ? 4000 + 4000 * (z - 500) / 1500 : z < 2300 ? 8000 + (1e6 - 8000) * ((z - 2000) / 300) ** 2 : 1e6 + 0.6e6 * Math.min(1, (z - 2300) / 7700);
+  const layer = z => z < 500 ? 'photosphere (visible surface)' : z < 2000 ? 'chromosphere' : z < 2300 ? 'transition region' : 'corona';
+  const X = (z, gx, gw) => gx + Math.log10(1 + z) / 4 * gw;
+  function frame() {
+    const z = 10 ** (+HS.value / 100 * 4) - 1; HO.value = `${Math.round(z).toLocaleString('en')} km`;
+    const t = T(z); setText(rT, t > 1e5 ? `${(t / 1e6).toFixed(2)} million K` : `${Math.round(t).toLocaleString('en')} K`); setText(rS, '≈ 5,800 K'); setText(rL, layer(z));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 64, gy = 34, gw = w - gx - 16, gh = h - gy - 36, Y = v => gy + gh - (Math.log10(v) - 3) / 3.4 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.2; ctx.beginPath(); for (let i = 0; i <= 400; i++) { const zz = 10 ** (i / 100) - 1; i ? ctx.lineTo(X(zz, gx, gw), Y(T(zz))) : ctx.moveTo(X(zz, gx, gw), Y(T(zz))); } ctx.stroke(); ctx.lineWidth = 1;
+    if (st.inside) { ctx.strokeStyle = COL.ice; ctx.setLineDash([5, 4]); ctx.beginPath(); for (let i = 0; i <= 400; i++) { const zz = 10 ** (i / 100) - 1, v = 5800 * Math.exp(-zz / 1500) + 1200; i ? ctx.lineTo(X(zz, gx, gw), Y(v)) : ctx.moveTo(X(zz, gx, gw), Y(v)); } ctx.stroke(); ctx.setLineDash([]); tag(ctx, 'heated only from inside', gx + gw - 6, Y(1500) - 6, COL.ice, 'right'); }
+    ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(X(z, gx, gw), Y(t), 6, 0, Math.PI * 2); ctx.fill();
+    [[1e3, '10³ K'], [1e4, '10⁴ K'], [1e5, '10⁵ K'], [1e6, '10⁶ K']].forEach(([v, l]) => tag(ctx, l, gx - 4, Y(v) + 4, COL['ink-3'], 'right'));
+    [[0, 'surface'], [100, '100 km'], [1000, '1,000 km'], [9999, '10,000 km']].forEach(([zz, l]) => tag(ctx, l, X(zz, gx, gw), gy + gh + 14, COL['ink-3'], 'center'));
+    tag(ctx, 'corona', X(6000, gx, gw), Y(1.2e6) - 10, COL.eigen, 'center');
+    tag(ctx, 'TEMPERATURE vs HEIGHT ABOVE THE SUN’S SURFACE (BOTH AXES LOG)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: current filaments ---------- */
+(function () {
+  const cv = $('#c3'), IS = $('#i3'), IO = $('#i3o'), GB = $('#go3'), rA = $('#r3a'), rB = $('#r3b'), rC = $('#r3c');
+  const st = { t: 0, P: [] };
+  function reset() { const r = mk(7); st.t = 0; st.P = Array.from({ length: 900 }, () => { const bg = r() < 0.2, a = bg ? r() * Math.PI * 2 : (r() < 0.5 ? 0 : Math.PI) + gs(r) * 0.28, rr = 0.12 + r() * 0.88; return { a, r: rr, z: r() }; }); }
+  GB.addEventListener('click', reset); reset();
+  function frame(dt) {
+    const I = +IS.value / 100; IO.value = `${Math.round(I * 100)}%`; if (!REDUCE) st.t += dt * (0.3 + I) * 1.4; else st.t = 6;
+    const sep = Math.max(0.12, 0.55 - st.t * 0.05 * I), om = 0.4 * I / Math.max(0.15, sep);
+    setText(rA, I ? `${(I * I / sep).toFixed(1)} (relative)` : 'none'); setText(rB, st.t * I < 1.5 ? 'two separate filaments' : st.t * I < 4 ? 'a rotating double' : 'trailing spiral arms'); setText(rC, 'none: electromagnetism only');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cx = w / 2, cy = h / 2 + 8, S = Math.min(w, h) * 0.42, ang = st.t * om;
+    st.P.forEach(p => { const lag = 1 / (0.35 + p.r), a = p.a + ang * lag * 0.5, x = cx + Math.cos(a) * p.r * S, y = cy + Math.sin(a) * p.r * S * 0.85; ctx.fillStyle = rgba(COL.violet, 0.25 + 0.4 * (1 - p.r)); ctx.fillRect(x, y, 2, 2); });
+    [0, Math.PI].forEach(o => { const x = cx + Math.cos(ang + o) * sep * S * 0.5, y = cy + Math.sin(ang + o) * sep * S * 0.5 * 0.85; const g = ctx.createRadialGradient(x, y, 0, x, y, 18); g.addColorStop(0, rgba(COL.eigen, 0.95)); g.addColorStop(1, rgba(COL.eigen, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); });
+    tag(ctx, 'PINK: CURRENT FILAMENTS · VIOLET: PLASMA (SCHEMATIC OF PERATT’S RESULT)', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

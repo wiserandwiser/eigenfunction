@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Uncertainty Principle</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 008 colour code: ice = the wave, pink = position, violet = momentum. */
+#vp1{aspect-ratio:16/11}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+#c3{cursor:ew-resize;touch-action:pan-y}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/3.4}}
+h1 .eig{transform:none;filter:blur(.6px)}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 008 · Quantum series · 2 of 10</div>
+    <a class="navlink" href="007.html">← Φ 007</a>
+    <a class="navlink" href="009.html">Φ 009 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 008 · Quantum series · 2 of 10</p>
+    <h1><span class="eig">un</span>certainty</h1>
+    <p class="gloss">QUANTUM · uncertainty principle — <em>the sharper a particle’s position, the blurrier its motion, and the reverse</em></p>
+    <p class="thesis">This isn’t about clumsy instruments. A particle is a wave, and a wave cannot have a sharp position and a sharp wavelength at the same time. That one fact sets the size of every atom in your body.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Waves → quantum mechanics → atoms</dd></div>
+    <div><dt>Models</dt><dd>A wave packet builder, a spreading packet, an atom finding its size</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 2 of 10. Follows the double slit.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--ice)"></i>the wave</span><span class="key"><i style="background:var(--eigen)"></i>position</span><span class="key"><i style="background:var(--violet)"></i>momentum</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="packet">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The trade-off</span><h2>Build a particle out of waves</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Top: a few of the waves being added. Middle: their sum, a wave packet whose width changes. Bottom: how much of each wavelength is in the mix."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="s1">Mix of wavelengths <input type="range" id="s1" min="0" max="1000" step="1" value="450"><output id="s1o">—</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Presets">
+            <button class="btn" type="button" data-p1="30">Almost one wavelength</button>
+            <button class="btn" type="button" data-p1="450">Balanced</button>
+            <button class="btn" type="button" data-p1="950">Many wavelengths</button>
+          </div>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Position spread Δx</b><span id="r1x" class="eg">—</span></div>
+          <div class="ro"><b>Momentum spread Δp</b><span id="r1p" class="vi">—</span></div>
+          <div class="ro"><b>Δx × Δp</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A pure wave with one exact wavelength runs on forever. It has a perfectly sharp <span class="v">momentum</span>, because in quantum mechanics wavelength <em>is</em> momentum. But it is everywhere at once, with no position at all.</p>
+        <p>To make something localised, a lump you could call a particle, you have to add many waves with slightly different wavelengths. They reinforce in one region and cancel everywhere else. The more wavelengths you mix in, the tighter the lump.</p>
+        <p>That is the whole uncertainty principle. A tight <span class="a">position</span> needs a wide mix of wavelengths, which means a blurry momentum. A sharp momentum needs a long, spread-out wave. You can trade one for the other, but you can never shrink both.</p>
+        <p>Werner Heisenberg stated the principle in 1927. The product of the two spreads can never fall below a fixed amount, set by Planck’s constant.</p>
+        <div class="task"><b>Try this</b>Drag the mix from narrow to wide and watch the packet shrink while the momentum bars spread. The product readout stays pinned at its minimum, ½ in these units.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">Δ<var>x</var> · Δ<var>p</var> ≥ <span class="frac"><span><var>ħ</var></span><span>2</span></span>,&nbsp; <var>p</var> = <var>ħk</var> = <span class="frac"><span><var>h</var></span><span><var>λ</var></span></span></div>
+          <p>The packet is <var>ψ</var>(<var>x</var>) = Σ <var>A</var>(<var>k</var>) <var>e</var><sup><var>ikx</var></sup> over about 120 waves, with Gaussian weights <var>A</var>(<var>k</var>) of width Δ<var>k</var>. A Gaussian is the shape that reaches the limit exactly: Δ<var>x</var> = 1/(2Δ<var>k</var>). Mathematically, position and momentum are Fourier transforms of each other. The Kennard inequality (1927) is a theorem about Fourier transforms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="spread">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Pin it down</span><h2>Squeeze a particle and it flies apart</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A particle located precisely, shown as a narrow bump, spreading out over time, compared with a loosely located one that spreads slowly."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="w2">How precisely located <input type="range" id="w2" min="0" max="1000" step="1" value="350"><output id="w2o">—</output></label>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Object">
+            <button class="btn" type="button" data-o2="electron" aria-pressed="true">Electron</button>
+            <button class="btn" type="button" data-o2="proton" aria-pressed="false">Proton</button>
+            <button class="btn" type="button" data-o2="virus" aria-pressed="false">Virus</button>
+            <button class="btn" type="button" data-o2="grain" aria-pressed="false">Grain of sand</button>
+          </div>
+          <button class="btn solo" type="button" id="go2">Locate again</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Located to within</b><span id="r2x" class="eg">—</span></div>
+          <div class="ro"><b>Minimum speed blur</b><span id="r2v" class="vi">—</span></div>
+          <div class="ro"><b>Blur after 1 second</b><span id="r2s">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Suppose you measure a particle’s position precisely. You have forced its wave into a narrow lump, and by Bay 01 that lump is made of a wide mix of wavelengths, meaning a wide range of possible speeds.</p>
+        <p>So the lump immediately starts to spread. The faster parts run ahead and the slower ones lag behind. The more tightly you pinned it, the faster it flies apart. Compare the <span class="a">tightly located</span> particle with the <span class="i">loosely located</span> one.</p>
+        <p>For an electron this is dramatic. Pin one down to the width of an atom and its speed becomes uncertain by hundreds of kilometres per second. For a grain of sand the effect still exists, but it is far too small ever to notice. That is why the everyday world looks sharp.</p>
+        <div class="task"><b>Try this</b>Squeeze the electron down and read the speed blur. Then switch to a grain of sand at the same precision and compare the two numbers.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>σ</var>(<var>t</var>) = <var>σ</var>₀ <span style="font-size:1.1em">√</span><span style="border-top:1px solid var(--ink-2)">1 + (<var>ħt</var> / 2<var>mσ</var>₀²)²</span></div>
+          <p>A free Gaussian packet’s width grows like this. The narrower the start <var>σ</var>₀, the faster the growth. The readouts use Δ<var>v</var> = <var>ħ</var>/(2<var>m</var>Δ<var>x</var>), the smallest possible speed spread. Masses used: electron 9.1 × 10⁻³¹ kg, proton 1.67 × 10⁻²⁷ kg, a virus about 10⁻¹⁸ kg, a grain of sand about 10⁻⁶ kg.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="atom">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Why atoms have a size</span><h2>The squeeze that holds every atom open</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Left: a hydrogen atom whose electron cloud you can squeeze or expand. Right: the energy of the atom against the cloud's size, with a minimum at 0.053 nanometres."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="r3">Cloud size <input type="range" id="r3" min="0.012" max="0.25" step="0.001" value="0.15"><output id="r3o">—</output></label>
+          <button class="btn solo" type="button" id="set3">Let it settle</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Squeeze energy</b><span id="r3k" class="vi">—</span></div>
+          <div class="ro"><b>Electric pull</b><span id="r3e">—</span></div>
+          <div class="ro"><b>Total energy</b><span id="r3t" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A hydrogen atom is a proton and an electron that attract each other. Classically the electron should spiral into the proton, radiating light all the way in, in about 16 trillionths of a second. Every atom in the universe would collapse.</p>
+        <p>The uncertainty principle forbids it. Squeeze the electron’s cloud smaller and you blur its momentum, giving it more <span class="v">kinetic energy</span>. Close in, that squeeze energy grows faster than the electric pull can pay for it.</p>
+        <p>The atom settles where the two balance. The calculation gives a size of 0.053 nanometres and an energy of −13.6 electronvolts, the measured values for hydrogen. A rough argument from uncertainty lands on the exact answer.</p>
+        <p>So the size of atoms, and everything built from them, comes from this trade-off. You are mostly empty space held open by the uncertainty principle.</p>
+        <div class="task"><b>Try this</b>Squeeze the cloud small and watch the squeeze energy shoot up. Expand it and the atom loses its grip. Then press Let it settle and see where it comes to rest.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>E</var>(<var>r</var>) ≈ <span class="frac"><span><var>ħ</var>²</span><span>2<var>m</var><sub>e</sub><var>r</var>²</span></span> − <span class="frac"><span><var>e</var>²</span><span>4π<var>ε</var>₀<var>r</var></span></span></div>
+          <p>Confining the electron to size <var>r</var> gives momentum <var>p</var> ~ <var>ħ</var>/<var>r</var>, so kinetic energy ~ <var>ħ</var>²/2<var>mr</var>². Minimising <var>E</var> gives <var>r</var> = 4π<var>ε</var>₀<var>ħ</var>²/<var>m</var><sub>e</sub><var>e</var>² = 0.0529 nm, the Bohr radius, and <var>E</var> = −13.6 eV. In these units: <var>E</var> = 0.0381/<var>r</var>² − 1.440/<var>r</var> eV, with <var>r</var> in nm.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>The trade-off at work</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Music</div><h3>A short note has no exact pitch</h3><p>The same mathematics governs sound. A sharp click contains every frequency, while a pure tone must ring for a while. Sound engineers know this as the Gabor limit.</p></div>
+      <div class="g"><div class="where">Gravitational waves</div><h3>Squeezed light in LIGO</h3><p>You can’t beat the limit, but you can choose where the uncertainty goes. LIGO injects “squeezed” light with less noise in the quantity it measures and more in the one it ignores, extending its reach into space.</p></div>
+      <div class="g"><div class="where">Cold matter</div><h3>Helium that never freezes</h3><p>At normal pressure, helium stays liquid down to absolute zero. Its atoms are so light that the jiggling forced by the uncertainty principle, called zero-point motion, is enough to stop them locking into a solid.</p></div>
+      <div class="g"><div class="where">A common myth</div><h3>Not about clumsy measurement</h3><p>Heisenberg first explained it as a measurement disturbing the particle. The modern view is deeper: the particle doesn’t have both sharp values to disturb in the first place.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">A wave can’t be in one <span class="a">place</span> and have one <span class="a">wavelength</span> at once. Everything is made of waves, so nothing can be perfectly still or perfectly located.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><span class="chip here">008 · Uncertainty</span><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 008 · Uncertainty · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: wave packet builder ---------- */
+(function () {
+  const cv = $('#c1'), sS = $('#s1'), sO = $('#s1o');
+  const rX = $('#r1x'), rP = $('#r1p'), rM = $('#r1m');
+  const K0 = 3, XL = 30, NX = 900, NK = 121;
+  const st = { sk: 0.4, t: 0 };
+  const skOf = v => Math.pow(10, -1.6 + 1.9 * v / 1000);
+  function upd() { st.sk = skOf(+sS.value); sO.value = `Δk ${st.sk.toFixed(2)}`; $$('[data-p1]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.p1 === +sS.value))); }
+  sS.addEventListener('input', upd);
+  $$('[data-p1]').forEach(b => b.addEventListener('click', () => { sS.value = b.dataset.p1; upd(); }));
+  upd();
+  function frame(dt) {
+    if (!REDUCE) st.t += dt;
+    const sk = st.sk, kr = Math.max(4 * sk, 0.01), ks = [], as = [];
+    for (let j = 0; j < NK; j++) { const k = K0 - kr + 2 * kr * j / (NK - 1); ks.push(k); as.push(Math.exp(-((k - K0) ** 2) / (4 * sk * sk))); }
+    const asum = as.reduce((a, b) => a + b, 0);
+    const re = new Float64Array(NX), mag = new Float64Array(NX);
+    let m1 = 0, m2 = 0, nn = 0, peak = 0;
+    const ph = st.t * 1.5;
+    for (let i = 0; i < NX; i++) {
+      const x = -XL + 2 * XL * i / (NX - 1); let a = 0, b = 0;
+      for (let j = 0; j < NK; j++) { const p = ks[j] * x - ph; a += as[j] * Math.cos(p); b += as[j] * Math.sin(p); }
+      a /= asum; b /= asum; re[i] = a; mag[i] = Math.hypot(a, b);
+      const d = mag[i] * mag[i]; m1 += d * x; m2 += d * x * x; nn += d; peak = Math.max(peak, mag[i]);
+    }
+    const mean = m1 / nn, dx = Math.sqrt(Math.max(0, m2 / nn - mean * mean));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const pad = 14, W = w - 2 * pad, X = i => pad + i / (NX - 1) * W;
+    // a few component waves
+    const tH = h * 0.2, tY = 26;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SOME OF THE WAVES BEING ADDED', pad, tY - 10);
+    [Math.floor(NK * 0.3), Math.floor(NK * 0.5), Math.floor(NK * 0.7)].forEach((j, q) => {
+      ctx.strokeStyle = rgba(COL.violet, 0.25 + 0.6 * as[j]); ctx.lineWidth = 1; ctx.beginPath();
+      const y0 = tY + tH * (q + 0.5) / 3;
+      for (let i = 0; i < NX; i += 2) { const x = -XL + 2 * XL * i / (NX - 1), y = y0 - Math.cos(ks[j] * x - ph) * tH / 9; i ? ctx.lineTo(X(i), y) : ctx.moveTo(X(i), y); }
+      ctx.stroke();
+    });
+    // the sum
+    const mY = tY + tH + 34, mH = h * 0.34, mid = mY + mH / 2, A = mH / 2 / Math.max(peak, 1e-6) * 0.9;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('THEIR SUM · THE PARTICLE’S WAVE', pad, mY - 10);
+    ctx.beginPath(); for (let i = 0; i < NX; i++) ctx.lineTo(X(i), mid - mag[i] * A); for (let i = NX - 1; i >= 0; i--) ctx.lineTo(X(i), mid + mag[i] * A); ctx.closePath();
+    ctx.fillStyle = rgba(COL.eigen, 0.14); ctx.fill();
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 1.4; ctx.beginPath(); for (let i = 0; i < NX; i++) { const y = mid - re[i] * A; i ? ctx.lineTo(X(i), y) : ctx.moveTo(X(i), y); } ctx.stroke();
+    // Δx bracket
+    const xa = pad + (mean - dx + XL) / (2 * XL) * W, xb = pad + (mean + dx + XL) / (2 * XL) * W;
+    if (xb - xa < W * 0.95) { ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xa, mY + mH + 6); ctx.lineTo(xb, mY + mH + 6); ctx.stroke(); ctx.fillStyle = COL.eigen; ctx.textAlign = 'center'; ctx.fillText('Δx', (xa + xb) / 2, mY + mH + 20); ctx.textAlign = 'left'; }
+    // momentum bars
+    const bY = mY + mH + 40, bH = h - bY - 22;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('HOW MUCH OF EACH WAVELENGTH · MOMENTUM', pad, bY - 4);
+    const KMIN = K0 - 4.2, KMAX = K0 + 4.2, KX = k => pad + (k - KMIN) / (KMAX - KMIN) * W;
+    const bw = Math.max(1, (KX(ks[1]) - KX(ks[0])) * 0.7);
+    for (let j = 0; j < NK; j++) { const v = as[j]; ctx.fillStyle = rgba(COL.violet, 0.85); ctx.fillRect(KX(ks[j]) - bw / 2, bY + bH - v * (bH - 8), bw, v * (bH - 8)); }
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(pad, bY + bH); ctx.lineTo(pad + W, bY + bH); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText('longer wavelength ← → shorter', pad + W / 2, h - 6); ctx.textAlign = 'left';
+    const dxv = dx > XL * 0.5 ? null : dx;
+    setText(rX, dxv == null ? 'spread over everything' : dx.toFixed(2));
+    setText(rP, sk.toFixed(3));
+    setText(rM, dxv == null ? 'limit applies off-screen' : `${(dx * sk).toFixed(3)} (≥ 0.5)`);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: spreading ---------- */
+(function () {
+  const cv = $('#c2'), wS = $('#w2'), wO = $('#w2o');
+  const rX = $('#r2x'), rV = $('#r2v'), rS = $('#r2s');
+  const HBAR = 1.054571817e-34;
+  const OBJ = { electron: 9.109e-31, proton: 1.673e-27, virus: 1e-18, grain: 1e-6 };
+  const st = { obj: 'electron', t: 0 };
+  const dxOf = v => Math.pow(10, -11 + 7 * v / 1000);         // 10 pm .. 1 mm
+  const s0Of = v => 0.25 + 1.5 * v / 1000;                      // visual width
+  function fmtLen(m) { if (m < 1e-9) return `${(m * 1e12).toFixed(0)} pm`; if (m < 1e-6) return `${(m * 1e9).toFixed(m < 1e-8 ? 2 : 1)} nm`; if (m < 1e-3) return `${(m * 1e6).toFixed(1)} µm`; if (m < 1) return `${(m * 1e3).toFixed(1)} mm`; if (m < 1e3) return `${m.toFixed(1)} m`; return `${(m / 1e3).toLocaleString('en-US', { maximumFractionDigits: 0 })} km`; }
+  function fmtV(v) { if (v >= 1e3) return `${(v / 1e3).toLocaleString('en-US', { maximumFractionDigits: 0 })} km/s`; if (v >= 1) return `${v.toFixed(1)} m/s`; if (v >= 1e-3) return `${(v * 1e3).toFixed(1)} mm/s`; const e = Math.floor(Math.log10(v)); return `${(v / 10 ** e).toFixed(1)}×10${sup(e)} m/s`; }
+  function fmtSmall(m) { if (m >= 1e-3) return fmtLen(m); const e = Math.floor(Math.log10(m)); return `${(m / 10 ** e).toFixed(1)}×10${sup(e)} m`; }
+  function upd() {
+    const dx = dxOf(+wS.value), dv = HBAR / (2 * OBJ[st.obj] * dx);
+    wO.value = fmtLen(dx);
+    setText(rX, fmtLen(dx)); setText(rV, fmtV(dv)); setText(rS, `±${fmtSmall(dv * 1)}`);
+  }
+  wS.addEventListener('input', () => { upd(); st.t = 0; });
+  $$('[data-o2]').forEach(b => b.addEventListener('click', () => { st.obj = b.dataset.o2; $$('[data-o2]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); upd(); }));
+  $('#go2').addEventListener('click', () => { st.t = 0; });
+  upd();
+  function frame(dt) {
+    if (!REDUCE) { st.t += dt * 1.2; if (st.t > 7) st.t = 0; } else st.t = 3;
+    const sA = 0.15 + 0.9 * +wS.value / 1000, sB = 2.2;               // more precise (left) → narrower start
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const pad = 14, W = w - 2 * pad, XL = 14, X = x => pad + (x + XL) / (2 * XL) * W;
+    const lanes = [[sA, COL.eigen, 'LOCATED TIGHTLY'], [sB, COL.ice, 'LOCATED LOOSELY']];
+    const LH = (h - 50) / 2;
+    lanes.forEach(([s0, col, lab], q) => {
+      const y0 = 22 + q * (LH + 14), base = y0 + LH - 6;
+      ctx.fillStyle = COL['ink-3']; ctx.fillText(lab, pad, y0 + 4);
+      ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(pad, base); ctx.lineTo(pad + W, base); ctx.stroke();
+      // ghost of the start
+      const draw = (s, stroke, fill, alpha) => {
+        const pk = 1 / (s * Math.sqrt(2 * Math.PI)), A = (LH - 22) / (1 / (0.12 * Math.sqrt(2 * Math.PI)));
+        ctx.beginPath(); ctx.moveTo(X(-XL), base);
+        for (let i = 0; i <= 400; i++) { const x = -XL + 2 * XL * i / 400, p = Math.exp(-x * x / (2 * s * s)) / (s * Math.sqrt(2 * Math.PI)); ctx.lineTo(X(x), base - Math.min(LH - 18, p * A)); }
+        ctx.lineTo(X(XL), base); ctx.closePath();
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        ctx.strokeStyle = stroke; ctx.globalAlpha = alpha; ctx.lineWidth = 1.6; ctx.stroke(); ctx.globalAlpha = 1;
+      };
+      draw(s0, COL['ink-3'], null, 0.6);
+      const s = s0 * Math.sqrt(1 + (st.t / (2 * s0 * s0)) ** 2);
+      draw(s, col, rgba(col === COL.eigen ? COL.eigen : COL.ice, 0.22), 1);
+      ctx.fillStyle = col; ctx.textAlign = 'right'; ctx.fillText(`width ×${(s / s0).toFixed(1)}`, pad + W, y0 + 4); ctx.textAlign = 'left';
+    });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(`TIME · ${st.t.toFixed(1)} (dashed: the start)`, pad, h - 6);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the size of hydrogen ---------- */
+(function () {
+  const cv = $('#c3'), rS = $('#r3'), rO = $('#r3o');
+  const rK = $('#r3k'), rE = $('#r3e'), rT = $('#r3t');
+  const KE = r => 0.0381 / (r * r), PE = r => -1.44 / r, E = r => KE(r) + PE(r), R0 = 2 * 0.0381 / 1.44;
+  const st = { r: 0.15, settling: false, t: 0 };
+  function upd() { st.r = +rS.value; }
+  rS.addEventListener('input', () => { st.settling = false; upd(); });
+  $('#set3').addEventListener('click', () => { st.settling = true; });
+  upd();
+  let geo = null;
+  cv.addEventListener('pointerdown', e => {
+    if (!geo) return; const b = cv.getBoundingClientRect(), x = e.clientX - b.left;
+    if (x < geo.cx) return;
+    const r = geo.rOf(x); if (r) { st.settling = false; st.r = clamp(r, 0.012, 0.25); rS.value = st.r; }
+  });
+  function frame(dt) {
+    st.t += dt;
+    if (st.settling) { const g = (E(st.r + 1e-4) - E(st.r - 1e-4)) / 2e-4; st.r = clamp(st.r - 0.00004 * g * Math.min(1, dt * 60) * 3, 0.012, 0.25); rS.value = st.r; if (Math.abs(st.r - R0) < 2e-4) st.settling = false; }
+    rO.value = `${st.r.toFixed(3)} nm`;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    // atom
+    const aw = narrow ? w - 28 : w * 0.36, ah = narrow ? h * 0.42 : h - 28, ax = 14 + aw / 2, ay = 14 + ah / 2;
+    const scale = Math.min(aw, ah) / 2 / 0.27;
+    const R = st.r * scale;
+    const g = ctx.createRadialGradient(ax, ay, 0, ax, ay, R * 1.6);
+    g.addColorStop(0, rgba(COL.ice, 0.55)); g.addColorStop(0.6, rgba(COL.ice, 0.18)); g.addColorStop(1, rgba(COL.ice, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ax, ay, R * 1.6, 0, Math.PI * 2); ctx.fill();
+    // jitter dots: faster jiggle when squeezed
+    const speed = Math.sqrt(KE(st.r)) * 0.7;
+    for (let k = 0; k < 40; k++) { const a = k * 2.399 + st.t * speed * (0.5 + (k % 5) * 0.2), rr = R * (0.2 + 0.8 * ((k * 0.618) % 1)); ctx.fillStyle = rgba(COL.violet, 0.7); ctx.beginPath(); ctx.arc(ax + rr * Math.cos(a), ay + rr * Math.sin(a), 1.6, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = COL.eigen; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.eigen, 0.6); ctx.beginPath(); ctx.arc(ax, ay, R0 * scale, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('HYDROGEN ATOM', 14, 24); ctx.fillText('dashed: real size', 14, 38);
+    // energy curve
+    const cx = narrow ? 14 : 14 + aw + 30, cy = narrow ? 14 + ah + 24 : 30, cw = narrow ? w - 28 : w - cx - 14, ch = narrow ? h - cy - 26 : h - 60;
+    const RMIN = 0.012, RMAX = 0.25, EMIN = -16, EMAX = 12;
+    const X = r => cx + (r - RMIN) / (RMAX - RMIN) * cw, Y = e => cy + (EMAX - clamp(e, EMIN - 5, EMAX + 40)) / (EMAX - EMIN) * ch;
+    geo = { cx, rOf: x => RMIN + (x - cx) / cw * (RMAX - RMIN) };
+    ctx.save(); ctx.beginPath(); ctx.rect(cx, cy, cw, ch); ctx.clip();
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(cx, Y(0)); ctx.lineTo(cx + cw, Y(0)); ctx.stroke();
+    const curve = (fn, col, dash) => { ctx.setLineDash(dash); ctx.strokeStyle = col; ctx.lineWidth = dash.length ? 1.4 : 2.4; ctx.beginPath(); for (let i = 0; i <= 300; i++) { const r = RMIN + (RMAX - RMIN) * i / 300, y = Y(fn(r)); i ? ctx.lineTo(X(r), y) : ctx.moveTo(X(r), y); } ctx.stroke(); ctx.setLineDash([]); };
+    curve(KE, COL.violet, [4, 4]); curve(PE, COL.ice, [4, 4]); curve(E, COL.eigen, []);
+    ctx.fillStyle = '#d2d1d5'; ctx.shadowColor = COL.eigen; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(X(st.r), Y(E(st.r)), 6, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.restore();
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch - 1);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY (eV) AGAINST CLOUD SIZE · DRAG HERE', cx, cy - 8);
+    ctx.fillStyle = COL.violet; ctx.fillText('squeeze', cx + 8, cy + 16); ctx.fillStyle = COL.ice; ctx.fillText('electric pull', cx + 8, cy + ch - 10); ctx.fillStyle = COL.eigen; ctx.fillText('total', X(0.17), Y(E(0.17)) - 8);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0.05, 0.1, 0.15, 0.2, 0.25].forEach(r => ctx.fillText(`${r}`, X(r), cy + ch + 14)); ctx.textAlign = 'right'; ctx.fillText('nm', cx + cw, cy + ch + 26); ctx.textAlign = 'left';
+    setText(rK, `+${KE(st.r).toFixed(1)} eV`); setText(rE, `${PE(st.r).toFixed(1)} eV`);
+    setText(rT, `${E(st.r).toFixed(1)} eV${Math.abs(st.r - R0) < 0.002 ? ' · the real value' : ''}`);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

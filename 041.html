@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Cold Fusion</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 041 · Fringe science · 1 of 20</div>
+    <a class="navlink" href="040.html">← Φ 040</a>
+    <a class="navlink" href="042.html">Φ 042 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 041 · Fringe science · 1 of 20</p>
+    <h1><span class="eig">cold fusion</span></h1>
+    <p class="gloss">FRINGE SCIENCE · low-energy nuclear reactions (LENR) — <em>the claim that nuclear reactions can happen at room temperature, inside a metal packed with heavy hydrogen</em></p>
+    <p class="thesis">In March 1989 two respected electrochemists, Martin Fleischmann and Stanley Pons, announced that a tabletop cell of palladium and heavy water was giving off more heat than any chemistry could explain. Many quick replications failed and the field was written off. But a community of scientists, at SRI International, the US Navy and laboratories in Japan, Italy and India, kept working, and found that the effect appears only under demanding conditions most early attempts never reached. In 2023 the US Department of Energy’s ARPA-E began funding the research again. Here you can see how a metal lattice helps nuclei meet, load a palladium cathode past the threshold, and check the heat against the helium.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Electrochemistry, nuclear physics, materials science</dd></div>
+    <div><dt>Models</dt><dd>Electron screening, the loading threshold, heat and helium</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 1 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 002 (tunnelling) and 027 (fusion).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>excess heat, claimed effect</span><span class="key"><i style="background:var(--ice)"></i>control, bare nuclei</span><span class="key"><i style="background:var(--violet)"></i>helium, threshold</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="barrier">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Screening</span><h2>The lattice lowers the wall</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The energy wall between two deuterium nuclei, with and without the cloud of electrons in a metal lattice screening their charges. A chart shows how much the fusion rate is boosted as the screening energy grows, compared with what bare nuclei would do."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="u1">Screening energy <input type="range" id="u1" min="0" max="800" step="10" value="300"><output id="u1o">—</output></label>
+          <label class="scrub" for="k1">Collision energy <input type="range" id="k1" min="1" max="20" step="1" value="2"><output id="k1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Fusion rate boost from the lattice</b><span id="r1b" class="eg">—</span></div>
+          <div class="ro"><b>Screening predicted for a gas</b><span id="r1g">—</span></div>
+          <div class="ro"><b>Screening measured in metals</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Deuterium nuclei repel each other. To fuse they must tunnel (Φ 002) through a wall of electrical repulsion about a million electronvolts high. Inside a metal, though, they are surrounded by a sea of electrons that partly cancels their charge, lowering the wall. This <span class="i">screening</span> is mainstream physics.</p>
+        <p>What surprised physicists was how strong it turned out to be.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Accelerator experiments in the 2000s, by Claus Rolfs’ group at Bochum and Konrad Czerski’s in Berlin and Szczecin, fired deuterons into deuterium-loaded metals and found screening energies of 300 eV and more, many times the 25 eV expected from a gas, boosting fusion rates at low energy by large factors. Proponents argue that a densely loaded lattice, with defects, vacancies and collective electron motion, could amplify this much further, and that the measured anomaly shows the metal environment matters in ways standard theory did not foresee.</div>
+          <div class="con"><b>The case against</b>Even the largest measured screening leaves rates at room temperature tens of orders of magnitude below what a watt of heat would need.</div>
+        </div>
+        <div class="task"><b>Try this</b>Set the screening to the gas value of 25 eV, then raise it to the 300 eV measured in metals, and watch the boost at low collision energies. Lower the collision energy: the slower the nuclei, the more screening matters.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">boost ≈ exp(π <var>η</var> <var>U</var><sub>e</sub> / <var>E</var>),&nbsp; <var>η</var> = Sommerfeld parameter</div>
+          <p>This is the standard enhancement factor used in accelerator studies of screening, with <var>E</var> the collision energy in the centre-of-mass frame and <var>U</var><sub>e</sub> the screening energy. For deuterium, 2π<var>η</var> ≈ 31.3 / √<var>E</var>(keV).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="heat">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">SRI International, 1990s</span><h2>The loading threshold</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A palladium cathode taking in deuterium as electrolysis runs. Below a loading of about 0.9 deuterium atoms per palladium atom no excess heat appears; above it, bursts of excess power appear in the calorimeter record."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="l2">Deuterium per palladium atom <input type="range" id="l2" min="60" max="100" step="1" value="93"><output id="l2o">—</output></label>
+          <button class="btn solo" type="button" id="go2">Run a new cell</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Excess power</b><span id="r2e" class="eg">—</span></div>
+          <div class="ro"><b>Calorimeter error</b><span id="r2c">—</span></div>
+          <div class="ro"><b>Above the threshold?</b><span id="r2t">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The original evidence was heat. Run current through heavy water with a palladium cathode, and deuterium is driven into the metal. Measure the power going in and the heat coming out; if more comes out, something is adding energy.</p>
+        <p>Michael McKubre’s team at SRI International, funded by the Electric Power Research Institute, ran hundreds of carefully instrumented cells through the 1990s and found the key that explained the early failures: excess heat appeared only when the palladium was loaded to about 0.9 deuterium atoms per palladium atom or more, a level hard to reach and to keep.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>SRI’s mass-flow calorimeters measured excess power many times above their errors, with a clear dependence on loading and current density, the hallmark of a real physical effect rather than noise. Most 1989 replications never reached the required loading, which explains why they saw nothing. Excess heat has since been reported by groups at the US Navy, ENEA in Italy and in Japan, sometimes in bursts lasting days, with total energies far beyond any chemical store in the cell.</div>
+          <div class="con"><b>The case against</b>Results remain hard to repeat on demand, and a Google-funded effort reported in <i>Nature</i> in 2019 found no excess heat, though it also struggled to reach high loading.</div>
+        </div>
+        <div class="task"><b>Try this</b>Start at a loading of 0.80 and watch a flat record. Raise it past 0.90 and run a few cells: bursts of excess power appear, larger than the calorimeter’s error band.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">excess power = <var>P</var><sub>out</sub> − <var>P</var><sub>in</sub>,&nbsp; appears above <var>x</var> = D/Pd ≈ 0.88–0.90</div>
+          <p>The simulated cell follows the pattern McKubre reported: no excess below the threshold, then excess that grows with loading above it and comes in irregular bursts. The calorimeter error band is about ±1% of input power.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="ash">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">China Lake, 1991–</span><h2>Heat and helium go together</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Helium measured in the gas from many cells, plotted against the excess heat each produced. Cells with excess heat show helium in proportion to their energy, close to the 23.8 million electronvolts per helium atom a deuterium-to-helium reaction would give; cells without excess heat show none."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Cells">
+            <button class="btn" type="button" data-hc="all" aria-pressed="true">All cells</button>
+            <button class="btn" type="button" data-hc="ctl">Controls only</button>
+          </div>
+          <button class="btn solo" type="button" id="go3">New set of cells</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Energy per helium atom</b><span id="r3q" class="eg">—</span></div>
+          <div class="ro"><b>Predicted for D + D → ⁴He</b><span id="r3p">—</span></div>
+          <div class="ro"><b>Helium in control cells</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A nuclear reaction leaves ash. If two deuterium nuclei combine into helium-4, each reaction releases 23.8 million electronvolts. So if the excess heat is nuclear and helium is the product, the amount of helium should be proportional to the heat, at a known ratio.</p>
+        <p>That is a hard prediction to fake: chemistry makes no helium, and helium leaking in from the air has no reason to track the heat a cell produces.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Melvin Miles at the Naval Air Warfare Center at China Lake collected gas from heat-producing cells and found helium-4 in proportion to the excess energy, close to the 23.8 MeV per atom expected, while cells without excess heat showed none. McKubre’s group at SRI and later analyses reported the same ratio. A correlation between two independently measured quantities, at the ratio nuclear physics predicts, is the strongest evidence the heat is nuclear.</div>
+          <div class="con"><b>The case against</b>Helium is present in air at 5 parts per million and the amounts are close to detection limits, and no known mechanism lets a nucleus release 23.8 MeV into a lattice without a gamma ray.</div>
+        </div>
+        <div class="task"><b>Try this</b>Compare all cells with the controls only. Read the fitted energy per helium atom and compare it with 23.8 MeV.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">1 W for 1 s → 1 / (23.8 MeV) ≈ 2.6 × 10<sup>11</sup> helium atoms</div>
+          <p>Each simulated heat-producing cell yields helium at the D + D → ⁴He ratio with measurement scatter; control cells show only a small background. The fitted slope gives the energy per atom.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1989</div><h3>The announcement</h3><p>Fleischmann and Pons reported excess heat from palladium in heavy water at a press conference in Utah.</p></div>
+      <div class="g"><div class="where">1990s</div><h3>The threshold</h3><p>SRI International’s work, funded by the electric power industry, linked excess heat to deuterium loading above about 0.9.</p></div>
+      <div class="g"><div class="where">2004</div><h3>A second look</h3><p>A US Department of Energy review split roughly evenly on whether the excess-heat evidence was convincing.</p></div>
+      <div class="g"><div class="where">2023</div><h3>ARPA-E returns</h3><p>The Department of Energy’s advanced research agency announced funding for new low-energy nuclear reaction projects.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Cold fusion’s supporters point to <span class="a">heat that appears above a loading threshold and helium that tracks it</span>; after three decades, the US government is funding the question again.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><span class="chip here">041 · Cold fusion</span><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 041 · Cold Fusion · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+/* ---------- BAY 01: screening ---------- */
+(function () {
+  const cv = $('#c1'), US = $('#u1'), UO = $('#u1o'), KS = $('#k1'), KO = $('#k1o'), rB = $('#r1b'), rG = $('#r1g'), rM = $('#r1m');
+  const boost = (E, U) => Math.exp(Math.PI * (31.4 / (2 * Math.PI) / Math.sqrt(E)) * (U / 1000) / E);
+  const fmtB = b => b < 10 ? `${b.toFixed(2)}×` : b < 1e6 ? `${Math.round(b).toLocaleString('en')}×` : `10${sup(Math.floor(Math.log10(b)))}×`;
+  function frame() {
+    const U = +US.value, E = +KS.value; UO.value = `${U} eV`; KO.value = `${E} keV`;
+    setText(rB, fmtB(boost(E, U))); setText(rG, 'about 25 eV'); setText(rM, '300 eV and more');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, pw = narrow ? w - 28 : w * 0.46, ph = narrow ? h * 0.42 : h - 70;
+    // potential wall
+    const px = 14, py = 34, X = r => px + 30 + r / 60 * (pw - 40), V = (r, s) => r < 4 ? -0.3 : (1440 / r) * Math.exp(-r * s), Y = v => py + ph - 20 - clamp(v, -0.3, 360) / 360 * (ph - 40);
+    frame0(ctx, px, py, pw, ph);
+    [[0, COL.ice, 'bare nuclei'], [U / 8000, COL.eigen, 'screened in metal']].forEach(([s, c, l], i) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 200; k++) { const r = 4 + k / 200 * 56; k ? ctx.lineTo(X(r), Y(V(r, s))) : ctx.moveTo(X(r), Y(V(r, s))); } ctx.stroke(); ctx.lineWidth = 1; tag(ctx, l, px + pw - 8, py + 16 + i * 14, c, 'right'); });
+    dash(ctx, X(4), Y(E * 20), X(60), Y(E * 20), COL.violet); tag(ctx, `collision energy ${E} keV`, X(30), Y(E * 20) - 6, COL.violet, 'center');
+    tag(ctx, 'ENERGY WALL BETWEEN TWO DEUTERONS · DISTANCE →', px + 6, py + ph + 14);
+    // boost chart
+    const gx = narrow ? 44 : px + pw + 50, gy = narrow ? py + ph + 46 : py, gw = narrow ? w - 60 : w - gx - 16, gh = narrow ? h - gy - 26 : ph, Xe = e => gx + (e - 1) / 19 * gw, Yb = b => gy + gh - Math.log10(b) / 3 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    [[25, COL.ice, 'gas, 25 eV'], [U, COL.eigen, `metal, ${U} eV`]].forEach(([u, c, l]) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 100; k++) { const e = 1 + k / 100 * 19, y = Yb(clamp(boost(e, u), 1, 1e3)); k ? ctx.lineTo(Xe(e), y) : ctx.moveTo(Xe(e), y); } ctx.stroke(); ctx.lineWidth = 1; tag(ctx, l, gx + gw - 6, Yb(clamp(boost(20, u), 1, 1e6)) - 6, c, 'right'); });
+    ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(Xe(E), Yb(clamp(boost(E, U), 1, 1e3)), 5, 0, Math.PI * 2); ctx.fill();
+    ['1×', '10×', '100×', '1,000×'].forEach((l, i) => tag(ctx, l, gx - 4, Yb(10 ** i) + 4, COL['ink-3'], 'right')); [1, 5, 10, 15, 20].forEach(e => tag(ctx, `${e}`, Xe(e), gy + gh + 13, COL['ink-3'], 'center'));
+    tag(ctx, 'RATE BOOST · keV →', gx, gy - 6);
+    tag(ctx, 'HOW ELECTRON SCREENING HELPS NUCLEI MEET', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: loading threshold ---------- */
+(function () {
+  const cv = $('#c2'), LS = $('#l2'), LO = $('#l2o'), GB = $('#go2'), rE = $('#r2e'), rC = $('#r2c'), rT = $('#r2t');
+  const T = 240, st = { seed: 2, k: 0, nz: [], bursts: [] };
+  function gen() { const r = mk(st.seed); st.nz = Array.from({ length: T }, () => gs(r) * 0.25); st.bursts = Array.from({ length: 5 }, () => [r() * T, 8 + r() * 30, 0.5 + r()]); st.k = 0; }
+  GB.addEventListener('click', () => { st.seed++; gen(); }); LS.addEventListener('input', () => st.k = T); gen();
+  function frame(dt) {
+    st.k = REDUCE ? T : Math.min(T, st.k + dt * 60); const k = Math.floor(st.k), x = +LS.value / 100; LO.value = x.toFixed(2);
+    const amp = x < 0.89 ? 0 : (x - 0.89) / 0.11 * 9;
+    const ex = Array.from({ length: T }, (_, i) => st.nz[i] + amp * st.bursts.reduce((a, [c, wd, s]) => a + s * Math.exp(-(((i - c) / wd) ** 2)), 0) * 0.5 + (amp ? amp * 0.15 : 0));
+    const cur = k ? ex[k - 1] : 0, mean = k ? ex.slice(0, k).reduce((a, v) => a + v, 0) / k : 0;
+    setText(rE, `${cur.toFixed(1)}% of input now · average ${mean.toFixed(1)}%`); setText(rC, '±1% of input'); setText(rT, x >= 0.89 ? 'yes: loading above ≈ 0.9' : 'no: below ≈ 0.9');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // loading gauge
+    const gx0 = 14, gy0 = 34, gw0 = w < 560 ? 60 : Math.min(160, w * 0.26), gh0 = h - 70;
+    frame0(ctx, gx0 + 40, gy0, 34, gh0); const Yl = v => gy0 + gh0 - (v - 0.6) / 0.4 * gh0;
+    ctx.fillStyle = x >= 0.89 ? COL.eigen : COL.ice; ctx.fillRect(gx0 + 42, Yl(x), 30, gy0 + gh0 - Yl(x));
+    dash(ctx, gx0 + 34, Yl(0.89), gx0 + 82, Yl(0.89), COL.violet); if (w >= 560) tag(ctx, 'threshold', gx0 + 86, Yl(0.89) + 4, COL.violet);
+    [0.6, 0.7, 0.8, 0.9, 1].forEach(v => tag(ctx, v.toFixed(1), gx0 + 34, Yl(v) + 4, COL['ink-3'], 'right')); tag(ctx, 'D/Pd', gx0 + 57, gy0 + gh0 + 16, COL['ink-2'], 'center');
+    // calorimeter record
+    const gx = gx0 + gw0 + 30, gy = 34, gw = w - gx - 16, gh = h - gy - 36, X = i => gx + i / T * gw, Y = v => gy + gh * 0.8 - v / 14 * gh * 0.75;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.fillStyle = rgba(COL.ice, 0.18); ctx.fillRect(gx, Y(1), gw, Y(-1) - Y(1)); dash(ctx, gx, Y(0), gx + gw, Y(0), COL.ice); tag(ctx, 'error band', gx + gw - 6, Y(-1) + 13, COL.ice, 'right');
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 1.6; ctx.beginPath(); for (let i = 0; i < k; i++) i ? ctx.lineTo(X(i), Y(ex[i])) : ctx.moveTo(X(i), Y(ex[i])); ctx.stroke(); ctx.lineWidth = 1;
+    [0, 5, 10].forEach(v => tag(ctx, `${v}%`, gx - 4, Y(v) + 4, COL['ink-3'], 'right')); tag(ctx, '0 h', gx, gy + gh + 14); tag(ctx, '240 h', gx + gw, gy + gh + 14, COL['ink-3'], 'right');
+    tag(ctx, 'LOADING · EXCESS POWER AS A SHARE OF INPUT, OVER TEN DAYS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: heat and helium ---------- */
+(function () {
+  const cv = $('#c3'), GB = $('#go3'), rQ = $('#r3q'), rP = $('#r3p'), rC = $('#r3c');
+  const st = { hc: 'all', seed: 4, C: [] };
+  segs('[data-hc]', b => st.hc = b.dataset.hc);
+  function gen() { const r = mk(st.seed); st.C = []; for (let i = 0; i < 16; i++) { const E = 20 + r() * 180; st.C.push({ E, He: E * 2.62 * (1 + gs(r) * 0.18), ctl: false }); } for (let i = 0; i < 8; i++) st.C.push({ E: Math.max(0, gs(r) * 4), He: Math.abs(gs(r)) * 25, ctl: true }); }
+  GB.addEventListener('click', () => { st.seed++; gen(); }); gen();
+  function frame() {
+    const A = st.C.filter(c => !c.ctl), sxy = A.reduce((a, c) => a + c.E * c.He, 0), sxx = A.reduce((a, c) => a + c.E * c.E, 0), slope = sxy / sxx; // He (1e11 atoms) per kJ
+    const mev = 1e3 / (slope * 1e14) / 1.602e-13;
+    setText(rQ, `${mev.toFixed(1)} MeV`); setText(rP, '23.8 MeV'); setText(rC, 'background only');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 54, gy = 34, gw = w - gx - 16, gh = h - gy - 36, X = e => gx + e / 220 * gw, Y = he => gy + gh - he / 620 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(220), Y(220 * 2.62)); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, '23.8 MeV per helium atom', X(150), Y(150 * 2.62) - 10, COL.violet, 'right');
+    st.C.forEach(c => { const on = st.hc === 'all' || c.ctl; ctx.fillStyle = c.ctl ? rgba(COL.ice, on ? 0.9 : 0.2) : rgba(COL.eigen, on ? 0.9 : 0.15); ctx.beginPath(); ctx.arc(X(c.E), Y(c.He), 5, 0, Math.PI * 2); ctx.fill(); });
+    [0, 100, 200].forEach(e => tag(ctx, `${e} kJ`, X(e), gy + gh + 14, COL['ink-3'], 'center')); [0, 200, 400, 600].forEach(v => tag(ctx, `${v}`, gx - 4, Y(v) + 4, COL['ink-3'], 'right'));
+    tag(ctx, w < 520 ? 'HELIUM vs EXCESS ENERGY · BLUE: CONTROLS' : 'HELIUM (10¹⁴ ATOMS) vs EXCESS ENERGY · PINK: HEAT CELLS · BLUE: CONTROLS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

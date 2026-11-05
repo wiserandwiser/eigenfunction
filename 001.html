@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Eigenfunction</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: observatory console. A title placard, then three numbered instrument bays (live model left, prose right), then a field guide.
+   Colour code used everywhere: pink = keeps its shape (eigen), ice = everything else, violet = the negative side. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 7%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:36ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+/* bays */
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#vp1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/11}
+#v3{aspect-ratio:4/3}
+#c1,#c2{touch-action:none;cursor:crosshair}
+#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+/* readouts */
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);min-width:0}
+.ro:last-child{border-right:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.meter{height:3px;background:var(--rule-hi);margin-top:7px;position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--eigen);width:100%;transition:width .15s linear}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.btn[data-done]::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--eigen);margin-left:7px;vertical-align:middle;box-shadow:0 0 6px var(--eigen)}
+.btn[data-done][aria-pressed="true"]::after{background:var(--void);box-shadow:none}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:200px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;text-transform:none}
+.step{display:inline-flex;align-items:center;border:1px solid var(--rule-hi);font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.step span{padding:0 10px;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.step .btn{padding:8px 10px}
+.check{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.check input{accent-color:var(--violet);width:15px;height:15px}
+
+/* prose */
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.35rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+/* field guide */
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue span.chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{font-family:var(--mono);font-size:11px;color:var(--ice);border:1px solid color-mix(in srgb,var(--ice) 45%,transparent);padding:6px 10px;text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 001 · Linear algebra → Quantum mechanics</div>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 001 · Big ideas, seen moving</p>
+    <h1><span class="eig">eigen</span>function</h1>
+    <p class="gloss">GERMAN · eigen — <em>one’s own, characteristic</em></p>
+    <p class="thesis">Act on almost anything and it changes shape. A rare few only grow, shrink or flip. Those survivors are the native alphabet of physics: the notes of a string, the patterns of a drum, the energy levels of an atom.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Linear algebra → wave physics → quantum mechanics</dd></div>
+    <div><dt>Models</dt><dd>3 live simulations, all draggable</dd></div>
+    <div><dt>Prereqs</dt><dd>None. Equations hidden until you ask.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>keeps its shape</span><span class="key"><i style="background:var(--ice)"></i>changes</span></dd></div>
+  </dl>
+</section>
+
+<!-- BAY 01 -->
+<section class="bay" id="arrows">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Arrows</span><h2>The arrows that refuse to turn</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1">
+          <canvas id="c1" aria-label="A grid of the plane being transformed. A ring of arrows turns; arrows along the eigen-lines stay on their line and glow pink."></canvas>
+          <div class="hint">Drag to aim the probe</div>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Transformation">
+            <button class="btn" type="button" data-preset="stretch" aria-pressed="true">Stretch</button>
+            <button class="btn" type="button" data-preset="shear" aria-pressed="false">Shear</button>
+            <button class="btn" type="button" data-preset="flip" aria-pressed="false">Flip</button>
+            <button class="btn" type="button" data-preset="rotate" aria-pressed="false">Rotate</button>
+          </div>
+          <label class="scrub" for="t1">Apply <input type="range" id="t1" min="0" max="1000" value="1000"></label>
+          <button class="btn solo" type="button" id="play1">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Matrix now</b><span id="r1m">—</span></div>
+          <div class="ro"><b>Eigenvalues λ</b><span id="r1l" class="eg">—</span></div>
+          <div class="ro"><b>Probe</b><span id="r1p">—</span></div>
+          <div class="ro"><b>Found here</b><span id="r1f">—</span></div>
+          <div class="ro"><b>Lab score</b><span id="r1s">—</span><div class="meter"><i id="r1sm" style="width:0"></i></div></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Take the flat plane and transform it: stretch it, shear it, flip it. Draw any arrow and it comes out pointing somewhere new.</p>
+        <p>Almost any arrow. Along a few special lines, an arrow comes out exactly on the line it started on, only <strong>longer, shorter or reversed</strong>. These are the <span class="a">eigenvectors</span>. The factor each one is scaled by is its <strong>eigenvalue</strong>, written λ.</p>
+        <p>The eigenvectors are the transformation’s skeleton. Know them and their λ, and you know everything the transformation does: every other arrow is just a blend of them.</p>
+        <div class="task"><b>Try this</b>Drag inside the field to aim the probe. Hunt down the lines where it stops turning. Then try Rotate, and see why a pure rotation has none.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>A</var><b>v</b> = <var>λ</var><b>v</b></div>
+          <p>A matrix <var>A</var> acting on an eigenvector <b>v</b> gives back the same vector times a number <var>λ</var>. To find the λ values, solve det(<var>A</var> − <var>λI</var>) = 0. For a 2×2 matrix that is a quadratic. Two real roots give two eigen-lines (Stretch, Flip). A repeated root can leave one (Shear). Complex roots mean every real arrow turns (Rotate).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 02 -->
+<section class="bay" id="string">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Functions</span><h2>A string that keeps its shape</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2">
+          <canvas id="c2" aria-label="A vibrating string pinned at both ends, sampled at evenly spaced points drawn as arrows, the components of a vector. Violet arrows show the curvature operator applied to that vector. A bar chart of the mode recipe sits below."></canvas>
+          <div class="hint">Drag the string to pluck it</div>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="String shape">
+            <button class="btn eg" type="button" data-mode="1" aria-pressed="false">n=1</button>
+            <button class="btn eg" type="button" data-mode="2" aria-pressed="false">2</button>
+            <button class="btn eg" type="button" data-mode="3" aria-pressed="true">3</button>
+            <button class="btn eg" type="button" data-mode="4" aria-pressed="false">4</button>
+            <button class="btn eg" type="button" data-mode="5" aria-pressed="false">5</button>
+            <button class="btn" type="button" data-mode="pluck" aria-pressed="false">Pluck</button>
+          </div>
+          <label class="check" for="op2"><input type="checkbox" id="op2" checked> Show curvature</label>
+          <label class="check" for="vec2"><input type="checkbox" id="vec2" checked> Show as vector</label>
+          <label class="scrub" for="n2">Sample points <input type="range" id="n2" min="6" max="40" step="1" value="16"><output id="n2o">16</output></label>
+          <button class="btn solo" type="button" id="play2">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Shape</b><span id="r2s">—</span></div>
+          <div class="ro"><b>Pitch</b><span id="r2f">—</span></div>
+          <div class="ro"><b>Curvature</b><span id="r2o">—</span></div>
+          <div class="ro"><b>λ from the vector</b><span id="r2l">—</span></div>
+          <div class="ro"><b>Shape kept</b><span id="r2k">—</span><div class="meter"><i id="r2m"></i></div></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A function is an arrow with infinitely many components, one for every point along it. Operations on functions are called operators, and they can have eigenvectors too. We call those <span class="a">eigenfunctions</span>.</p>
+        <p>The operator that rules a guitar string is <strong>curvature</strong>: how sharply the string bends at each point. Curvature is what pulls the string back toward straight.</p>
+        <p>Feed it one of these smooth standing waves and the curvature (<span class="v">dotted</span>) comes back as the same wave, upside-down and scaled. So each standing wave just swings up and down with its shape intact, its nodes frozen in place. That is an eigenfunction in motion.</p>
+        <p>The arrows make the link to Bay 01 literal. Sample the string at a handful of points and it becomes a list of numbers: an ordinary vector, one <span class="a">pink arrow</span> per component. The curvature operator becomes a matrix that compares each point with its two neighbours. For a standing wave, the <span class="v">violet arrows</span> it returns are the pink ones flipped and scaled by one number, λ. Add more sample points and the vector turns into the function.</p>
+        <p>Now pluck it. A pluck is a mixture of many standing waves, each swinging at its own rate, so the shape smears and travels. The bars underneath show the recipe. Those extra ingredients are the overtones you hear in every real note.</p>
+        <div class="task"><b>Try this</b>Watch the Shape-kept meter on n = 1 to 5, then drag the string anywhere to pluck it and watch the meter fall. Slide the sample points from 6 to 40 and watch λ from the vector close in on −(nπ)².</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><span class="frac"><span>d²<var>f</var></span><span>d<var>x</var>²</span></span> = <var>λ</var><var>f</var>,&nbsp; <var>f</var>(0) = <var>f</var>(<var>L</var>) = 0</div>
+          <p>The pinned ends allow only <var>f<sub>n</sub></var>(<var>x</var>) = sin(<var>nπx</var>/<var>L</var>), with <var>λ<sub>n</sub></var> = −(<var>nπ</var>/<var>L</var>)². The wave equation ∂²<var>u</var>/∂<var>t</var>² = <var>c</var>²∂²<var>u</var>/∂<var>x</var>² then makes mode <var>n</var> oscillate at <var>n</var> times the fundamental frequency. Any pluck is a Fourier sum Σ <var>b<sub>n</sub></var><var>f<sub>n</sub></var>, and each term evolves on its own.</p>
+          <div class="eq">(<var>A</var><b>v</b>)<sub><var>i</var></sub> = (<var>v</var><sub><var>i</var>−1</sub> − 2<var>v<sub>i</sub></var> + <var>v</var><sub><var>i</var>+1</sub>) / <var>h</var>²,&nbsp; <var>λ<sub>n</sub></var> = −(4/<var>h</var>²) sin²(<var>nπh</var>/2)</div>
+          <p>With <var>N</var> sample points spaced <var>h</var> = <var>L</var>/(<var>N</var> + 1), curvature is an <var>N</var> × <var>N</var> matrix. The sampled standing waves are its exact eigenvectors, and its eigenvalues approach −(<var>nπ</var>/<var>L</var>)² as <var>N</var> grows. The readout computes λ = (<var>A</var><b>v</b> · <b>v</b>) / (<b>v</b> · <b>v</b>) from the arrows themselves, here with <var>L</var> = 1.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAY 03 -->
+<section class="bay" id="membrane">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Surfaces → Quantum</span><h2>From a drumhead to an atom</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="v3">
+          <div class="fallback" hidden>The 3D model needs WebGL and couldn’t start in this browser.</div>
+          <div class="hint">Drag to orbit</div>
+        </div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="What the surface is">
+            <button class="btn" type="button" data-view="drum" aria-pressed="true">Drumhead</button>
+            <button class="btn" type="button" data-view="quantum" aria-pressed="false">Quantum box |ψ|²</button>
+          </div>
+          <div class="step" aria-label="Mode number m"><button class="btn" type="button" id="m3d" aria-label="Decrease m">−</button><span id="m3v">m 2</span><button class="btn" type="button" id="m3u" aria-label="Increase m">+</button></div>
+          <div class="step" aria-label="Mode number n"><button class="btn" type="button" id="n3d" aria-label="Decrease n">−</button><span id="n3v">n 3</span><button class="btn" type="button" id="n3u" aria-label="Increase n">+</button></div>
+          <button class="btn solo" type="button" id="sup3" aria-pressed="false">Superpose</button>
+          <button class="btn solo" type="button" id="vec3" aria-pressed="true">Vector arrows: on</button>
+          <button class="btn solo" type="button" id="lap3" aria-pressed="true">∇² output: on</button>
+          <label class="scrub" for="g3">Sample grid <input type="range" id="g3" min="4" max="14" step="1" value="8"><output id="g3o">8 × 8</output></label>
+          <button class="btn solo" type="button" id="play3">Pause</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Mode (m, n)</b><span id="r3m">—</span></div>
+          <div class="ro"><b id="r3qk">Pitch ÷ lowest</b><span id="r3q">—</span></div>
+          <div class="ro"><b>Pattern</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>λ from the vector</b><span id="r3l">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Give the string a second dimension and you have a drumhead. Its eigenfunctions are labelled by two whole numbers, (m, n). The <span class="a">pink lines</span> are nodes: they never move while the skin around them heaves.</p>
+        <p>The pitches go up as √(m² + n²), which is not a neat musical ladder. That is why a drum thuds where a string sings.</p>
+        <p>The arrows sample the surface on a grid, turning it into one long vector with a component at every grid point. The <span class="v">violet arrows</span> are the 2D curvature operator ∇² applied to that vector, divided by the size of λ so the two can be compared. For a single mode each violet arrow is its pink partner turned upside down: the same vector times a negative number. Superpose two modes and the pairs no longer match.</p>
+        <p>Now switch to <strong>Quantum box</strong>. Replace the drumhead with an electron trapped in a square box and the very same shapes reappear. Schrödinger’s equation, <strong>Ĥψ = Eψ</strong>, is an eigenvalue problem. Its eigenfunctions are the states of definite energy, and its eigenvalues are the energies themselves.</p>
+        <p>In a single eigenstate the probability cloud does not move at all, which is why physicists call these states <strong>stationary</strong>. Superpose two and the cloud starts to slosh. Because only whole-number (m, n) fit in the box, the energy comes in steps. That is the “quantum” in quantum mechanics.</p>
+        <div class="task"><b>Try this</b>Pick a mode and check that every violet arrow mirrors its pink partner. Press Superpose and watch them disagree. Then switch to Quantum box and watch nothing move.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">∇²<var>φ</var> = −<var>k</var>²<var>φ</var>,&nbsp; <var>φ<sub>mn</sub></var> = sin<span style="font-size:.8em">(</span><var>mπx</var>/<var>L</var><span style="font-size:.8em">)</span> sin<span style="font-size:.8em">(</span><var>nπy</var>/<var>L</var><span style="font-size:.8em">)</span></div>
+          <p>Drum: <var>ω<sub>mn</sub></var> = (<var>cπ</var>/<var>L</var>)√(<var>m</var>² + <var>n</var>²).</p>
+          <div class="eq"><var>Ĥψ</var> = <var>Eψ</var>,&nbsp; <var>Ĥ</var> = −<span class="frac"><span><var>ħ</var>²</span><span>2<var>M</var></span></span>∇²</div>
+          <p>Box: <var>E<sub>mn</sub></var> = (<var>ħ</var>²<var>π</var>²/2<var>ML</var>²)(<var>m</var>² + <var>n</var>²). Each eigenstate carries a phase <var>e</var><sup>−<var>iEt</var>/<var>ħ</var></sup>, which cancels in |<var>ψ</var>|², so the density is constant. Two states with different <var>E</var> interfere, and the density oscillates at (<var>E</var>₁ − <var>E</var>₂)/<var>ħ</var>.</p>
+          <div class="eq">(∇²<b>v</b>)<sub><var>ij</var></sub> = (<var>v</var><sub><var>i</var>±1,<var>j</var></sub> + <var>v</var><sub><var>i</var>,<var>j</var>±1</sub> − 4<var>v<sub>ij</sub></var>) / <var>h</var>²</div>
+          <p>The five-point Laplacian on a <var>G</var> × <var>G</var> grid with <var>L</var> = 1. Sampled modes are its exact eigenvectors, with λ<sub><var>mn</var></sub> = −(4/<var>h</var>²)[sin²(<var>mπh</var>/2) + sin²(<var>nπh</var>/2)] → −π²(<var>m</var>² + <var>n</var>²). In Quantum box the arrows show the real part of ψ, which swings in time while |ψ|² stays put.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Where you will meet them next</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Atomic physics</div><h3>The shape of an atom</h3><p>The s, p, d and f orbitals in a chemistry textbook are eigenfunctions of hydrogen’s energy operator. Chemistry’s periodic table is built on their eigenvalues.</p></div>
+      <div class="g"><div class="where">Gravitational waves</div><h3>A black hole’s ringdown</h3><p>After two black holes merge, the new one rings like a struck bell in a set of damped modes, close cousins of eigenmodes. LIGO reads the final mass and spin from their frequencies.</p></div>
+      <div class="g"><div class="where">The web</div><h3>Google’s first ranking</h3><p>PageRank scored every page using the leading eigenvector of the web’s link matrix: the one arrow the endless shuffle of clicks leaves pointing the same way.</p></div>
+      <div class="g"><div class="where">Machine learning</div><h3>The directions data cares about</h3><p>Principal component analysis finds the eigenvectors of a dataset’s covariance matrix. The largest eigenvalues mark the few directions that hold most of the variation.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">An eigenfunction is a shape an operation can only <span class="a">rescale</span>. Find them, and one tangled problem splits into many simple ones that each run on their own.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><span class="chip here" style="border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)">001 · Eigenfunction</span><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 001 · Operators and invariance · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const mix = (h1, h2, w, a = 1) => { const A = rgb(h1), B = rgb(h2); return `rgba(${A.map((v,i) => Math.round(v + (B[i]-v)*w)).join(',')},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function arrow(ctx, x0, y0, x1, y1, col, lw) {
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy);
+  if (L < 3) return;
+  const ux = dx / L, uy = dy / L, hl = Math.min(9, L * 0.32);
+  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - ux * hl * 0.7, y1 - uy * hl * 0.7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1, y1);
+  ctx.lineTo(x1 - ux * hl - uy * hl * 0.42, y1 - uy * hl + ux * hl * 0.42);
+  ctx.lineTo(x1 - ux * hl + uy * hl * 0.42, y1 - uy * hl - ux * hl * 0.42);
+  ctx.closePath(); ctx.fill();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+
+/* ---------- BAY 01: eigenvectors ---------- */
+(function () {
+  const cv = $('#c1'), slider = $('#t1'), playBtn = $('#play1');
+  const rM = $('#r1m'), rL = $('#r1l'), rP = $('#r1p'), rF = $('#r1f'), rS = $('#r1s'), rSm = $('#r1sm');
+  const rot = a => [[Math.cos(a), -Math.sin(a)], [Math.sin(a), Math.cos(a)]];
+  const P = {
+    stretch: { A: [[1.6, 0.6], [0.6, 1.6]] },
+    shear:   { A: [[1, 0.9], [0, 1]] },
+    flip:    { A: [[0.4, 1.1], [1.1, 0.4]] },
+    rotate:  { A: rot(Math.PI / 3), angle: Math.PI / 3 }
+  };
+  const st = { key: 'stretch', t: 1, playing: !REDUCE, clock: 2.6, probe: [1.3, 0.42], drag: false, found: { stretch: new Set(), shear: new Set(), flip: new Set(), rotate: new Set() }, geom: { s: 40 } };
+  const F = () => st.found[st.key];
+  const Mt = (p, t) => p.angle != null ? rot(p.angle * t) : [[1 + t * (p.A[0][0] - 1), t * p.A[0][1]], [t * p.A[1][0], 1 + t * (p.A[1][1] - 1)]];
+  const ap = (M, v) => [M[0][0] * v[0] + M[0][1] * v[1], M[1][0] * v[0] + M[1][1] * v[1]];
+  function eig(A) {
+    const a = A[0][0], b = A[0][1], c = A[1][0], d = A[1][1];
+    const tr = a + d, det = a * d - b * c, disc = tr * tr / 4 - det;
+    if (disc < -1e-9) return [];
+    const s = Math.sqrt(Math.max(0, disc));
+    const ls = s < 1e-6 ? [tr / 2] : [tr / 2 + s, tr / 2 - s];
+    return ls.map(l => {
+      let v;
+      if (Math.abs(b) > 1e-9) v = [b, l - a];
+      else if (Math.abs(c) > 1e-9) v = [l - d, c];
+      else v = Math.abs(l - a) < 1e-9 ? [1, 0] : [0, 1];
+      const n = Math.hypot(v[0], v[1]);
+      return { l, v: [v[0] / n, v[1] / n] };
+    });
+  }
+  const angDeg = (v, w) => Math.atan2(v[0] * w[1] - v[1] * w[0], v[0] * w[0] + v[1] * w[1]) * 180 / Math.PI;
+  const lineDev = (v, w) => { const a = Math.abs(angDeg(v, w)); return Math.min(a, 180 - a); };
+  const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  function tOf(c) { c %= 8; if (c < 2.6) return ease(c / 2.6); if (c < 5.2) return 1; if (c < 7) return 1 - ease((c - 5.2) / 1.8); return 0; }
+  const fmt = x => (Math.abs(x) < 0.005 ? 0 : x).toFixed(2);
+  const TOTAL = Object.keys(P).reduce((s, k) => s + eig(P[k].A).length, 0);
+  function marks() {
+    $$('[data-preset]').forEach(b => {
+      const k = b.dataset.preset, n = eig(P[k].A).length;
+      if (n && st.found[k].size === n) b.setAttribute('data-done', ''); else b.removeAttribute('data-done');
+    });
+  }
+  function mark(i) { if (!F().has(i)) { F().add(i); marks(); } }
+
+  function check(tol) {
+    eig(P[st.key].A).forEach((e, i) => { if (lineDev(st.probe, e.v) < tol) mark(i); });
+  }
+  function snap() {
+    eig(P[st.key].A).forEach((e, i) => {
+      if (lineDev(st.probe, e.v) < 6) {
+        const L = Math.hypot(...st.probe), sg = (st.probe[0] * e.v[0] + st.probe[1] * e.v[1]) >= 0 ? 1 : -1;
+        st.probe = [e.v[0] * L * sg, e.v[1] * L * sg]; mark(i);
+      }
+    });
+  }
+  function setProbe(e) {
+    const r = cv.getBoundingClientRect(), s = st.geom.s;
+    const x = (e.clientX - r.left - r.width / 2) / s, y = -(e.clientY - r.top - r.height / 2) / s;
+    const L = Math.hypot(x, y); if (L < 0.05) return;
+    const Lc = clamp(L, 0.5, 1.9);
+    st.probe = [x / L * Lc, y / L * Lc]; check(2.5);
+  }
+  cv.addEventListener('pointerdown', e => {
+    st.drag = true; cv.setPointerCapture(e.pointerId);
+    if (st.playing) { st.playing = false; playLabel(playBtn, false); }
+    st.t = 1; slider.value = 1000; setProbe(e);
+  });
+  cv.addEventListener('pointermove', e => { if (st.drag) setProbe(e); });
+  cv.addEventListener('pointerup', () => { st.drag = false; snap(); });
+  cv.addEventListener('pointercancel', () => { st.drag = false; });
+  $$('[data-preset]').forEach(b => b.addEventListener('click', () => {
+    st.key = b.dataset.preset;
+    $$('[data-preset]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    if (st.playing) st.clock = 0;
+  }));
+  slider.addEventListener('input', () => { st.t = slider.value / 1000; if (st.playing) { st.playing = false; playLabel(playBtn, false); } });
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); if (st.playing) st.clock = st.t > 0.999 ? 2.6 : 0; });
+  playLabel(playBtn, st.playing);
+
+  function frame(dt) {
+    if (st.playing) { st.clock += dt; st.t = tOf(st.clock); slider.value = Math.round(st.t * 1000); }
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const s = Math.min(w, h) / 8.4, ox = w / 2, oy = h / 2;
+    st.geom.s = s;
+    const p = P[st.key], M = Mt(p, st.t);
+    const sc = v => [ox + v[0] * s, oy - v[1] * s];
+    const mp = v => sc(ap(M, v));
+    // reference grid
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = rgba(COL['rule-hi'], 0.55);
+    ctx.beginPath();
+    for (let i = -10; i <= 10; i++) { let a = sc([i, -10]), b = sc([i, 10]); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); a = sc([-10, i]); b = sc([10, i]); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+    ctx.stroke();
+    // transformed grid
+    ctx.strokeStyle = rgba(COL.ice, 0.16);
+    ctx.beginPath();
+    for (let i = -10; i <= 10; i++) { let a = mp([i, -10]), b = mp([i, 10]); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); a = mp([-10, i]); b = mp([10, i]); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+    ctx.stroke();
+    // eigen-lines
+    const E = eig(p.A);
+    ctx.font = `11px ${MONO}`;
+    E.forEach((e, i) => {
+      const a = sc([-e.v[0] * 12, -e.v[1] * 12]), b = sc([e.v[0] * 12, e.v[1] * 12]);
+      ctx.setLineDash([6, 6]); ctx.strokeStyle = rgba(COL.eigen, F().has(i) ? 0.85 : 0.42); ctx.lineWidth = F().has(i) ? 1.6 : 1.1;
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.setLineDash([]);
+      const lt = 1 + st.t * (e.l - 1);
+      const lp = sc([e.v[0] * 3.25, e.v[1] * 3.25]);
+      ctx.fillStyle = COL.eigen;
+      ctx.fillText(`λ = ${fmt(lt)}`, clamp(lp[0] + 8, 8, w - 80), clamp(lp[1] - 8, 16, h - 8));
+    });
+    // ring of arrows
+    const N = 28, R = 1.55;
+    const o = sc([0, 0]);
+    for (let k = 0; k < N; k++) {
+      const th = k / N * Math.PI * 2, v = [R * Math.cos(th), R * Math.sin(th)];
+      const tip0 = sc(v);
+      ctx.fillStyle = rgba(COL['ink-3'], 0.7);
+      ctx.beginPath(); ctx.arc(tip0[0], tip0[1], 1.6, 0, Math.PI * 2); ctx.fill();
+      const Mv = ap(M, v), dev = lineDev(v, Mv), wgt = clamp(1 - dev / 5, 0, 1);
+      const tip = sc(Mv);
+      arrow(ctx, o[0], o[1], tip[0], tip[1], mix(COL.ice, COL.eigen, wgt, 0.42 + 0.55 * wgt), 1.1 + 0.9 * wgt);
+    }
+    // probe
+    const pv = st.probe, Mpv = ap(M, pv);
+    const pIn = sc(pv), pOut = sc(Mpv);
+    const pDev = lineDev(pv, Mpv), onLine = pDev < 1;
+    ctx.setLineDash([3, 4]);
+    arrow(ctx, o[0], o[1], pIn[0], pIn[1], rgba(COL.ink, 0.55), 1.4);
+    ctx.setLineDash([]);
+    const a0 = Math.atan2(-pv[1], pv[0]), a1 = Math.atan2(-Mpv[1], Mpv[0]);
+    if (!onLine) {
+      ctx.strokeStyle = rgba(COL['ink-2'], 0.6); ctx.lineWidth = 1;
+      let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+      ctx.beginPath(); ctx.arc(o[0], o[1], 26, a0, a0 + d, d < 0); ctx.stroke();
+    }
+    ctx.shadowColor = onLine ? COL.eigen : 'transparent'; ctx.shadowBlur = onLine ? 14 : 0;
+    arrow(ctx, o[0], o[1], pOut[0], pOut[1], onLine ? COL.eigen : COL.ink, 2.4);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = onLine ? COL.eigen : COL.ink;
+    ctx.beginPath(); ctx.arc(pIn[0], pIn[1], 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL.void; ctx.beginPath(); ctx.arc(pIn[0], pIn[1], 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-2']; ctx.beginPath(); ctx.arc(o[0], o[1], 2.5, 0, Math.PI * 2); ctx.fill();
+
+    // readouts
+    setText(rM, `[${fmt(M[0][0])} ${fmt(M[0][1])} ; ${fmt(M[1][0])} ${fmt(M[1][1])}]`);
+    const Ml = eig(M);
+    setText(rL, Ml.length ? Ml.map(e => fmt(e.l)).join('  ·  ') : 'complex: none real');
+    const ratio = Math.hypot(...Mpv) / Math.hypot(...pv);
+    const turned = Math.abs(angDeg(pv, Mpv));
+    rP.className = onLine ? 'eg' : '';
+    setText(rP, onLine ? (turned > 90 ? `reversed on its line · ×${ratio.toFixed(2)}` : `on its own line · ×${ratio.toFixed(2)}`) : `turned ${turned.toFixed(1)}° · ×${ratio.toFixed(2)}`);
+    setText(rF, E.length ? `${F().size} of ${E.length}` : 'none exist here');
+    rF.className = E.length && F().size === E.length ? 'eg' : '';
+    const got = Object.values(st.found).reduce((s, x) => s + x.size, 0);
+    setText(rS, got === TOTAL ? `${got} of ${TOTAL} · all found` : `${got} of ${TOTAL}`);
+    rS.className = got === TOTAL ? 'eg' : '';
+    rSm.style.width = (got / TOTAL * 100) + '%';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: string ---------- */
+(function () {
+  const cv = $('#c2'), playBtn = $('#play2'), op = $('#op2'), vecC = $('#vec2'), nS = $('#n2'), nO = $('#n2o'), rL = $('#r2l');
+  const rS = $('#r2s'), rF = $('#r2f'), rO = $('#r2o'), rK = $('#r2k'), rMeter = $('#r2m');
+  const NT = 60, X = 241, W = 2 * Math.PI / 2.6;
+  const sinT = [null], sig = new Float64Array(NT + 1), k2 = new Float64Array(NT + 1);
+  for (let n = 1; n <= NT; n++) {
+    const a = new Float64Array(X);
+    for (let i = 0; i < X; i++) a[i] = Math.sin(n * Math.PI * i / (X - 1));
+    sinT.push(a);
+    const q = Math.PI * n / (NT + 1); sig[n] = Math.sin(q) / q; k2[n] = (n * Math.PI) ** 2;
+  }
+  const coef = new Float64Array(NT + 1), u = new Float64Array(X), u0 = new Float64Array(X), g = new Float64Array(X);
+  const st = { kind: 'mode', n: 3, p: 0.3, tau: 0, playing: !REDUCE, drag: false, keep: 1, geom: { top: 0, mid: 0, amp: 1, pad: 20 } };
+  function prep() { u0.fill(0); for (let n = 1; n <= NT; n++) { const c = coef[n]; if (!c) continue; const s = sinT[n]; for (let i = 0; i < X; i++) u0[i] += c * s[i]; } }
+  function setMode(n) { coef.fill(0); coef[n] = 0.8; st.kind = 'mode'; st.n = n; st.tau = 0; prep(); }
+  function setPluck(p, h) {
+    coef.fill(0);
+    for (let n = 1; n <= NT; n++) coef[n] = 2 * h * Math.sin(n * Math.PI * p) / (n * n * Math.PI * Math.PI * p * (1 - p));
+    st.kind = 'pluck'; st.p = p; st.tau = 0; prep();
+  }
+  function press(which) { $$('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === which))); }
+  setMode(3);
+  $$('[data-mode]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.mode === 'pluck') setPluck(0.3, 0.8); else setMode(+b.dataset.mode);
+    press(b.dataset.mode);
+  }));
+  playBtn.addEventListener('click', () => { st.playing = !st.playing; playLabel(playBtn, st.playing); });
+  playLabel(playBtn, st.playing);
+  function pluckAt(e) {
+    const r = cv.getBoundingClientRect(), G = st.geom;
+    const x = clamp((e.clientX - r.left - G.pad) / (r.width - 2 * G.pad), 0.04, 0.96);
+    const h = clamp((G.mid - (e.clientY - r.top)) / G.amp, -1, 1);
+    setPluck(x, Math.abs(h) < 0.05 ? 0.05 : h); press('pluck');
+  }
+  cv.addEventListener('pointerdown', e => {
+    const r = cv.getBoundingClientRect();
+    if (e.clientY - r.top > st.geom.top) return;
+    st.drag = true; cv.setPointerCapture(e.pointerId); pluckAt(e);
+  });
+  cv.addEventListener('pointermove', e => { if (st.drag) pluckAt(e); });
+  const release = () => { if (st.drag) { st.drag = false; st.tau = 0; if (!st.playing) { st.playing = true; playLabel(playBtn, true); } } };
+  cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
+
+  function frame(dt) {
+    if (st.playing && !st.drag) st.tau += dt;
+    // evaluate
+    u.fill(0); g.fill(0);
+    for (let n = 1; n <= NT; n++) {
+      const c = coef[n]; if (!c) continue;
+      const cc = c * Math.cos(n * W * st.tau), gg = -cc * k2[n] * sig[n], s = sinT[n];
+      for (let i = 0; i < X; i++) { u[i] += cc * s[i]; g[i] += gg * s[i]; }
+    }
+    let dot = 0, nu = 0, n0 = 0, mu = 0, mg = 0;
+    for (let i = 0; i < X; i++) { dot += u[i] * u0[i]; nu += u[i] * u[i]; n0 += u0[i] * u0[i]; mu = Math.max(mu, Math.abs(u[i])); mg = Math.max(mg, Math.abs(g[i])); }
+    if (nu > 1e-4 * n0) st.keep = Math.abs(dot) / Math.sqrt(nu * n0);
+
+    const { ctx, w, h } = fit(cv);
+    ctx.clearRect(0, 0, w, h);
+    const pad = Math.max(22, w * 0.05), top = h * 0.66, mid = top * 0.52, amp = top * 0.4;
+    st.geom = { top, mid, amp, pad };
+    const xp = i => pad + (i / (X - 1)) * (w - 2 * pad);
+    // rest line + posts
+    ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, mid); ctx.lineTo(w - pad, mid); ctx.stroke();
+    ctx.strokeStyle = COL['ink-2']; ctx.lineWidth = 2;
+    [pad, w - pad].forEach(x => { ctx.beginPath(); ctx.moveTo(x, mid - 10); ctx.lineTo(x, mid + 10); ctx.stroke(); });
+    const path = (arr, scale) => { ctx.beginPath(); for (let i = 0; i < X; i++) { const y = mid - arr[i] * scale; i ? ctx.lineTo(xp(i), y) : ctx.moveTo(xp(i), y); } ctx.stroke(); };
+    // ghost of starting shape
+    ctx.setLineDash([3, 5]); ctx.strokeStyle = rgba(COL['ink-3'], 0.9); ctx.lineWidth = 1; path(u0, amp); ctx.setLineDash([]);
+    // curvature
+    if (op.checked && mg > 1e-9 && mu > 1e-3) {
+      ctx.setLineDash([2, 4]); ctx.strokeStyle = rgba(COL.violet, 0.9); ctx.lineWidth = 1.6; path(g, amp * mu / mg); ctx.setLineDash([]);
+    }
+    // the string
+    const pure = st.kind === 'mode';
+    ctx.strokeStyle = pure ? COL.eigen : COL.ice; ctx.lineWidth = 2.4;
+    ctx.shadowColor = pure ? COL.eigen : COL.ice; ctx.shadowBlur = 12;
+    path(u, amp); ctx.shadowBlur = 0;
+    if (pure) {
+      ctx.strokeStyle = COL.eigen; ctx.fillStyle = COL.bay; ctx.lineWidth = 1.5;
+      for (let k = 1; k < st.n; k++) { const x = pad + (k / st.n) * (w - 2 * pad); ctx.beginPath(); ctx.arc(x, mid, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    }
+    // the string as a vector: N samples, and the curvature matrix applied to them
+    const N = +nS.value, hh = 1 / (N + 1); nO.value = String(N);
+    const at = (arr, x) => { const p = x * (X - 1), i = Math.floor(p), f = p - i; return i >= X - 1 ? arr[X - 1] : arr[i] * (1 - f) + arr[i + 1] * f; };
+    const vs = [], vs0 = []; for (let i = 1; i <= N; i++) { vs.push(at(u, i * hh)); vs0.push(at(u0, i * hh)); }
+    const lap = a => a.map((v, i) => ((i ? a[i - 1] : 0) - 2 * v + (i < a.length - 1 ? a[i + 1] : 0)) / (hh * hh));
+    const A0 = lap(vs0); let num = 0, den = 0, aa = 0; vs0.forEach((v, i) => { num += A0[i] * v; den += v * v; aa += A0[i] * A0[i]; });
+    const lam = den > 1e-12 ? num / den : 0, align = den > 1e-12 && aa > 0 ? Math.abs(num) / Math.sqrt(den * aa) : 0;
+    if (vecC.checked) {
+      const Av = lap(vs), arrow = (x, y1, c, lw) => { const dy = y1 - mid; if (Math.abs(dy) < 1.5) { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, mid, 1.6, 0, Math.PI * 2); ctx.fill(); return; } const hd = Math.min(6, Math.abs(dy) * 0.45), sg = Math.sign(dy); ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(x, mid); ctx.lineTo(x, y1 - sg * hd * 0.6); ctx.stroke(); ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x - hd * 0.6, y1 - sg * hd); ctx.lineTo(x + hd * 0.6, y1 - sg * hd); ctx.closePath(); ctx.fill(); };
+      const off = Math.min(4, (w - 2 * pad) * hh * 0.18);
+      for (let i = 0; i < N; i++) {
+        const x = pad + (i + 1) * hh * (w - 2 * pad);
+        if (op.checked && Math.abs(lam) > 1e-9) arrow(x + off, mid - (Av[i] / Math.abs(lam)) * amp, rgba(COL.violet, 0.9), 1.4);
+        arrow(x - (op.checked ? off : 0), mid - vs[i] * amp, pure ? COL.eigen : COL.ice, 1.8);
+      }
+    }
+    // legend
+    ctx.font = `10.5px ${MONO}`; ctx.textBaseline = 'alphabetic';
+    let lx = pad;
+    const leg = (c, t, dash) => { ctx.strokeStyle = c; ctx.lineWidth = 1.6; ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(lx, 20); ctx.lineTo(lx + 16, 20); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL['ink-2']; ctx.fillText(t, lx + 22, 24); lx += 30 + ctx.measureText(t).width; };
+    leg(pure ? COL.eigen : COL.ice, 'string', []);
+    leg(COL['ink-3'], 'start', [3, 5]);
+    if (op.checked) leg(COL.violet, vecC.checked ? 'curvature (arrows ÷ |λ|)' : 'curvature, rescaled', [2, 4]);
+    if (vecC.checked && w > 520) { ctx.fillStyle = COL['ink-3']; ctx.fillText(`${N} ARROWS = ONE VECTOR`, w - pad - ctx.measureText(`${N} ARROWS = ONE VECTOR`).width, 24); }
+    // spectrum
+    ctx.strokeStyle = COL.rule; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, top); ctx.lineTo(w, top); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('RECIPE · HOW MUCH OF EACH EIGENFUNCTION', pad, top + 20);
+    const NB = 16, bw = (w - 2 * pad) / NB, base = h - 22, bh = base - (top + 34);
+    let mx = 0; for (let n = 1; n <= NB; n++) mx = Math.max(mx, Math.abs(coef[n]));
+    for (let n = 1; n <= NB; n++) {
+      const v = mx ? Math.abs(coef[n]) / mx : 0, x = pad + (n - 1) * bw;
+      ctx.fillStyle = COL['rule-hi']; ctx.fillRect(x + bw * 0.2, base - 1, bw * 0.6, 1);
+      if (v > 0.001) { ctx.fillStyle = pure ? COL.eigen : rgba(COL.ice, 0.35 + 0.65 * v); ctx.fillRect(x + bw * 0.2, base - v * bh, bw * 0.6, v * bh); }
+      ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText(String(n), x + bw / 2, h - 7); ctx.textAlign = 'left';
+    }
+    // readouts
+    if (pure) {
+      setText(rS, `pure mode n = ${st.n}`); rS.className = 'eg';
+      setText(rF, st.n === 1 ? 'fundamental f₁' : `${st.n} × f₁, one pitch`);
+      setText(rO, `−${k2[st.n].toFixed(1)} × the shape`); rO.className = 'eg';
+    } else {
+      setText(rS, `plucked at ${Math.round(st.p * 100)}%`); rS.className = '';
+      setText(rF, 'f₁, 2f₁, 3f₁ … at once');
+      setText(rO, 'a different shape'); rO.className = '';
+    }
+    if (pure && align > 0.999) { setText(rL, `−${Math.abs(lam).toFixed(1)} (exact −${k2[st.n].toFixed(1)})`); rL.className = 'eg'; }
+    else { setText(rL, 'no single λ: Av is a new shape'); rL.className = ''; }
+    const pct = Math.round(st.keep * 100);
+    setText(rK, `${pct}%`); rK.className = pct >= 99 ? 'eg' : '';
+    rMeter.style.width = pct + '%'; rMeter.style.background = pct >= 99 ? COL.eigen : COL.ice;
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: membrane / quantum box ---------- */
+(function () {
+  const host = $('#v3');
+  const rM = $('#r3m'), rQ = $('#r3q'), rQk = $('#r3qk'), rS = $('#r3s'), playBtn = $('#play3'), supBtn = $('#sup3'), rL = $('#r3l'), gS = $('#g3'), gO = $('#g3o'), vecB = $('#vec3'), lapB = $('#lap3');
+  let renderer;
+  try { if (!window.THREE) throw 0; renderer = new THREE.WebGLRenderer({ antialias: true }); }
+  catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(new THREE.Color(COL.bay), 1);
+  host.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(new THREE.Color(COL.bay), 4.6, 9);
+  const cam = new THREE.PerspectiveCamera(36, 4 / 3, 0.1, 50);
+  const S = 72, V = (S + 1) * (S + 1);
+  const pos = new Float32Array(V * 3), colA = new Float32Array(V * 3), val = new Float32Array(V);
+  const idx = [];
+  for (let j = 0; j <= S; j++) for (let i = 0; i <= S; i++) { const k = j * (S + 1) + i; pos[3 * k] = (i / S - 0.5) * 2; pos[3 * k + 2] = (j / S - 0.5) * 2; }
+  for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) { const a = j * (S + 1) + i, b = a + 1, c = a + S + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  const geo = new THREE.BufferGeometry();
+  const pAttr = new THREE.BufferAttribute(pos, 3), cAttr = new THREE.BufferAttribute(colA, 3);
+  geo.setAttribute('position', pAttr); geo.setAttribute('color', cAttr); geo.setIndex(idx);
+  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.55, metalness: 0.05 })));
+  scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: new THREE.Color(COL['rule-hi']), wireframe: true, transparent: true, opacity: 0.28 })));
+  const rimG = new THREE.BufferGeometry().setFromPoints([[-1, -1], [1, -1], [1, 1], [-1, 1]].map(p => new THREE.Vector3(p[0], 0, p[1])));
+  scene.add(new THREE.LineLoop(rimG, new THREE.LineBasicMaterial({ color: new THREE.Color(COL.eigen), transparent: true, opacity: 0.7 })));
+  const grid = new THREE.GridHelper(7, 28, new THREE.Color(COL['rule-hi']), new THREE.Color(COL.rule)); grid.position.y = -1.05; scene.add(grid);
+  // eigenvector arrows: one stem per grid sample, plus the Laplacian's output
+  const GM = 14, mkSet = col => { const p = new Float32Array(GM * GM * 6), t = new Float32Array(GM * GM * 3); const lg = new THREE.BufferGeometry(), tg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(p, 3)); tg.setAttribute('position', new THREE.BufferAttribute(t, 3)); const L = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: new THREE.Color(col), transparent: true, opacity: 0.95, depthTest: false })); const P = new THREE.Points(tg, new THREE.PointsMaterial({ color: new THREE.Color(col), size: 0.055, depthTest: false })); L.renderOrder = P.renderOrder = 5; scene.add(L); scene.add(P); return { p, t, lg, tg, L, P }; };
+  const AV = mkSet(COL.eigen), AL = mkSet(COL.violet);
+  const vst = { vec: true, lap: true };
+  vecB.onclick = () => { vst.vec = !vst.vec; vecB.setAttribute('aria-pressed', String(vst.vec)); vecB.textContent = vst.vec ? 'Vector arrows: on' : 'Vector arrows: off'; };
+  lapB.onclick = () => { vst.lap = !vst.lap; lapB.setAttribute('aria-pressed', String(vst.lap)); lapB.textContent = vst.lap ? '∇² output: on' : '∇² output: off'; };
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.85); dl.position.set(2, 4, 3); scene.add(dl);
+
+  const su = [null]; for (let m = 1; m <= 6; m++) { const a = new Float32Array(S + 1); for (let i = 0; i <= S; i++) a[i] = Math.sin(m * Math.PI * i / S); su.push(a); }
+  const st = { m: 2, n: 3, sup: false, view: 'drum', playing: !REDUCE, tau: 0, az: 0.75, el: 0.62, drag: null };
+  const cI = new THREE.Color(COL.ice), cV = new THREE.Color(COL.violet), cE = new THREE.Color(COL.eigen), cB = new THREE.Color(COL['bay-2']);
+  const wc = 2 * Math.PI / 2.4 / Math.SQRT2, wq = 2 * Math.PI / 5 / 2;
+
+  function second() { return st.m < 5 ? [st.m + 1, st.n] : [st.m - 1, st.n]; }
+  function ui() {
+    setText($('#m3v'), `m ${st.m}`); setText($('#n3v'), `n ${st.n}`);
+    supBtn.setAttribute('aria-pressed', String(st.sup));
+    $$('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === st.view)));
+    const [m2, n2] = second(), q = st.m * st.m + st.n * st.n;
+    setText(rM, st.sup ? `(${st.m}, ${st.n}) + (${m2}, ${n2})` : `(${st.m}, ${st.n})`);
+    if (st.view === 'drum') {
+      setText(rQk, 'Pitch ÷ lowest');
+      setText(rQ, st.sup ? `${Math.sqrt(q / 2).toFixed(2)} and ${Math.sqrt((m2 * m2 + n2 * n2) / 2).toFixed(2)}` : `√(${q}/2) = ${Math.sqrt(q / 2).toFixed(3)}`);
+      setText(rS, st.sup ? 'two modes: nodes wander' : `${st.m - 1 + st.n - 1} nodal lines, all still`);
+    } else {
+      setText(rQk, 'Energy ÷ lowest');
+      setText(rQ, st.sup ? `${(q / 2).toFixed(1)} and ${((m2 * m2 + n2 * n2) / 2).toFixed(1)}` : `${q}/2 = ${(q / 2).toFixed(1)}`);
+      setText(rS, st.sup ? 'superposed: cloud sloshes' : 'stationary: cloud never moves');
+    }
+    rS.className = st.sup ? '' : 'eg';
+  }
+  const bump = (k, d) => { st[k] = clamp(st[k] + d, 1, 5); ui(); };
+  $('#m3d').onclick = () => bump('m', -1); $('#m3u').onclick = () => bump('m', 1);
+  $('#n3d').onclick = () => bump('n', -1); $('#n3u').onclick = () => bump('n', 1);
+  supBtn.onclick = () => { st.sup = !st.sup; st.tau = 0; ui(); };
+  $$('[data-view]').forEach(b => b.onclick = () => { st.view = b.dataset.view; ui(); });
+  playBtn.onclick = () => { st.playing = !st.playing; playLabel(playBtn, st.playing); };
+  playLabel(playBtn, st.playing); ui();
+
+  const cvs = renderer.domElement;
+  cvs.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; cvs.setPointerCapture(e.pointerId); cvs.style.cursor = 'grabbing'; });
+  cvs.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.4); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; cvs.style.cursor = 'grab'; };
+  cvs.addEventListener('pointerup', end); cvs.addEventListener('pointercancel', end);
+
+  function resize() { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); cvs.style.width = '100%'; cvs.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); }
+  new ResizeObserver(resize).observe(host); resize();
+
+  function frame(dt) {
+    if (st.playing) { st.tau += dt; if (!st.drag) st.az += dt * 0.06; }
+    const modes = st.sup ? [[st.m, st.n, 0.75], [...second(), 0.75]] : [[st.m, st.n, 1]];
+    const quantum = st.view === 'quantum';
+    const ph = modes.map(([m, n]) => quantum ? wq * (m * m + n * n) * st.tau : wc * Math.sqrt(m * m + n * n) * st.tau);
+    let mx = 0;
+    for (let j = 0; j <= S; j++) for (let i = 0; i <= S; i++) {
+      const k = j * (S + 1) + i;
+      let re = 0, im = 0;
+      for (let q = 0; q < modes.length; q++) {
+        const [m, n, a] = modes[q], f = a * su[m][i] * su[n][j];
+        re += f * Math.cos(ph[q]); if (quantum) im -= f * Math.sin(ph[q]);
+      }
+      const v = quantum ? re * re + im * im : re;
+      val[k] = v; mx = Math.max(mx, Math.abs(v));
+    }
+    const asum = modes.reduce((s, x) => s + x[2], 0);
+    const norm = quantum ? asum * asum : asum;
+    mx = mx || 1;
+    for (let k = 0; k < V; k++) {
+      const v = val[k];
+      pos[3 * k + 1] = quantum ? v / norm * 0.95 - 0.15 : v / norm * 0.55;
+      const nv = v / mx, base = nv >= 0 ? cI : cV, s = 0.16 + 0.84 * Math.abs(nv);
+      let r = cB.r + (base.r - cB.r) * s, g = cB.g + (base.g - cB.g) * s, b = cB.b + (base.b - cB.b) * s;
+      const qn = Math.exp(-(nv * nv) / (quantum ? 0.0016 : 0.0036)) * 0.95;
+      colA[3 * k] = r + (cE.r - r) * qn; colA[3 * k + 1] = g + (cE.g - g) * qn; colA[3 * k + 2] = b + (cE.b - b) * qn;
+    }
+    pAttr.needsUpdate = true; cAttr.needsUpdate = true; geo.computeVertexNormals();
+    // sampled vector and its discrete Laplacian
+    const G = +gS.value, hh = 1 / (G + 1); gO.value = `${G} × ${G}`;
+    const fv = [], f0 = [];
+    for (let j = 1; j <= G; j++) for (let i = 1; i <= G; i++) {
+      let r = 0, r0 = 0; const x = i * hh, y = j * hh;
+      for (let q = 0; q < modes.length; q++) { const [m, n, a] = modes[q], f = a * Math.sin(m * Math.PI * x) * Math.sin(n * Math.PI * y); r += f * Math.cos(ph[q]); r0 += f; }
+      fv.push(r); f0.push(r0);
+    }
+    const lapG = a => a.map((v, k) => { const i = k % G, j = (k - i) / G; const g = (ii, jj) => ii < 0 || jj < 0 || ii >= G || jj >= G ? 0 : a[jj * G + ii]; return (g(i - 1, j) + g(i + 1, j) + g(i, j - 1) + g(i, j + 1) - 4 * v) / (hh * hh); });
+    const L0 = lapG(f0); let num = 0, den = 0, aa = 0; f0.forEach((v, k) => { num += L0[k] * v; den += v * v; aa += L0[k] * L0[k]; });
+    const lam = den > 1e-12 ? num / den : 0, align = den > 1e-12 && aa > 0 ? Math.abs(num) / Math.sqrt(den * aa) : 0;
+    if (!st.sup && align > 0.999) { setText(rL, `−${Math.abs(lam).toFixed(1)} (exact −${(Math.PI * Math.PI * (st.m * st.m + st.n * st.n)).toFixed(1)})`); rL.className = 'eg'; }
+    else { setText(rL, 'no single λ: ∇²v is a new shape'); rL.className = ''; }
+    const LV = lapG(fv), base = quantum ? -0.15 : 0, sc = 0.55 / asum, off = Math.min(0.035, hh * 0.35);
+    const fill = (S2, arr, scale, dx, on) => { const cnt = G * G; for (let k = 0; k < cnt; k++) { const i = k % G, j = (k - i) / G, x = ((i + 1) * hh - 0.5) * 2 + dx, z = ((j + 1) * hh - 0.5) * 2, top = base + arr[k] * scale; S2.p.set([x, base, z, x, top, z], k * 6); S2.t.set([x, top, z], k * 3); } S2.lg.setDrawRange(0, cnt * 2); S2.tg.setDrawRange(0, cnt); S2.lg.attributes.position.needsUpdate = true; S2.tg.attributes.position.needsUpdate = true; S2.L.visible = S2.P.visible = on; };
+    fill(AV, fv, sc, vst.lap ? -off : 0, vst.vec);
+    fill(AL, LV, Math.abs(lam) > 1e-9 ? sc / Math.abs(lam) : 0, vst.vec ? off : 0, vst.lap && Math.abs(lam) > 1e-9);
+    const R = 3.7;
+    cam.position.set(R * Math.cos(st.el) * Math.sin(st.az), R * Math.sin(st.el), R * Math.cos(st.el) * Math.cos(st.az));
+    cam.lookAt(0, -0.12, 0);
+    renderer.render(scene, cam);
+  }
+  const Sg = { frame }; watch(host, Sg); stages.push(Sg);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

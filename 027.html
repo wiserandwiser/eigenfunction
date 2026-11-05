@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Fusion Power</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 027 colour code: pink = hot ions and fusion power, ice = electrons, magnetic fields and tunnelling, violet = where fusion actually happens. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp3{aspect-ratio:4/4.4}#vp2{aspect-ratio:4/5}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 027 · Breakthrough technology · 1 of 8</div>
+    <a class="navlink" href="026.html">← Φ 026</a>
+    <a class="navlink" href="028.html">Φ 028 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 027 · Breakthrough technology · 1 of 8</p>
+    <h1>fusion <span class="eig">power</span></h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · energy — <em>bottling a small star, and why it has taken 70 years</em></p>
+    <p class="thesis">Fuse two forms of hydrogen and you release about four times more energy per kilogram than splitting uranium, using deuterium from seawater and tritium bred from lithium, with no carbon and no long-lived waste. The catch: the fuel must be hotter than the Sun’s core and held together long enough to burn, inside a cage made of nothing but magnetic fields.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Plasma physics, energy engineering</dd></div>
+    <div><dt>Models</dt><dd>Why it takes 150 million degrees, the magnetic bottle, the Lawson criterion</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 1 of 8. Uses tunnelling (Φ 002) and stellar fusion (Φ 017).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>ions · fusion power</span><span class="key"><i style="background:var(--ice)"></i>electrons · fields</span><span class="key"><i style="background:var(--violet)"></i>where fusion happens</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="gamow">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Hotter than the Sun</span><h2>Why it takes 150 million degrees</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Two curves against collision energy: how many nuclei are moving that fast, falling steeply, and the chance of tunnelling through their electric repulsion, rising steeply. Their overlap is a narrow window where fusion happens. Below, the fusion rate against temperature."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="t1">Plasma temperature <input type="range" id="t1" min="0" max="1000" step="1" value="560"><output id="t1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Temperature</b><span id="r1k" class="eg">—</span></div>
+          <div class="ro"><b>Fusion happens at about</b><span id="r1g">—</span></div>
+          <div class="ro"><b>Fusion rate vs 150 million °C</b><span id="r1r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The easiest fusion reaction joins <strong>deuterium</strong> and <strong>tritium</strong>, two heavy forms of hydrogen, into helium and a fast neutron, releasing 17.6 MeV. Both nuclei are positively charged, so they repel. Pushing them close enough to touch would take energies of hundreds of keV.</p>
+        <p>Two things help. In a hot gas a few nuclei are moving much faster than average (pink). And nuclei don’t have to climb all the way over the barrier: they can <span class="i">tunnel</span> through it (Φ 002), with a chance that rises steeply with energy (ice). Multiply the two and you get a narrow window, the <span class="v">Gamow peak</span>, where almost all fusion happens.</p>
+        <p>The Sun’s core, at 15 million °C, gets away with being cooler because it is enormous and patient. On Earth we need fusion fast, which means around <strong>150 million °C</strong>, ten times hotter than the Sun’s core.</p>
+        <div class="task"><b>Try this</b>Lower the temperature to the Sun’s core and watch the fusion rate collapse. Then find where raising it stops helping.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">rate ∝ ∫ <var>e</var><sup>−<var>E</var>/<var>kT</var></sup> · <var>e</var><sup>−√(<var>E</var><sub>G</sub>/<var>E</var>)</sup> d<var>E</var>,&nbsp; <var>E</var><sub>0</sub> = (<var>E</var><sub>G</sub>(<var>kT</var>)²/4)<sup>1/3</sup>,&nbsp; <var>E</var><sub>G</sub> ≈ 1,180 keV for D–T</div>
+          <p>The lower graph is the measured D–T reactivity ⟨σ<var>v</var>⟩ (the Bosch–Hale fit). It peaks near 65 keV, but the best operating point for a power plant is lower, around 10–20 keV, because hotter plasma also costs more to confine. 1 keV ≈ 11.6 million °C.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="bottle">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The magnetic bottle</span><h2>A cage made of field lines</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Charged particles spiralling along magnetic field lines. In a straight tube they leak out of the ends. Bent into a ring they drift up and down into the wall. Add a twist to the field and they stay confined."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Magnetic field shape">
+            <button class="btn" type="button" data-cfg="tube">Straight tube</button>
+            <button class="btn" type="button" data-cfg="ring">Bent into a ring</button>
+            <button class="btn" type="button" data-cfg="tok" aria-pressed="true">Twisted ring · tokamak</button>
+          </div>
+          <button class="btn solo" type="button" id="re2">Restart</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Particles still confined</b><span id="r2c" class="eg">—</span></div>
+          <div class="ro"><b>How they escape</b><span id="r2h">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>No material wall survives 150 million degrees, so the plasma must not touch one. Charged particles in a magnetic field spiral tightly around the field lines and can’t easily cross them. That gives you a bottle, but a leaky one.</p>
+        <p>In a <strong>straight tube</strong> the particles simply run out of the ends. Bend the tube into a <strong>ring</strong> and there are no ends, but the field is stronger on the inside of the bend, which makes ions drift one way and electrons the other. The charges separate, an electric field builds up, and the whole plasma is pushed outward into the wall.</p>
+        <p>The fix, worked out by Soviet physicists in the 1950s, is to drive a current through the plasma itself so the field lines <strong>twist</strong> around the ring like stripes on a candy cane. Each particle then spends as much time above the centre as below it, and the drifts cancel. This is the <span class="i">tokamak</span>. Its cousin, the stellarator, gets the twist from intricately shaped coils instead.</p>
+        <div class="task"><b>Try this</b>Try each field shape in turn. Watch the cross-section on the right: in the plain ring the particles march off up and down; in the tokamak they circle on closed loops.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>m</var> d<strong>v</strong>/d<var>t</var> = <var>q</var> <strong>v</strong> × <strong>B</strong>,&nbsp; <var>v</var><sub>drift</sub> ≈ (<var>v</var><sub>∥</sub>² + ½<var>v</var><sub>⊥</sub>²) / (Ω<var>R</var>)</div>
+          <p>Each particle is pushed with the Boris method through a ring-shaped field falling off as 1/<var>R</var>, plus, for the tokamak, a twisting field from the plasma current (safety factor about 2). Particles are drawn hundreds of times larger than real, to make the spirals and drifts visible; real ions gyrate in millimetres inside a ring several metres across. The ring view shows only the vertical drift; the electric field that then flings the plasma outward is described, not simulated.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="lawson">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Getting more out than in</span><h2>The Lawson criterion</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="A map of plasma temperature against density times confinement time, with curves for break-even, a gain of ten, and ignition. Sliders move your plasma's point; a power bar compares fusion output with the heating needed."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="n3">Density <input type="range" id="n3" min="0" max="1000" step="1" value="500"><output id="n3o">—</output></label>
+          <label class="scrub" for="T3">Temperature <input type="range" id="T3" min="0" max="1000" step="1" value="520"><output id="T3o">—</output></label>
+          <label class="scrub" for="tau3">Energy confinement time <input type="range" id="tau3" min="0" max="1000" step="1" value="220"><output id="tau3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Triple product</b><span id="r3p">—</span></div>
+          <div class="ro"><b>Gain Q</b><span id="r3q" class="eg">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r3v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A plasma constantly leaks heat. To keep it hot you either keep heating it or let the fusion heat it. In D–T fusion a fifth of the energy comes out as helium nuclei that stay trapped and heat the plasma; the rest leaves as neutrons, which a power plant would catch to boil water.</p>
+        <p>In 1955 John Lawson worked out what it takes: the plasma must be <strong>hot</strong>, <strong>dense</strong> and <strong>well insulated</strong> (a long energy confinement time) all at once. Their product must pass about 3 × 10²¹ keV·s/m³. The gain <span class="a">Q</span> compares fusion power with the heating power you supply. Q = 1 is break-even; at <strong>ignition</strong> the plasma keeps itself hot.</p>
+        <p>In 2021 Britain’s JET tokamak produced 59 megajoules in five seconds, and in its final 2023 run, 69. In December 2022 the US National Ignition Facility, which crushes tiny fuel pellets with lasers instead of using magnets, got more fusion energy out of a pellet (3.15 MJ) than the laser light put in (2.05 MJ), the first time ever. ITER in France aims for Q = 10.</p>
+        <div class="task"><b>Try this</b>Start below break-even. Find a route to Q = 1, then to Q = 10, then to ignition. Which of the three knobs gives the most?</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>P</var><sub>fus</sub> = ¼ <var>n</var>² ⟨σ<var>v</var>⟩ <var>E</var><sub>fus</sub>,&nbsp; <var>P</var><sub>loss</sub> = 3<var>nT</var>/τ<sub>E</sub>,&nbsp; <var>Q</var> = <var>P</var><sub>fus</sub> / (<var>P</var><sub>loss</sub> − <var>P</var><sub>α</sub>)</div>
+          <p>A 50/50 D–T plasma with ion and electron temperatures equal, losing heat only through the confinement time; radiation and impurities are ignored, which makes this optimistic. <var>P</var><sub>α</sub> = <var>P</var><sub>fus</sub>/5. NIF’s gain compares fusion energy with laser light on target; the lasers themselves drew far more from the grid. Engineering gain for a whole power plant is a much tougher target.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Machines to know</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Culham, UK · 1983–2023</div><h3>JET</h3><p>The Joint European Torus, for decades the world’s most powerful tokamak. Its final deuterium–tritium run set the record for energy from a fusion experiment: 69 MJ.</p></div>
+      <div class="g"><div class="where">Cadarache, France</div><h3>ITER</h3><p>A 35-nation tokamak, the largest ever built, designed to produce 500 MW from 50 MW of heating. Delays have pushed full deuterium–tritium operation into the late 2030s.</p></div>
+      <div class="g"><div class="where">Massachusetts, USA</div><h3>SPARC</h3><p>A compact tokamak from Commonwealth Fusion Systems using high-temperature superconducting magnets (Φ 028) to get much stronger fields in a much smaller machine. It aims to show Q &gt; 1.</p></div>
+      <div class="g"><div class="where">Greifswald, Germany</div><h3>Wendelstein 7-X</h3><p>The most advanced stellarator, whose twisted coils were designed by supercomputer. It holds long pulses without needing a current driven through the plasma.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Fusion needs plasma that is <span class="a">hot, dense and well insulated</span> all at once; a twisted magnetic bottle can hold it, and the race now is to get much more energy out than goes in.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><span class="chip here">027 · Fusion power</span><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 027 · A star in a bottle · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* D–T reactivity ⟨σv⟩ in m³/s, Bosch & Hale (1992), T in keV (valid 0.2–100 keV) */
+function sigv(T) {
+  const BG = 34.3827, MRC2 = 1124656, C = [1.17302e-9, 1.51361e-2, 7.51886e-2, 4.60643e-3, 1.35e-2, -1.0675e-4, 1.366e-5];
+  const th = T / (1 - T * (C[1] + T * (C[3] + T * C[5])) / (1 + T * (C[2] + T * (C[4] + T * C[6]))));
+  const xi = Math.pow(BG * BG / (4 * th), 1 / 3);
+  return C[0] * th * Math.sqrt(xi / (MRC2 * T ** 3)) * Math.exp(-3 * xi) * 1e-6;
+}
+const KEV_MK = 11.6045; // million kelvin per keV
+const fmtMK = T => { const mk = T * KEV_MK; return mk >= 1000 ? `${(mk / 1000).toFixed(1)} billion °C` : `${Math.round(mk)} million °C`; };
+
+/* ---------- BAY 01: the Gamow peak ---------- */
+(function () {
+  const cv = $('#c1'), tS = $('#t1'), tO = $('#t1o');
+  const rK = $('#r1k'), rG = $('#r1g'), rR = $('#r1r');
+  const EG = 1182, Tof = v => Math.pow(10, Math.log10(1) + 2 * v / 1000); // 1–100 keV
+  const ref = sigv(150 / KEV_MK);
+  function frame() {
+    const T = Tof(+tS.value); tO.value = `${T.toFixed(T < 10 ? 1 : 0)} keV`;
+    const E0 = Math.pow(EG * T * T / 4, 1 / 3), rel = sigv(T) / ref;
+    setText(rK, `${fmtMK(T)} · ${T.toFixed(T < 10 ? 1 : 0)} keV`);
+    setText(rG, `${E0.toFixed(0)} keV collisions (${(E0 / T).toFixed(1)}× the average)`);
+    setText(rR, rel >= 0.01 ? `${rel.toFixed(rel < 1 ? 2 : 1)}×` : (([m, e]) => `${m} × 10${sup(+e)}`)(rel.toExponential(1).split('e')));
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    // top: the two factors vs energy
+    const gx = 44, gy = 22, gw = w - gx - 16, gh = h * 0.5 - 30, EM = 250;
+    const X = E => gx + E / EM * gw;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    const mx = E => Math.exp(-E / T), tu = E => Math.exp(-Math.sqrt(EG / E));
+    const pr = E => mx(E) * tu(E), pmax = pr(E0);
+    const line = (fn, col, wd, fill) => { ctx.beginPath(); for (let i = 1; i <= 300; i++) { const E = i / 300 * EM, y = gy + gh - Math.min(1, fn(E)) * (gh - 8); i > 1 ? ctx.lineTo(X(E), y) : ctx.moveTo(X(E), y); } if (fill) { ctx.lineTo(X(EM), gy + gh); ctx.lineTo(X(0), gy + gh); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); } else { ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.stroke(); ctx.lineWidth = 1; } };
+    line(E => pr(E) / pmax, null, 0, rgba(COL.violet, 0.35));
+    line(E => pr(E) / pmax, COL.violet, 1.6);
+    line(E => mx(E) / mx(1), COL.eigen, 2);
+    line(E => tu(E) / tu(EM), COL.ice, 2);
+    ctx.fillStyle = COL.eigen; ctx.fillText('nuclei moving this fast', X(Math.min(EM * 0.5, T * 2.2)) + 6, gy + 18);
+    ctx.fillStyle = COL.ice; ctx.textAlign = 'right'; ctx.fillText('chance to tunnel', gx + gw - 6, gy + 18); ctx.textAlign = 'left';
+    ctx.fillStyle = COL.violet; ctx.fillText('fusion happens here', Math.min(X(E0) + 8, w - 140), gy + gh * 0.42);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0, 50, 100, 150, 200, 250].forEach(E => ctx.fillText(String(E), X(E), gy + gh + 13)); ctx.fillText('COLLISION ENERGY (keV)', gx + gw / 2, gy + gh + 26); ctx.textAlign = 'left';
+    // bottom: reactivity vs temperature
+    const by = gy + gh + 44, bh = h - by - 26;
+    const XT = t => gx + Math.log10(t) / 2 * gw, L0 = -26, L1 = -21, YS = s => by + bh - (Math.log10(s) - L0) / (L1 - L0) * bh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, by + 0.5, gw, bh);
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 200; i++) { const t = Math.pow(10, 2 * i / 200), y = Math.max(by, YS(sigv(t))); i ? ctx.lineTo(XT(t), y) : ctx.moveTo(XT(t), y); } ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(XT(T), Math.max(by, YS(sigv(T))), 4.5, 0, Math.PI * 2); ctx.fill();
+    [[1.3, 'Sun’s core'], [13, '150 M°C']].forEach(([t, l]) => { ctx.strokeStyle = rgba(COL.ink, 0.25); ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(XT(t), by); ctx.lineTo(XT(t), by + bh); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = COL['ink-3']; ctx.fillText(l, XT(t) + 4, by + bh - 6); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('D–T FUSION RATE ⟨σv⟩ · LOG SCALE', gx + 6, by + 14);
+    ctx.textAlign = 'center'; [1, 10, 100].forEach(t => ctx.fillText(`${t} keV`, XT(t) + (t === 1 ? 14 : t === 100 ? -18 : 0), by + bh + 13)); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: the magnetic bottle ---------- */
+(function () {
+  const cv = $('#c2'), reB = $('#re2');
+  const rC = $('#r2c'), rH = $('#r2h');
+  const R0 = 1, A = 0.35, K = 40, DT = 0.002, NP = 16, TUBE = 2;
+  const st = { cfg: 'tok', P: [], t: 0 };
+  const HOW = { tube: 'out of the open ends, along the field', ring: 'ions drift up, electrons down, into the wall', tok: 'they don’t: the twist cancels the drift' };
+  function field(x, y, z) {
+    if (st.cfg === 'tube') return [1, 0, 0];
+    const R = Math.hypot(x, y), bp = R0 / R, ph = [-y / R, x / R];
+    let Bx = bp * ph[0], By = bp * ph[1], Bz = 0;
+    if (st.cfg === 'tok') { const dR = R - R0, r = Math.hypot(dR, z) + 1e-9, bt = r / (2 * R0); const BR = -bt * z / r, BZ = bt * dR / r; Bx += BR * x / R; By += BR * y / R; Bz += BZ; }
+    return [Bx, By, Bz];
+  }
+  function setup() {
+    st.P = []; st.t = 0;
+    for (let i = 0; i < NP; i++) {
+      const s = i % 2 ? -1 : 1, r = 0.04 + Math.random() * 0.08, th = Math.random() * 6.283, u = Math.random() * 2 - 1, phv = Math.random() * 6.283, sq = Math.sqrt(1 - u * u);
+      const v = [sq * Math.cos(phv), sq * Math.sin(phv), u];
+      if (st.cfg === 'tube') st.P.push({ s, x: (Math.random() - 0.5) * 0.6, y: r * Math.cos(th), z: r * Math.sin(th), v, alive: true, tr: [] });
+      else { const ang = Math.random() * 6.283, R = R0 + r * Math.cos(th); st.P.push({ s, x: R * Math.cos(ang), y: R * Math.sin(ang), z: r * Math.sin(th), v, alive: true, tr: [], cs: [] }); }
+    }
+  }
+  $$('[data-cfg]').forEach(b => b.addEventListener('click', () => { st.cfg = b.dataset.cfg; $$('[data-cfg]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); setup(); }));
+  reB.addEventListener('click', setup);
+  setup();
+  function push(p) {
+    const B = field(p.x, p.y, p.z), q = p.s * K * DT / 2, t = [B[0] * q, B[1] * q, B[2] * q], t2 = t[0] ** 2 + t[1] ** 2 + t[2] ** 2, s = t.map(c => 2 * c / (1 + t2)), v = p.v;
+    const vp = [v[0] + v[1] * t[2] - v[2] * t[1], v[1] + v[2] * t[0] - v[0] * t[2], v[2] + v[0] * t[1] - v[1] * t[0]];
+    p.v = [v[0] + vp[1] * s[2] - vp[2] * s[1], v[1] + vp[2] * s[0] - vp[0] * s[2], v[2] + vp[0] * s[1] - vp[1] * s[0]];
+    p.x += p.v[0] * DT; p.y += p.v[1] * DT; p.z += p.v[2] * DT;
+    if (st.cfg === 'tube') { if (Math.abs(p.x) > TUBE) p.alive = false; }
+    else if (Math.hypot(Math.hypot(p.x, p.y) - R0, p.z) > A) p.alive = false;
+  }
+  function frame(dt) {
+    const steps = REDUCE ? 0 : Math.round(dt * 2.6 / DT);
+    for (let k = 0; k < steps; k++) st.P.forEach(p => { if (p.alive) push(p); });
+    st.t += steps * DT;
+    st.P.forEach(p => { if (!p.alive) return; p.tr.push([p.x, p.y, p.z]); if (p.tr.length > 260) p.tr.shift(); if (st.cfg !== 'tube') { p.cs.push([Math.hypot(p.x, p.y) - R0, p.z]); if (p.cs.length > 700) p.cs.shift(); } });
+    const alive = st.P.filter(p => p.alive).length;
+    setText(rC, `${alive} of ${NP}`); setText(rH, HOW[st.cfg]);
+    if (alive === 0 && !st.dead) st.dead = st.t; if (st.dead && st.t - st.dead > 4) { st.dead = 0; setup(); }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, lw = narrow ? w : w * 0.6, lh = narrow ? h * 0.55 : h;
+    const col = p => p.s > 0 ? COL.eigen : COL.ice;
+    // left: overview
+    if (st.cfg === 'tube') {
+      const sc = Math.min(lw / (2 * TUBE + 1), lh / 1.4), cx = lw / 2, cy = lh / 2, X = x => cx + x * sc, Y = z => cy - z * sc;
+      ctx.strokeStyle = rgba(COL.ice, 0.35); ctx.strokeRect(X(-TUBE), Y(A), 2 * TUBE * sc, 2 * A * sc);
+      for (let k = -2; k <= 2; k++) { ctx.strokeStyle = rgba(COL.ice, 0.12); ctx.beginPath(); ctx.moveTo(X(-TUBE - 0.4), Y(k * A / 2.5)); ctx.lineTo(X(TUBE + 0.4), Y(k * A / 2.5)); ctx.stroke(); }
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('open end', X(-TUBE) - 4, Y(A) - 8); ctx.fillText('open end', X(TUBE) - 50, Y(A) - 8);
+      st.P.forEach(p => { ctx.strokeStyle = rgba(col(p), p.alive ? 0.7 : 0.15); ctx.beginPath(); p.tr.forEach(([x, , z], i) => i ? ctx.lineTo(X(x), Y(z)) : ctx.moveTo(X(x), Y(z))); ctx.stroke(); if (p.alive) { ctx.fillStyle = col(p); ctx.beginPath(); ctx.arc(X(p.x), Y(p.z), 3, 0, Math.PI * 2); ctx.fill(); } });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('SIDE VIEW · FIELD LINES RUN LEFT ↔ RIGHT', 14, 18);
+    } else {
+      const sc = Math.min(lw, lh) / 2 / (R0 + A + 0.15), cx = lw / 2, cy = lh / 2, X = x => cx + x * sc, Y = y => cy - y * sc;
+      ctx.strokeStyle = rgba(COL.ice, 0.3); ctx.lineWidth = 1; [R0 - A, R0 + A].forEach(r => { ctx.beginPath(); ctx.arc(cx, cy, r * sc, 0, Math.PI * 2); ctx.stroke(); });
+      ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.arc(cx, cy, R0 * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      st.P.forEach(p => { if (!p.alive) return; ctx.strokeStyle = rgba(col(p), 0.6); ctx.beginPath(); p.tr.forEach(([x, y], i) => i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.stroke(); ctx.fillStyle = col(p); ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 3, 0, Math.PI * 2); ctx.fill(); });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('TOP VIEW OF THE RING', 14, 18);
+      // right: poloidal cross-section
+      const rx = narrow ? 0 : lw, ry = narrow ? lh : 0, rw = narrow ? w : w - lw, rh = narrow ? h - lh : h;
+      const ps = Math.min(rw, rh) / 2 / (A * 1.25), pcx = rx + rw / 2, pcy = ry + rh / 2 + 6;
+      ctx.strokeStyle = rgba(COL.ice, 0.5); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(pcx, pcy, A * ps, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
+      st.P.forEach(p => { if (!p.alive) return; ctx.strokeStyle = rgba(col(p), 0.5); ctx.beginPath(); p.cs.forEach(([dr, z], i) => i ? ctx.lineTo(pcx + dr * ps, pcy - z * ps) : ctx.moveTo(pcx + dr * ps, pcy - z * ps)); ctx.stroke(); const dr = Math.hypot(p.x, p.y) - R0; ctx.fillStyle = col(p); ctx.beginPath(); ctx.arc(pcx + dr * ps, pcy - p.z * ps, 3, 0, Math.PI * 2); ctx.fill(); });
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('CROSS-SECTION · WALL', rx + 14, ry + 18); ctx.fillText('↑ up', pcx - 12, pcy - A * ps - 8 < ry + 30 ? ry + 32 : pcy - A * ps - 8);
+      ctx.fillText('outside →', pcx + A * ps - 40, pcy + A * ps + 16 > ry + rh - 4 ? ry + rh - 6 : pcy + A * ps + 16);
+    }
+    ctx.fillStyle = COL.eigen; ctx.fillText('● ion', w - 110, h - 10); ctx.fillStyle = COL.ice; ctx.fillText('● electron', w - 70 > 0 ? w - 66 : 0, h - 10);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: Lawson and the gain Q ---------- */
+(function () {
+  const cv = $('#c3'), nS = $('#n3'), nO = $('#n3o'), TS = $('#T3'), TO = $('#T3o'), tS = $('#tau3'), tO = $('#tau3o');
+  const rP = $('#r3p'), rQ = $('#r3q'), rV = $('#r3v');
+  const KEV = 1.602e-16, EF = 17.6e3 * KEV;
+  const lg = (v, a, b) => Math.pow(10, a + (b - a) * v / 1000);
+  const ntau = (T, Q) => 12 * T * KEV / (sigv(T) * EF * (1 / Q + 0.2)); // n·τ for a given Q (Q = Infinity gives ignition)
+  function frame() {
+    const n = lg(+nS.value, 19, 21), T = lg(+TS.value, 0, 2), tau = lg(+tS.value, -1.5, 1.5);
+    nO.value = `${(n / 1e20).toFixed(n < 1e20 ? 2 : 1)} × 10²⁰ /m³`; TO.value = `${T.toFixed(T < 10 ? 1 : 0)} keV`; tO.value = `${tau < 1 ? tau.toFixed(2) : tau.toFixed(1)} s`;
+    const Pf = 0.25 * n * n * sigv(T) * EF, Pl = 3 * n * T * KEV / tau, Pa = Pf / 5, Ph = Pl - Pa, Q = Ph <= 0 ? Infinity : Pf / Ph;
+    const tp = n * T * tau;
+    setText(rP, `${(tp / 1e21).toFixed(2)} × 10²¹ keV·s/m³`);
+    setText(rQ, Q === Infinity ? 'ignited' : Q < 0.01 ? Q.toExponential(1) : Q.toFixed(Q < 10 ? 2 : 0));
+    setText(rV, Q === Infinity ? 'self-heating: a burning plasma' : Q >= 10 ? 'ITER-class gain' : Q >= 1 ? 'past break-even' : Q >= 0.1 ? 'close: JET reached about 0.67' : 'far below break-even');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, gx = 58, gy = 22, gw = (narrow ? w : w * 0.72) - gx - 12, gh = h - gy - 44;
+    const XT = t => gx + Math.log10(t) / 2 * gw, L0 = 18, L1 = 22.5, YN = v => gy + gh - (Math.log10(v) - L0) / (L1 - L0) * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [18, 19, 20, 21, 22].forEach(e => ctx.fillText(`10${sup(e)}`, gx - 6, YN(10 ** e) + 4)); ctx.textAlign = 'center';
+    [1, 3, 10, 30, 100].forEach(t => ctx.fillText(`${t}`, XT(t), gy + gh + 14)); ctx.fillText('TEMPERATURE (keV)', gx + gw / 2, gy + gh + 30); ctx.textAlign = 'left';
+    ctx.fillText('DENSITY × CONFINEMENT TIME (s/m³)', gx + 6, gy + 14);
+    // shade the ignition region
+    ctx.beginPath(); for (let i = 0; i <= 120; i++) { const t = Math.pow(10, 2 * i / 120), y = Math.max(gy, YN(ntau(t, Infinity))); i ? ctx.lineTo(XT(t), y) : ctx.moveTo(XT(t), y); } ctx.lineTo(XT(100), gy); ctx.lineTo(XT(1), gy); ctx.closePath(); ctx.fillStyle = rgba(COL.eigen, 0.08); ctx.fill();
+    [[1, COL.ice, 'Q = 1 · break-even'], [10, COL.violet, 'Q = 10 · ITER goal'], [Infinity, COL.eigen, 'ignition']].forEach(([Qc, c, l], k) => {
+      ctx.strokeStyle = c; ctx.lineWidth = 1.6; ctx.beginPath(); let started = false;
+      for (let i = 0; i <= 160; i++) { const t = Math.pow(10, 2 * i / 160), y = YN(ntau(t, Qc)); if (y < gy || y > gy + gh) { started = false; continue; } started ? ctx.lineTo(XT(t), y) : ctx.moveTo(XT(t), y); started = true; }
+      ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = c; ctx.fillText(l, XT([3.2, 2.4, 1.8][k]) + 6, Math.max(gy + 30, YN(ntau([3.2, 2.4, 1.8][k], Qc))));
+    });
+    const px = XT(T), py = clamp(YN(n * tau), gy, gy + gh);
+    ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL.ink; ctx.fillText('your plasma', Math.min(px + 10, gx + gw - 80), py - 8);
+    // power bars
+    if (!narrow) {
+      const bx = w * 0.72 + 14, bw = w - bx - 16, top = gy + 20, bh2 = gh - 40, mx = Math.max(Pf, Ph > 0 ? Ph : 0, 1);
+      const bar = (i, v, c, l) => { const hh = Math.min(1, v / mx) * bh2, x = bx + i * (bw / 2) + 6; ctx.fillStyle = c; ctx.fillRect(x, top + bh2 - hh, bw / 2 - 12, hh); ctx.fillStyle = COL['ink-2']; ctx.fillText(l, x, top + bh2 + 14); };
+      bar(0, Math.max(0, Ph), rgba(COL.ice, 0.8), 'heating in'); bar(1, Pf, rgba(COL.eigen, 0.9), 'fusion out');
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('POWER PER m³', bx + 6, gy + 8);
+    }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

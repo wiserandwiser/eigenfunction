@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Entanglement</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 010 colour code: pink = up, violet = down, ice = the two labs. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/3.6}}
+h1 .eig{transform:none}
+h1 .tie{display:inline-block;width:.5em;height:.06em;background:var(--eigen);vertical-align:.3em;margin:0 .06em}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 010 · Quantum series · 4 of 10</div>
+    <a class="navlink" href="009.html">← Φ 009</a>
+    <a class="navlink" href="011.html">Φ 011 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 010 · Quantum series · 4 of 10</p>
+    <h1>entangle<span class="tie" aria-hidden="true"></span><span class="eig">ment</span></h1>
+    <p class="gloss">QUANTUM · entanglement — <em>two particles sharing one state, so their answers stay linked however far apart they are</em></p>
+    <p class="thesis">Measure one particle of an entangled pair and you instantly know something about its twin, light-years away. That alone could be pre-arranged, like a pair of gloves. In 1964 John Bell found a test that tells the difference, and nature fails the gloves.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Quantum foundations → quantum information</dd></div>
+    <div><dt>Models</dt><dd>Linked measurements, Bell’s game, a test for faster-than-light messages</dd></div>
+    <div><dt>Series</dt><dd>Quantum, 4 of 10. Builds on spin (Φ 009).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>up</span><span class="key"><i style="background:var(--violet)"></i>down</span><span class="key"><i style="background:var(--ice)"></i>the two labs</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="pairs">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Linked answers</span><h2>Two labs, one shared answer</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A source in the middle sends entangled pairs to Alice on the left and Bob on the right. Each measures spin along a dial angle. Their results stream out as two rows of marks."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="a1">Alice’s angle <input type="range" id="a1" min="0" max="180" step="1" value="0"><output id="a1o">0°</output></label>
+          <label class="scrub" for="b1">Bob’s angle <input type="range" id="b1" min="0" max="180" step="1" value="0"><output id="b1o">0°</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Alice gets up</b><span id="r1a">—</span></div>
+          <div class="ro"><b>Bob gets up</b><span id="r1b">—</span></div>
+          <div class="ro"><b>Same answer</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Quantum prediction</b><span id="r1p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A source emits pairs of particles in a special shared spin state. One flies to Alice, the other to Bob. Each measures spin along an angle they choose, just like the analysers in Φ 009.</p>
+        <p>On their own, each person’s results look like coin tosses: up half the time, down half the time, with no pattern. But compare the two lists. With both dials at the same angle, the answers are <strong>always opposite</strong>. Every single time, at any distance.</p>
+        <p>Turn one dial and the link loosens smoothly. At 90° apart the answers agree half the time, and at 180° they always match.</p>
+        <p>Einstein called this “spooky action at a distance” and thought it meant quantum theory was incomplete. Perhaps each pair simply carries hidden instructions, decided at the source, like a pair of gloves split into two boxes. Open one, find a left glove, and you know the other is right. Nothing spooky. Bay 02 tests that idea.</p>
+        <div class="task"><b>Try this</b>Set both dials equal: always opposite. Now turn Bob’s dial and watch the “same answer” share climb along a smooth curve.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">|<var>ψ</var>⟩ = <span class="frac"><span>1</span><span>√2</span></span><span style="font-size:.8em">(</span>|↑↓⟩ − |↓↑⟩<span style="font-size:.8em">)</span>,&nbsp; <var>P</var>(same) = sin²<span style="font-size:.8em">(</span><span class="frac"><span><var>a</var> − <var>b</var></span><span>2</span></span><span style="font-size:.8em">)</span></div>
+          <p>The singlet state. Neither particle has a spin of its own, only the pair does. The correlation between results is <var>E</var>(<var>a</var>, <var>b</var>) = −cos(<var>a</var> − <var>b</var>), where up = +1 and down = −1. The model draws each of Alice’s results at random and Bob’s from these joint odds.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="bell">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Bell’s test</span><h2>A game that hidden instructions can’t win</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Four correlation bars for the four setting combinations, a Bell score gauge with the classical limit at 2 and the quantum value at 2.83, and a win-rate readout."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="What the source sends">
+            <button class="btn eg" type="button" data-m2="q" aria-pressed="true">Entangled pairs</button>
+            <button class="btn" type="button" data-m2="h" aria-pressed="false">Hidden instructions</button>
+          </div>
+          <label class="scrub" for="rate2">Rounds per second <input type="range" id="rate2" min="0" max="1000" step="1" value="780"><output id="rate2o">—</output></label>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="clr2">Restart the tally</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Rounds played</b><span id="r2n">0</span></div>
+          <div class="ro"><b>Bell score S</b><span id="r2s" class="eg">—</span></div>
+          <div class="ro"><b>Win rate</b><span id="r2w">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r2v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Bell’s idea turns the experiment into a game. In each round, Alice randomly picks one of two angles and Bob randomly picks one of two angles, too late for any signal to pass between them. Then they compare results.</p>
+        <p>Combine the four correlations into a single number, the <strong>Bell score S</strong>. Bell proved that if each pair carries pre-set hidden instructions, however clever, S can never exceed <strong>2</strong>. Equivalently, the CHSH version of the game can be won at most 75% of the time.</p>
+        <p>Switch the source to <strong>hidden instructions</strong>: each pair carries a secret angle that decides both answers, the best strategy of this kind. It tops out right at 2. Switch back to <span class="a">entangled pairs</span> and the score climbs to about <strong>2.83</strong>, winning 85% of rounds. No pre-arranged plan can do that.</p>
+        <p>Real experiments agree with quantum mechanics. In 2015 three groups (Delft, Vienna and Boulder) closed the remaining loopholes. The 2022 Nobel Prize went to Alain Aspect, John Clauser and Anton Zeilinger for this line of experiments. The particles have no pre-set answers, yet their answers stay linked.</p>
+        <div class="task"><b>Try this</b>Let a few thousand rounds run with each source. Watch the hidden-instruction score settle onto the line at 2 and never cross it, while entangled pairs sit well above.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>S</var> = |<var>E</var>(<var>a</var>, <var>b</var>) + <var>E</var>(<var>a</var>, <var>b</var>′) + <var>E</var>(<var>a</var>′, <var>b</var>) − <var>E</var>(<var>a</var>′, <var>b</var>′)| ≤ 2</div>
+          <p>The CHSH inequality (1969), for any local hidden-variable model. Settings: <var>a</var> = 0°, <var>a</var>′ = 90°, <var>b</var> = 45°, <var>b</var>′ = −45°. Quantum mechanics gives 2√2 ≈ 2.83, Tsirelson’s bound. The win rate is ½ + <var>S</var>/8. The hidden-instruction model gives each pair a random angle <var>λ</var>, with <var>A</var> = sign cos(<var>a</var> − <var>λ</var>) and <var>B</var> = −sign cos(<var>b</var> − <var>λ</var>).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="nosignal">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">No messages</span><h2>Why you still can’t phone faster than light</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Bob's results alone, always a random 50/50, whatever Alice does. A Compare notes button lines up both lists and reveals the hidden pattern."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Alice">
+            <button class="btn" type="button" data-al3="0" aria-pressed="true">Alice measures at 0°</button>
+            <button class="btn" type="button" data-al3="90" aria-pressed="false">Alice measures at 90°</button>
+            <button class="btn" type="button" data-al3="off" aria-pressed="false">Alice does nothing</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn solo" type="button" id="cmp3" style="color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 55%,transparent)">Compare notes</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Bob sees up</b><span id="r3b">—</span></div>
+          <div class="ro"><b>Message Bob receives</b><span id="r3m">—</span></div>
+          <div class="ro"><b>After comparing notes</b><span id="r3c" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>If Alice’s measurement instantly affects what Bob can find, can she use it to send him a message faster than light? Try it. Alice can choose her angle, or not measure at all. Bob, on his own, measures at 0°.</p>
+        <p>Whatever Alice does, Bob sees a perfectly random 50/50 stream. Her choice changes nothing he can detect. The link only shows up when they <strong>compare notes</strong>, and comparing notes needs an ordinary signal, travelling at light speed or slower.</p>
+        <p>So entanglement is real and nonlocal, but it can’t carry a message. Nature keeps the speed limit by making each side’s results look perfectly random on their own.</p>
+        <p>That randomness is useful. In 2017 China’s Micius satellite sent entangled photons to two ground stations 1,200 kilometres apart and confirmed the link still held. Φ 011 and 016 show how entanglement teleports quantum states and secures keys.</p>
+        <div class="task"><b>Try this</b>Switch Alice between her three options while watching Bob’s share. It never budges. Then press Compare notes.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>ρ</var><sub>Bob</sub> = Tr<sub>Alice</sub> |<var>ψ</var>⟩⟨<var>ψ</var>| = <span class="frac"><span><var>I</var></span><span>2</span></span></div>
+          <p>Bob’s own state is maximally mixed whatever Alice does: the no-signalling theorem. His odds of up are ½ along every axis. Information only appears in the joint statistics, which need classical communication to assemble.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>From paradox to technology</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1935 → 1964</div><h3>EPR and Bell</h3><p>Einstein, Podolsky and Rosen argued that entanglement showed quantum theory must be incomplete. Three decades later John Bell turned their philosophical argument into a number that could be measured.</p></div>
+      <div class="g"><div class="where">2016 · The Big Bell Test</div><h3>Settings chosen by people</h3><p>About 100,000 volunteers worldwide played an online game, and their keystrokes chose the measurement settings in labs on five continents. Even with human choices, nature still violated Bell’s limit.</p></div>
+      <div class="g"><div class="where">Space</div><h3>Entanglement from orbit</h3><p>The Micius satellite distributed entangled photon pairs over 1,200 kilometres. It is a step towards a quantum internet that links quantum computers and sensors.</p></div>
+      <div class="g"><div class="where">Certified randomness</div><h3>Randomness you can prove</h3><p>A Bell violation guarantees the results weren’t pre-scripted. Labs now use this to generate random numbers whose unpredictability is certified by physics, not just trusted.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Entangled particles have no answers of their own until measured, yet their answers stay <span class="a">linked</span>. No hidden plan can match the link, and no message can ride on it.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><span class="chip here">010 · Entanglement</span><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 010 · Entanglement · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const DEG = Math.PI / 180;
+function pairQ(a, b) { const A = Math.random() < 0.5 ? 1 : -1; const same = Math.random() < Math.sin((a - b) * DEG / 2) ** 2; return [A, same ? A : -A]; }
+function pairH(a, b) { const l = Math.random() * 2 * Math.PI; return [Math.sign(Math.cos(a * DEG - l)) || 1, -(Math.sign(Math.cos(b * DEG - l)) || 1)]; }
+function lab(ctx, x, y, r, ang, name, col) {
+  ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+  if (ang != null) { const t = ang * DEG; ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x - r * 0.8 * Math.sin(t), y + r * 0.8 * Math.cos(t)); ctx.lineTo(x + r * 0.8 * Math.sin(t), y - r * 0.8 * Math.cos(t)); ctx.stroke(); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + r * 0.8 * Math.sin(t), y - r * 0.8 * Math.cos(t), 3, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(name + (ang != null ? ` · ${ang}°` : ''), x, y + r + 16); ctx.textAlign = 'left';
+}
+function tape(ctx, x, y, w, list, idx, label) {
+  ctx.fillStyle = COL['ink-3']; ctx.fillText(label, x, y - 6);
+  const n = Math.min(list.length, Math.floor(w / 6)), start = list.length - n;
+  for (let k = 0; k < n; k++) { const v = list[start + k][idx]; ctx.fillStyle = v > 0 ? COL.eigen : COL.violet; ctx.fillRect(x + k * 6, y, 4, 14); }
+}
+
+/* ---------- BAY 01 ---------- */
+(function () {
+  const cv = $('#c1'), aS = $('#a1'), bS = $('#b1'), aO = $('#a1o'), bO = $('#b1o');
+  const rA = $('#r1a'), rB = $('#r1b'), rS = $('#r1s'), rP = $('#r1p');
+  const st = { list: [], fly: [], acc: 0 };
+  const reset = () => { st.list = []; aO.value = `${aS.value}°`; bO.value = `${bS.value}°`; };
+  aS.addEventListener('input', reset); bS.addEventListener('input', reset); reset();
+  if (REDUCE) for (let k = 0; k < 400; k++) st.list.push(pairQ(+aS.value, +bS.value));
+  function frame(dt) {
+    const a = +aS.value, b = +bS.value;
+    if (!REDUCE) { st.acc += dt * 8; while (st.acc >= 1) { st.fly.push({ t: 0, r: pairQ(a, b) }); st.acc -= 1; } }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const cy = h * 0.32, R = Math.min(34, w * 0.07), ax = 20 + R, bx = w - 20 - R, sx = w / 2;
+    ctx.fillStyle = COL['bay-2']; ctx.strokeStyle = COL['ink-3']; ctx.beginPath(); ctx.arc(sx, cy, 12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText('SOURCE', sx, cy + 28); ctx.textAlign = 'left';
+    for (let k = st.fly.length - 1; k >= 0; k--) {
+      const f = st.fly[k]; f.t += dt * 1.3;
+      if (f.t >= 1) { st.list.push(f.r); st.fly.splice(k, 1); continue; }
+      const xl = sx - (sx - ax - R) * f.t, xr = sx + (bx - R - sx) * f.t;
+      ctx.strokeStyle = rgba(COL.eigen, 0.25); ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(xl, cy); ctx.lineTo(xr, cy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(xl, cy, 3, 0, Math.PI * 2); ctx.arc(xr, cy, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    lab(ctx, ax, cy, R, a, 'ALICE', COL.ice); lab(ctx, bx, cy, R, b, 'BOB', COL.ice);
+    const ty = h * 0.62, tw = w - 40;
+    tape(ctx, 20, ty, tw, st.list, 0, 'ALICE’S RESULTS');
+    tape(ctx, 20, ty + 40, tw, st.list, 1, 'BOB’S RESULTS');
+    // same/different marks
+    const n = Math.min(st.list.length, Math.floor(tw / 6)), s0 = st.list.length - n;
+    for (let k = 0; k < n; k++) { const [A, B] = st.list[s0 + k]; ctx.fillStyle = A === B ? COL.eigen : rgba(COL['ink-3'], 0.5); ctx.fillRect(20 + k * 6 + 1, ty + 64, 2, A === B ? 8 : 3); }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('tall mark = same answer', 20, ty + 88);
+    const N = st.list.length; let au = 0, bu = 0, same = 0; for (const [A, B] of st.list) { if (A > 0) au++; if (B > 0) bu++; if (A === B) same++; }
+    setText(rA, N ? `${Math.round(au / N * 100)}%` : '—'); setText(rB, N ? `${Math.round(bu / N * 100)}%` : '—');
+    setText(rS, N ? `${Math.round(same / N * 100)}% of ${N}` : '—'); setText(rP, `${Math.round(Math.sin((a - b) * DEG / 2) ** 2 * 100)}% same`);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: CHSH ---------- */
+(function () {
+  const cv = $('#c2'), rateS = $('#rate2'), rateO = $('#rate2o');
+  const rN = $('#r2n'), rS = $('#r2s'), rW = $('#r2w'), rV = $('#r2v');
+  const SET = [[0, 45], [0, -45], [90, 45], [90, -45]], SIGN = [1, 1, 1, -1];
+  const st = { mode: 'q', sum: [0, 0, 0, 0], cnt: [0, 0, 0, 0], acc: 0, hist: [] };
+  const rate = () => Math.pow(10, 0.5 + 3 * +rateS.value / 1000);
+  function reset() { st.sum = [0, 0, 0, 0]; st.cnt = [0, 0, 0, 0]; st.hist = []; }
+  $$('[data-m2]').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.m2; reset(); $$('[data-m2]').forEach(x => { x.setAttribute('aria-pressed', String(x === b)); x.classList.toggle('eg', x === b && b.dataset.m2 === 'q'); }); }));
+  $('#clr2').addEventListener('click', reset);
+  function round() { const k = Math.floor(Math.random() * 4), [a, b] = SET[k], [A, B] = st.mode === 'q' ? pairQ(a, b) : pairH(a, b); st.sum[k] += A * B; st.cnt[k]++; }
+  const score = () => { let S = 0; for (let k = 0; k < 4; k++) if (st.cnt[k]) S += SIGN[k] * st.sum[k] / st.cnt[k]; return Math.abs(S); };
+  if (REDUCE) for (let k = 0; k < 20000; k++) round();
+  function frame(dt) {
+    const r = rate(); rateO.value = r < 100 ? r.toFixed(0) : Math.round(r).toLocaleString('en-US');
+    if (!REDUCE) { st.acc += r * dt; let g = 0; while (st.acc >= 1 && g++ < 20000) { round(); st.acc -= 1; } }
+    const N = st.cnt.reduce((a, b) => a + b, 0), S = score();
+    if (N > 40) { st.hist.push(S); if (st.hist.length > 500) st.hist.shift(); }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560;
+    // four correlation bars
+    const bx = 16, bw = narrow ? w - 32 : w * 0.46, by = 34, bh = narrow ? h * 0.36 : h - 70;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('CORRELATION FOR EACH PAIR OF SETTINGS', bx, by - 14);
+    const mid = by + bh / 2, cw = bw / 4;
+    ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(bx, mid); ctx.lineTo(bx + bw, mid); ctx.stroke();
+    for (let k = 0; k < 4; k++) {
+      const E = st.cnt[k] ? st.sum[k] / st.cnt[k] : 0, x = bx + k * cw + cw * 0.2, ww = cw * 0.6;
+      const eq = -Math.cos((SET[k][0] - SET[k][1]) * DEG), d = Math.abs(SET[k][0] - SET[k][1]) * DEG, eh = -(1 - 2 * Math.min(d, 2 * Math.PI - d) / Math.PI);
+      ctx.fillStyle = rgba(E >= 0 ? COL.eigen : COL.violet, 0.8); ctx.fillRect(x, mid - Math.max(0, E) * bh / 2, ww, Math.abs(E) * bh / 2);
+      ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 4, mid - eq * bh / 2); ctx.lineTo(x + ww + 4, mid - eq * bh / 2); ctx.stroke();
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = COL['ink-2']; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - 4, mid - eh * bh / 2); ctx.lineTo(x + ww + 4, mid - eh * bh / 2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(`${SET[k][0]}° · ${SET[k][1]}°`, x + ww / 2, by + bh + 14); ctx.textAlign = 'left';
+    }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('— quantum   - - best hidden plan', bx, by + bh + 30);
+    // S over time
+    const gx = narrow ? 16 : bx + bw + 30, gy = narrow ? by + bh + 56 : by, gw = narrow ? w - 32 : w - gx - 16, gh = narrow ? h - gy - 20 : bh;
+    const SMIN = 1, SMAX = 3.2, Y = s => gy + (SMAX - clamp(s, SMIN, SMAX)) / (SMAX - SMIN) * gh;
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('BELL SCORE S', gx, gy - 14);
+    ctx.fillStyle = rgba(COL.violet, 0.08); ctx.fillRect(gx, Y(2), gw, Y(SMIN) - Y(2));
+    [[2, 'classical limit 2', COL['ink-2']], [2 * Math.SQRT2, 'quantum 2.83', COL.eigen]].forEach(([s, t, c]) => { ctx.setLineDash([5, 4]); ctx.strokeStyle = c; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(gx, Y(s)); ctx.lineTo(gx + gw, Y(s)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = c; ctx.fillText(t, gx + 4, Y(s) - 5); });
+    ctx.strokeStyle = st.mode === 'q' ? COL.eigen : COL.ice; ctx.lineWidth = 2; ctx.beginPath();
+    st.hist.forEach((s, k) => { const x = gx + k / 499 * gw; k ? ctx.lineTo(x, Y(s)) : ctx.moveTo(x, Y(s)); }); ctx.stroke();
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw - 1, gh - 1);
+    setText(rN, N.toLocaleString('en-US'));
+    setText(rS, N > 40 ? S.toFixed(3) : '—'); setText(rW, N > 40 ? `${((0.5 + S / 8) * 100).toFixed(1)}%` : '—');
+    const v = N < 2000 ? 'gathering data…' : S > 2.15 ? 'beats every hidden plan' : 'within the classical limit';
+    setText(rV, v); rV.className = S > 2.15 && N >= 2000 ? 'eg' : '';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: no signalling ---------- */
+(function () {
+  const cv = $('#c3');
+  const rB = $('#r3b'), rM = $('#r3m'), rC = $('#r3c');
+  const st = { alice: '0', list: [], acc: 0, compare: false };
+  $$('[data-al3]').forEach(b => b.addEventListener('click', () => { st.alice = b.dataset.al3; st.list = []; st.compare = false; $$('[data-al3]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  $('#cmp3').addEventListener('click', () => { st.compare = !st.compare; });
+  function one() {
+    if (st.alice === 'off') { st.list.push([0, Math.random() < 0.5 ? 1 : -1]); return; }
+    st.list.push(pairQ(+st.alice, 0));
+  }
+  if (REDUCE) for (let k = 0; k < 300; k++) one();
+  function frame(dt) {
+    if (!REDUCE) { st.acc += dt * 10; while (st.acc >= 1) { one(); st.acc -= 1; } }
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const R = Math.min(30, w * 0.06);
+    lab(ctx, 20 + R, 30 + R, R, st.alice === 'off' ? null : +st.alice, st.alice === 'off' ? 'ALICE · idle' : 'ALICE', COL.ice);
+    lab(ctx, w - 20 - R, 30 + R, R, 0, 'BOB', COL.ice);
+    ctx.setLineDash([3, 5]); ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(20 + 2 * R + 10, 30 + R); ctx.lineTo(w - 30 - 2 * R, 30 + R); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText('1,200 km apart', w / 2, 30 + R - 8); ctx.textAlign = 'left';
+    const ty = 30 + 2 * R + 52, tw = w - 40;
+    if (st.compare) {
+      tape(ctx, 20, ty, tw, st.list.filter(r => r[0] !== 0), 0, 'ALICE’S RESULTS (SENT BY ORDINARY SIGNAL)');
+    } else { ctx.fillStyle = COL['ink-3']; ctx.fillText('ALICE’S RESULTS · NOT YET KNOWN TO BOB', 20, ty - 6); ctx.fillStyle = COL['bay-2']; ctx.fillRect(20, ty, tw, 14); }
+    tape(ctx, 20, ty + 40, tw, st.compare ? st.list.filter(r => r[0] !== 0) : st.list, 1, 'BOB’S RESULTS');
+    // Bob's running share
+    const N = st.list.length; let bu = 0; for (const r of st.list) if (r[1] > 0) bu++;
+    const gy = ty + 84, gh = h - gy - 20;
+    if (gh > 30) {
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('BOB’S SHARE OF “UP” SO FAR', 20, gy);
+      const barW = (w - 40) * (N ? bu / N : 0.5);
+      ctx.fillStyle = rgba(COL.eigen, 0.8); ctx.fillRect(20, gy + 10, barW, Math.min(22, gh - 14)); ctx.fillStyle = rgba(COL.violet, 0.8); ctx.fillRect(20 + barW, gy + 10, (w - 40) - barW, Math.min(22, gh - 14));
+      ctx.fillStyle = '#d2d1d5'; ctx.fillRect(20 + (w - 40) / 2 - 1, gy + 6, 2, Math.min(22, gh - 14) + 8);
+    }
+    setText(rB, N ? `${(bu / N * 100).toFixed(1)}%` : '—'); setText(rM, 'nothing · pure coin tosses');
+    if (st.compare) {
+      const L = st.list.filter(r => r[0] !== 0); let opp = 0; for (const [A, B] of L) if (A !== B) opp++;
+      setText(rC, L.length ? `opposite ${Math.round(opp / L.length * 100)}% of the time` : 'Alice measured nothing'); rC.className = 'eg';
+    } else { setText(rC, 'press Compare notes'); rC.className = ''; }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

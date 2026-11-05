@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Metamaterials</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 033 colour code: pink = light rays, ice = ordinary materials and electric response, violet = the metamaterial and magnetic response. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp3{aspect-ratio:4/4.4}#vp2{aspect-ratio:4/4.8}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 033 · Breakthrough technology · 7 of 8</div>
+    <a class="navlink" href="032.html">← Φ 032</a>
+    <a class="navlink" href="034.html">Φ 034 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 033 · Breakthrough technology · 7 of 8</p>
+    <h1><span class="eig">meta</span>materials</h1>
+    <p class="gloss">BREAKTHROUGH TECHNOLOGY · optics and materials — <em>engineered structures that bend light the wrong way, focus it with a flat slab, and steer it around objects</em></p>
+    <p class="thesis">Ordinary materials get their optical properties from their atoms. Metamaterials get theirs from structure: tiny rings, wires and pillars, arranged in patterns smaller than the wavelength they control. Shape them right and you get behaviour no natural material has, including a negative refractive index and, in principle, invisibility.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Electromagnetism, optics, materials design</dd></div>
+    <div><dt>Models</dt><dd>Negative refraction and the flat lens, building blocks with negative ε and μ, a transformation-optics cloak</dd></div>
+    <div><dt>Series</dt><dd>Breakthrough technology, 7 of 8. Uses waves from the quantum series and lensing from Φ 024.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>light</span><span class="key"><i style="background:var(--ice)"></i>electric (ε)</span><span class="key"><i style="background:var(--violet)"></i>magnetic (μ) · metamaterial</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="refract">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">The wrong way</span><h2>Negative refraction and the flat lens</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A light ray crossing from air into a material. With a positive refractive index it bends towards the normal on the far side; with a negative index it bends back on the same side. A slab with index minus one focuses light from a point to a point."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="View">
+            <button class="btn" type="button" data-v1="ray" aria-pressed="true">One ray</button>
+            <button class="btn" type="button" data-v1="lens">Flat lens</button>
+          </div>
+          <label class="scrub" for="n1">Refractive index <input type="range" id="n1" min="-200" max="200" step="1" value="150"><output id="n1o">—</output></label>
+          <label class="scrub" for="a1">Angle <input type="range" id="a1" min="5" max="80" step="1" value="40"><output id="a1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Ray inside bends</b><span id="r1b" class="eg">—</span></div>
+          <div class="ro"><b>Angle inside</b><span id="r1a">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>When light passes from air into glass it slows down and bends towards the perpendicular, the “normal”. The refractive index <var>n</var> says how much. Every natural transparent material has a positive index.</p>
+        <p>In 1967 Victor Veselago asked what would happen if a material had both its electric response (ε) and its magnetic response (μ) negative. His answer: a <span class="v">negative refractive index</span>. Light would bend the “wrong” way, staying on the same side of the normal, and the waves’ crests would travel backwards even as energy flowed forwards.</p>
+        <p>In 2000 John Pendry showed that a flat slab with <var>n</var> = −1 would act as a lens, refocusing light from a point to a point with no curved surfaces at all. In principle it could even recover details finer than a wavelength, beating the diffraction limit (Φ 031).</p>
+        <div class="task"><b>Try this</b>Slide the index from glass (1.5) through zero to −1 and watch the ray flip sides. Then switch to Flat lens.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>n</var>₁ sin θ₁ = <var>n</var>₂ sin θ₂,&nbsp; <var>n</var> = −√(εμ) when ε &lt; 0 and μ &lt; 0</div>
+          <p>Snell’s law holds unchanged; a negative <var>n</var>₂ simply gives a negative refraction angle. For the flat lens with <var>n</var> = −1, light from a source a distance <var>s</var> above a slab of thickness <var>d</var> focuses at depth <var>s</var> inside the slab and again at <var>d</var> − <var>s</var> below it. Real negative-index materials absorb strongly, which limits the sharpness.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="blocks">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Building blocks</span><h2>Rings and wires: making ε and μ negative</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A grid of tiny split rings and thin wires, and graphs of the effective electric permittivity and magnetic permeability against frequency. In a narrow band both are negative and the material has a negative refractive index."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="w2">Frequency <input type="range" id="w2" min="40" max="160" step="1" value="95"><output id="w2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>ε (electric)</b><span id="r2e">—</span></div>
+          <div class="ro"><b>μ (magnetic)</b><span id="r2m">—</span></div>
+          <div class="ro"><b>Wave in the material</b><span id="r2n" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>No natural material has both ε and μ negative at the same frequency. So in 2000 David Smith, Sheldon Schultz and colleagues built one from two kinds of part, each much smaller than the wavelength.</p>
+        <p>Thin <strong>wires</strong> act like a dilute metal: below a cut-off frequency the electrons slosh against the wave, making ε negative. Small <strong>split rings</strong> are tiny circuits with a gap; near their resonance the current they carry pushes back against the wave’s magnetic field, making μ negative. Where both are negative, waves pass through with a negative index. Where only one is, the material is opaque.</p>
+        <p>The first demonstrations worked at microwave frequencies, with parts millimetres across. For visible light the parts must be tens of nanometres, and metals absorb heavily there, so optical negative-index materials remain a struggle.</p>
+        <div class="task"><b>Try this</b>Sweep the frequency. Find the narrow window where the material turns transparent with a negative index.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">ε(ω) = 1 − ω<sub>p</sub>²/ω²,&nbsp; μ(ω) = 1 − <var>F</var>ω²/(ω² − ω₀² + <var>i</var>γω)</div>
+          <p>The standard textbook models for a wire array (plasma frequency ω<sub>p</sub>) and a split-ring array (resonance ω₀, filling factor <var>F</var>, small loss γ), here with ω<sub>p</sub> = 1.2, ω₀ = 0.8 and <var>F</var> = 0.5 in units of a reference frequency. Real parts are plotted; the losses make the material dimmer near the resonance.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="cloak">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Invisibility</span><h2>Steering light around an object</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Parallel light rays crossing a region containing an object. Without a cloak, the object blocks rays and leaves a shadow. With a cloak, rays curve smoothly around the hidden region and leave exactly as if nothing were there."></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Cloak">
+            <button class="btn" type="button" data-cl="0">No cloak</button>
+            <button class="btn" type="button" data-cl="1" aria-pressed="true">Cloak on</button>
+          </div>
+          <label class="scrub" for="s3">Cloak thickness <input type="range" id="s3" min="20" max="120" step="1" value="70"><output id="s3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Rays blocked</b><span id="r3b" class="eg">—</span></div>
+          <div class="ro"><b>An observer behind sees</b><span id="r3o">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 2006 Pendry, Schurig and Smith worked out how to hide an object. Imagine space as a rubber sheet. Stretch a point in it open into a hole, squeezing everything that was there into a ring around it. Light that would have crossed the point now flows around the hole, then carries on exactly as before.</p>
+        <p>Maxwell’s equations have a remarkable property: <strong>stretching space is equivalent to changing materials</strong>. So a shell whose ε and μ vary in just the right way through its thickness makes light follow those stretched paths. Anything inside the hole is invisible, and so is the cloak itself. The method, <span class="i">transformation optics</span>, is now used to design all kinds of lenses and devices.</p>
+        <p>That same year the Duke team built a working cloak, for microwaves, in two dimensions, at one frequency. Visible-light cloaks of anything human-sized remain far off: the needed properties are extreme and work only over a narrow band of colours.</p>
+        <div class="task"><b>Try this</b>Toggle the cloak on and off. Then make the cloak thinner and watch the rays bend more sharply to get around.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>r</var>′ = <var>a</var> + <var>r</var>(<var>b</var> − <var>a</var>)/<var>b</var>,&nbsp; θ′ = θ&nbsp; (for <var>r</var> &lt; <var>b</var>)</div>
+          <p>The rays here are exact for an ideal cloak: each straight path in the undistorted space is carried through this mapping, which squeezes a disk of radius <var>b</var> into the ring between <var>a</var> and <var>b</var>. The material that achieves this is anisotropic, and at the inner edge some of its components must go to zero or infinity, one reason perfect cloaks are impractical.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Metamaterials in the world</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Phones</div><h3>Metalenses</h3><p>Flat lenses made of nanoscale pillars, a cousin of metamaterials called metasurfaces. Since 2022 they have shipped in smartphone depth sensors, replacing stacks of curved glass.</p></div>
+      <div class="g"><div class="where">Radio</div><h3>Steerable antennas</h3><p>Metasurface antennas steer radio beams electronically with no moving parts, used in satellite internet terminals and research on 6G networks.</p></div>
+      <div class="g"><div class="where">Sound</div><h3>Acoustic metamaterials</h3><p>The same ideas work for sound: structures that block particular frequencies, focus ultrasound, or quieten engines and ventilation without bulky padding.</p></div>
+      <div class="g"><div class="where">The ground</div><h3>Seismic metamaterials</h3><p>Researchers have tested arrays of boreholes and buried resonators that deflect some surface waves around a protected area, an idea for shielding buildings from earthquakes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Metamaterials get their powers from <span class="a">structure, not atoms</span>: they can bend light the wrong way and, by imitating stretched space, steer it around a hidden object.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><span class="chip here">033 · Metamaterials</span><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 033 · Structure over substance · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* ---------- BAY 01: negative refraction ---------- */
+(function () {
+  const cv = $('#c1'), nS = $('#n1'), nO = $('#n1o'), aS = $('#a1'), aO = $('#a1o');
+  const rB = $('#r1b'), rA = $('#r1a');
+  const st = { v: 'ray', t: 0 };
+  $$('[data-v1]').forEach(b => b.addEventListener('click', () => { st.v = b.dataset.v1; $$('[data-v1]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); if (st.v === 'lens') { nS.value = -100; } }));
+  function frame(dt) {
+    let n = +nS.value / 100; if (Math.abs(n) < 0.15) n = n < 0 ? -0.15 : 0.15; const th = +aS.value * Math.PI / 180;
+    nO.value = n.toFixed(2); aO.value = `${aS.value}°`;
+    if (!REDUCE) st.t += dt;
+    const s2 = Math.sin(th) / n, tir = Math.abs(s2) > 1, th2 = tir ? 0 : Math.asin(s2);
+    setText(rB, tir ? 'it can’t enter: total reflection' : n < 0 ? 'to the same side: negative refraction' : 'across the normal, as normal');
+    setText(rA, tir ? '—' : `${(th2 * 180 / Math.PI).toFixed(1)}°`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    if (st.v === 'ray') {
+      const iy = h * 0.45, cx = w / 2, L = Math.min(w, h) * 0.5;
+      ctx.fillStyle = n < 0 ? rgba(COL.violet, 0.16) : rgba(COL.ice, 0.1); ctx.fillRect(0, iy, w, h - iy);
+      ctx.strokeStyle = COL['rule-hi']; ctx.beginPath(); ctx.moveTo(0, iy); ctx.lineTo(w, iy); ctx.stroke();
+      ctx.setLineDash([3, 4]); ctx.strokeStyle = rgba(COL.ink, 0.35); ctx.beginPath(); ctx.moveTo(cx, iy - L); ctx.lineTo(cx, iy + L); ctx.stroke(); ctx.setLineDash([]);
+      const x0 = cx - Math.sin(th) * L, y0 = iy - Math.cos(th) * L;
+      const ray = (xa, ya, xb, yb) => { ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke(); ctx.lineWidth = 1; const ph = (st.t * 0.6) % 1, px = xa + (xb - xa) * ph, py = ya + (yb - ya) * ph; ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill(); };
+      ray(x0, y0, cx, iy);
+      if (tir) ray(cx, iy, cx + Math.sin(th) * L, iy - Math.cos(th) * L);
+      else ray(cx, iy, cx + Math.sin(th2) * L, iy + Math.cos(th2) * L);
+      ctx.fillStyle = COL['ink-2']; ctx.fillText('air, n = 1', 14, iy - 10); ctx.fillText(n < 0 ? `metamaterial, n = ${n.toFixed(2)}` : `material, n = ${n.toFixed(2)}`, 14, iy + 20);
+      ctx.fillStyle = COL['ink-3']; ctx.fillText('normal', cx + 6, iy - L * 0.85 > 14 ? iy - L * 0.85 : 20);
+    } else {
+      const sTop = h * 0.32, d = h * 0.36, sBot = sTop + d, cx = w / 2, srcY = sTop - d * 0.4, nn = n;
+      ctx.fillStyle = nn < 0 ? rgba(COL.violet, 0.18) : rgba(COL.ice, 0.1); ctx.fillRect(0, sTop, w, d);
+      ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(-1, sTop, w + 2, d);
+      ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(cx, srcY, 5, 0, Math.PI * 2); ctx.fill();
+      for (let k = -6; k <= 6; k++) {
+        if (!k) continue; const a = k * 0.11, xA = cx + Math.tan(a) * (sTop - srcY);
+        const s = Math.sin(a) / nn; if (Math.abs(s) > 1) { ctx.strokeStyle = rgba(COL.eigen, 0.3); ctx.beginPath(); ctx.moveTo(cx, srcY); ctx.lineTo(xA, sTop); ctx.stroke(); continue; }
+        const b = Math.asin(s), xB = xA + Math.tan(b) * d, xC = xB + Math.tan(a) * (h - sBot);
+        ctx.strokeStyle = rgba(COL.eigen, 0.85); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx, srcY); ctx.lineTo(xA, sTop); ctx.lineTo(xB, sBot); ctx.lineTo(xC, h); ctx.stroke(); ctx.lineWidth = 1;
+      }
+      if (Math.abs(nn + 1) < 0.06) { const f1 = sTop + (sTop - srcY), f2 = sBot + (d - (sTop - srcY)); ctx.fillStyle = COL.eigen; [f1, f2].forEach(y => { ctx.beginPath(); ctx.arc(cx, y, 4, 0, Math.PI * 2); ctx.fill(); }); ctx.fillText('focus', cx + 8, f2 + 4); ctx.fillText('focus', cx + 8, f1 + 4); }
+      ctx.fillStyle = COL['ink-2']; ctx.fillText(`flat slab, n = ${nn.toFixed(2)}${Math.abs(nn + 1) < 0.06 ? ' · a perfect flat lens' : nn > 0 ? ' · rays spread' : ''}`, 14, sTop - 8);
+      ctx.fillText('point source', cx + 10, srcY + 4);
+    }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: rings and wires ---------- */
+(function () {
+  const cv = $('#c2'), wS = $('#w2'), wO = $('#w2o');
+  const rE = $('#r2e'), rM = $('#r2m'), rN = $('#r2n');
+  const WP = 1.2, W0 = 0.8, F = 0.5, G = 0.02;
+  const eps = w => 1 - WP * WP / (w * w);
+  const mu = w => { const re = w * w - W0 * W0, im = G * w, den = re * re + im * im; return 1 - F * w * w * re / den; };
+  const st = { t: 0 };
+  function frame(dt) {
+    const om = +wS.value / 100, e = eps(om), m = mu(om); wO.value = om.toFixed(2);
+    setText(rE, e.toFixed(2)); setText(rM, m.toFixed(2));
+    setText(rN, e < 0 && m < 0 ? `passes · n = ${(-Math.sqrt(e * m)).toFixed(2)} (negative)` : e > 0 && m > 0 ? `passes · n = ${Math.sqrt(e * m).toFixed(2)}` : 'blocked: one of ε, μ is negative');
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, uw = narrow ? w : w * 0.36, uh = narrow ? h * 0.36 : h;
+    // unit cells: split rings + wires
+    const cols = 4, rows = narrow ? 2 : 5, cs = Math.min((uw - 30) / cols, (uh - 40) / rows), ox = (uw - cs * cols) / 2, oy = 30;
+    const resp = clamp(Math.abs(F * om * om / (om * om - W0 * W0 + 0.05)) / 4, 0, 1);
+    for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+      const x = ox + (i + 0.5) * cs, y = oy + (j + 0.5) * cs, r = cs * 0.28;
+      ctx.strokeStyle = rgba(COL.violet, 0.5 + 0.5 * resp * (0.5 + 0.5 * Math.sin(st.t * 6))); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0.25, Math.PI * 2 - 0.25); ctx.stroke(); ctx.beginPath(); ctx.arc(x, y, r * 0.62, Math.PI + 0.35, Math.PI * 3 - 0.35); ctx.stroke(); ctx.lineWidth = 1;
+    }
+    for (let i = 0; i <= cols; i++) { ctx.strokeStyle = rgba(COL.ice, 0.7); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ox + i * cs, oy); ctx.lineTo(ox + i * cs, oy + rows * cs); ctx.stroke(); ctx.lineWidth = 1; }
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SPLIT RINGS (μ) + WIRES (ε)', ox, oy - 10);
+    // response curves
+    const gx = narrow ? 40 : uw + 50, gy = narrow ? uh + 20 : 30, gw = (narrow ? w : w - uw) - (narrow ? 56 : 66), gh = (narrow ? h - uh : h) - (narrow ? 48 : 70);
+    const W0x = 0.4, W1x = 1.6, X = v => gx + (v - W0x) / (W1x - W0x) * gw, Y = v => gy + gh / 2 - clamp(v, -6, 6) / 6 * (gh / 2);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    // shade the negative-index band
+    let a0 = null; for (let i = 0; i <= 400; i++) { const v = W0x + (W1x - W0x) * i / 400, neg = eps(v) < 0 && mu(v) < 0; if (neg && a0 === null) a0 = v; if ((!neg || i === 400) && a0 !== null) { ctx.fillStyle = rgba(COL.eigen, 0.14); ctx.fillRect(X(a0), gy, X(v) - X(a0), gh); ctx.fillStyle = COL.eigen; ctx.fillText('n < 0', X(a0) + 4, gy + 14); a0 = null; } }
+    ctx.strokeStyle = rgba(COL.ink, 0.25); ctx.beginPath(); ctx.moveTo(gx, Y(0)); ctx.lineTo(gx + gw, Y(0)); ctx.stroke();
+    const curve = (fn, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); let prev = null; for (let i = 0; i <= 500; i++) { const v = W0x + (W1x - W0x) * i / 500, y = Y(fn(v)); if (prev !== null && Math.abs(y - prev) > gh * 0.6) ctx.moveTo(X(v), y); else i ? ctx.lineTo(X(v), y) : ctx.moveTo(X(v), y); prev = y; } ctx.stroke(); ctx.lineWidth = 1; };
+    curve(eps, COL.ice); curve(mu, COL.violet);
+    ctx.strokeStyle = '#d2d1d5'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(om), gy); ctx.lineTo(X(om), gy + gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL.ice; ctx.fillText('ε', X(0.45), Y(eps(0.45)) < gy + 10 ? gy + 26 : Y(eps(0.45)) - 6); ctx.fillStyle = COL.violet; ctx.fillText('μ', X(1.5) - 10, Y(mu(1.5)) - 8);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; [0.5, 1, 1.5].forEach(v => ctx.fillText(v.toFixed(1), X(v), gy + gh + 14)); ctx.fillText('FREQUENCY', gx + gw / 2, gy + gh + 28); ctx.textAlign = 'right'; ctx.fillText('0', gx - 6, Y(0) + 4); ctx.fillText('+', gx - 6, gy + 12); ctx.fillText('−', gx - 6, gy + gh - 4); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the cloak ---------- */
+(function () {
+  const cv = $('#c3'), sS = $('#s3'), sO = $('#s3o');
+  const rB = $('#r3b'), rO = $('#r3o');
+  const st = { on: 1, t: 0 };
+  $$('[data-cl]').forEach(b => b.addEventListener('click', () => { st.on = +b.dataset.cl; $$('[data-cl]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+  function frame(dt) {
+    const A = 0.45, B = A + +sS.value / 100; sO.value = `${Math.round((B - A) / A * 100)}% of object radius`;
+    if (!REDUCE) st.t += dt;
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const sc = Math.min(w / 4.4, h / 3), cx = w / 2, cy = h / 2, X = x => cx + x * sc, Y = y => cy - y * sc;
+    const NR = 22, span = 1.35;
+    let blocked = 0;
+    if (st.on) { const g = ctx.createRadialGradient(cx, cy, A * sc, cx, cy, B * sc); g.addColorStop(0, rgba(COL.violet, 0.45)); g.addColorStop(1, rgba(COL.violet, 0.05)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, B * sc, 0, Math.PI * 2); ctx.arc(cx, cy, A * sc, 0, Math.PI * 2, true); ctx.fill(); ctx.strokeStyle = rgba(COL.violet, 0.6); ctx.beginPath(); ctx.arc(cx, cy, B * sc, 0, Math.PI * 2); ctx.stroke(); }
+    for (let k = 0; k < NR; k++) {
+      const y0 = -span + 2 * span * k / (NR - 1);
+      ctx.strokeStyle = rgba(COL.eigen, 0.8); ctx.lineWidth = 1.3; ctx.beginPath();
+      let stopped = false, first = true, lastP = null;
+      for (let i = 0; i <= 400; i++) {
+        const x = -2.2 + 4.4 * i / 400; let px = x, py = y0;
+        if (st.on) { const r = Math.hypot(x, y0); if (r < B) { const rp = A + r * (B - A) / B, f = r > 1e-9 ? rp / r : 0; px = x * f; py = y0 * f; } }
+        else if (Math.hypot(x, y0) < A) { stopped = true; blocked++; break; }
+        first ? ctx.moveTo(X(px), Y(py)) : ctx.lineTo(X(px), Y(py)); first = false; lastP = [px, py];
+      }
+      ctx.stroke(); ctx.lineWidth = 1;
+      // a pulse travelling along each ray
+      const ph = (st.t * 0.25 + k * 0.013) % 1, x = -2.2 + 4.4 * ph; let px = x, py = y0;
+      if (st.on) { const r = Math.hypot(x, y0); if (r < B) { const rp = A + r * (B - A) / B, f = rp / r; px = x * f; py = y0 * f; } }
+      if (!(!st.on && Math.hypot(x, y0) < A) && !(stopped && x > -Math.sqrt(Math.max(0, A * A - y0 * y0)))) { ctx.fillStyle = '#d2d1d5'; ctx.beginPath(); ctx.arc(X(px), Y(py), 2.2, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.fillStyle = '#38363d'; ctx.beginPath(); ctx.arc(cx, cy, A * sc, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = COL['ink-2']; ctx.stroke();
+    ctx.fillStyle = COL.ink; ctx.textAlign = 'center'; ctx.fillText('hidden object', cx, cy + 4); ctx.textAlign = 'left';
+    if (!st.on) { ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(cx, cy - A * sc, w - cx, 2 * A * sc); ctx.fillStyle = COL['ink-3']; ctx.fillText('shadow', cx + A * sc + 12, cy + 4); }
+    setText(rB, `${blocked} of ${NR}`); setText(rO, st.on ? 'straight, undisturbed light: nothing there' : 'a shadow: something is there');
+    ctx.fillStyle = COL['ink-3']; ctx.fillText(st.on ? 'CLOAK ON · RAYS FOLLOW STRETCHED SPACE' : 'NO CLOAK', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

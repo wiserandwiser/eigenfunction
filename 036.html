@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>The Higgs Field</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 036 colour code: pink = the Higgs field and its potential, ice = particles and data, violet = the signal bump. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 036 · Particles & forces · 2 of 6</div>
+    <a class="navlink" href="035.html">← Φ 035</a>
+    <a class="navlink" href="037.html">Φ 037 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 036 · Particles &amp; forces · 2 of 6</p>
+    <h1>the higgs <span class="eig">field</span></h1>
+    <p class="gloss">PARTICLES &amp; FORCES · the origin of mass — <em>an invisible field fills all of space, and how strongly a particle feels it sets its mass</em></p>
+    <p class="thesis">Without the Higgs field, electrons would be massless and fly at the speed of light, atoms could not form, and the weak force would be as long-ranged as electromagnetism. The field switched on a trillionth of a second after the Big Bang. In 2012, after a 48-year search, its ripple, the Higgs boson, was finally caught.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Particle physics, cosmology</dd></div>
+    <div><dt>Models</dt><dd>The Mexican-hat potential, a universe with a different Higgs, finding the bump</dd></div>
+    <div><dt>Series</dt><dd>Particles &amp; forces, 2 of 6. Follows Φ 035.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>Higgs field</span><span class="key"><i style="background:var(--ice)"></i>particles · data</span><span class="key"><i style="background:var(--violet)"></i>signal</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="hat">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Breaking the symmetry</span><h2>A ball in a Mexican hat</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="The energy of the Higgs field drawn as a surface. In the hot early universe it is a bowl and the field sits at zero. As the universe cools it becomes a Mexican hat, and the field rolls off the peak into the circular trough, choosing a direction and taking a non-zero value."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="T1">Temperature of the universe <input type="range" id="T1" min="0" max="100" step="1" value="90"><output id="T1o">—</output></label>
+          <button class="btn solo" type="button" id="cool1">Cool the universe</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Shape of the energy</b><span id="r1s">—</span></div>
+          <div class="ro"><b>Field value in empty space</b><span id="r1v" class="eg">—</span></div>
+          <div class="ro"><b>Symmetry</b><span id="r1y">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A field has energy, and the field settles wherever its energy is lowest. For most fields that is zero: empty space contains no electric field, for example. The Higgs field is different. Its energy curve is shaped like a <span class="a">Mexican hat</span>, highest in the middle, so the lowest-energy state of empty space is a trough where the field is <strong>not</strong> zero.</p>
+        <p>In the first instants after the Big Bang it was hot enough that the hat was a simple bowl and the field sat at zero. About 10⁻¹² seconds in, the universe cooled enough for the hat to form. The field rolled off the peak into the trough and has stayed there ever since, with a value of about <strong>246 GeV</strong> everywhere in the universe.</p>
+        <p>The hat is perfectly round, but the ball had to land at one particular point on the rim. The laws are symmetric; the state of the universe is not. This is <span class="i">spontaneous symmetry breaking</span>, like a pencil balanced on its tip that must fall some way.</p>
+        <div class="task"><b>Try this</b>Press Cool the universe and watch the field choose a spot in the trough. Reheat and cool again: it chooses a different one.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>V</var>(φ) = −μ²|φ|² + λ|φ|⁴,&nbsp; ⟨φ⟩ = <var>v</var>/√2,&nbsp; <var>v</var> = μ/√λ ≈ 246 GeV</div>
+          <p>The temperature dependence is the simplest version: μ²(<var>T</var>) changes sign at a critical temperature of roughly 160 GeV (about 10¹⁵ K). Lattice calculations show that in the Standard Model the change is smooth (a crossover) rather than a sudden phase transition. The ball’s motion here is drawn with friction for clarity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="world">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Mass from the field</span><h2>Turn the Higgs field up or down</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="Particle masses plotted against how strongly each particle couples to the Higgs field, all on one straight line. A slider changes the field's strength; masses scale with it, and a hydrogen atom grows or shrinks as the electron's mass changes."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="v2">Higgs field strength <input type="range" id="v2" min="0" max="300" step="1" value="100"><output id="v2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Electron mass</b><span id="r2e" class="eg">—</span></div>
+          <div class="ro"><b>Hydrogen atom size</b><span id="r2a">—</span></div>
+          <div class="ro"><b>Proton mass</b><span id="r2p">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Each elementary particle has a fixed strength of coupling to the Higgs field. The stronger the coupling, the more the field holds it back, and the more mass it has. The top quark couples almost perfectly (a coupling of about 1); the electron barely at all (about 3 × 10⁻⁶). Plot mass against coupling and every particle falls on <strong>one straight line</strong>, which the LHC has now confirmed for the heavier ones.</p>
+        <p>So the field’s value is a dial for the universe. Turn it down and the electron gets lighter, so its orbit in an atom swells; atoms and everything built from them get bigger and floppier. Turn it to zero and electrons become massless: no atoms, no chemistry.</p>
+        <p>The proton barely notices. Most of its mass comes from the strong force (Φ 035), not the Higgs. Photons and gluons don’t couple at all, which is why they stay massless.</p>
+        <div class="task"><b>Try this</b>Turn the field down to half, then to zero. Watch the atom and compare the electron with the proton.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>m</var><sub><var>f</var></sub> = <var>y</var><sub><var>f</var></sub> <var>v</var>/√2,&nbsp; <var>m</var><sub>W</sub> = <var>gv</var>/2,&nbsp; <var>a</var><sub>0</sub> ∝ 1/<var>m</var><sub>e</sub></div>
+          <p>Fermion masses scale directly with <var>v</var>; the hydrogen atom’s Bohr radius is inversely proportional to the electron mass (0.053 nm today). The proton mass shown is about 99% strong-force energy plus the scaled quark masses, ignoring the small knock-on change in the strong force. Neutrino masses may come partly from another mechanism and are not shown.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="bump">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The discovery</span><h2>Finding a bump in the data</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Simulated counts of collision events with two photons, plotted against their combined mass. A smooth falling background hides a small bump near 125 GeV that emerges as more data is collected, until it reaches five standard deviations."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="L3">Data collected <input type="range" id="L3" min="0" max="1000" step="1" value="200"><output id="L3o">—</output></label>
+          <button class="btn solo" type="button" id="re3">Rerun the experiment</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Two-photon events</b><span id="r3n">—</span></div>
+          <div class="ro"><b>Bump significance</b><span id="r3s" class="eg">—</span></div>
+          <div class="ro"><b>Verdict</b><span id="r3v">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The Higgs boson is a ripple in the field, and it lives for only about 10⁻²² seconds. It can be detected only through what it decays into. One clean signature is a pair of high-energy <strong>photons</strong>: add up their energies and directions and you recover the mass of whatever made them.</p>
+        <p>The trouble is that ordinary collisions also make photon pairs, at all masses. The Higgs shows up only as a small <span class="v">bump</span> on a large smooth background. With little data, random fluctuations make bumps everywhere. Particle physicists demand <strong>five standard deviations</strong>, a less than one-in-3.5-million chance of a fluke, before they claim a discovery.</p>
+        <p>On 4 July 2012, the ATLAS and CMS experiments at CERN announced a new particle at about 125 GeV, built from billions of collisions. Peter Higgs and François Englert, who predicted it in 1964, won the 2013 Nobel Prize.</p>
+        <div class="task"><b>Try this</b>Start with little data and look for the bump. Rerun a few times: fake bumps come and go. Then collect more data until the real one passes 5σ.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>m</var><sub>γγ</sub>² = 2<var>E</var>₁<var>E</var>₂(1 − cos θ),&nbsp; <var>Z</var> ≈ <var>S</var>/√<var>B</var></div>
+          <p>Simulated data shaped roughly like the 2012 two-photon search: a falling background, a signal with about 1.7 GeV resolution, and counts drawn at random. Significance uses a ±2 GeV window. Real analyses split events into categories, fit the background shape and combine several decay channels; ATLAS and CMS each reached 5σ only by combining channels.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>The road to the Higgs</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1964</div><h3>Six theorists</h3><p>Robert Brout and François Englert, Peter Higgs, and Gerald Guralnik, Carl Hagen and Tom Kibble independently showed how a field could give force carriers mass without wrecking the theory.</p></div>
+      <div class="g"><div class="where">1967</div><h3>Electroweak theory</h3><p>Steven Weinberg and Abdus Salam used the mechanism to unify the electromagnetic and weak forces, predicting the W, Z and the Higgs boson.</p></div>
+      <div class="g"><div class="where">2012</div><h3>Discovery</h3><p>ATLAS and CMS announced a Higgs-like boson at about 125 GeV. Later measurements confirmed spin 0 and couplings matching the Standard Model.</p></div>
+      <div class="g"><div class="where">Open question</div><h3>Is our vacuum stable?</h3><p>With the measured Higgs and top masses, the Higgs field may not sit at its true lowest energy. If so, the universe is metastable, but the expected lifetime is vastly longer than its current age.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Empty space is filled with a <span class="a">Higgs field</span> stuck at a non-zero value; how strongly each particle couples to it sets its mass.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><span class="chip here">036 · The Higgs field</span><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 036 · The field everywhere · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const gauss = r => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+
+/* ---------- BAY 01: the Mexican hat ---------- */
+(function () {
+  const cv = $('#c1'), TS = $('#T1'), TO = $('#T1o'), coolB = $('#cool1');
+  const rS = $('#r1s'), rV = $('#r1v'), rY = $('#r1y');
+  const st = { x: 0.01, y: 0.005, vx: 0, vy: 0, cooling: false, T: 90 };
+  TS.addEventListener('input', () => { st.T = +TS.value; st.cooling = false; });
+  const m2 = T => 1 - T / 50, V = (r, T) => -m2(T) * r * r + r ** 4, R0 = Math.sqrt(0.5);
+  coolB.addEventListener('click', () => { st.T = 90; TS.value = 90; const a = Math.random() * 6.283; st.x = 0.01 * Math.cos(a); st.y = 0.01 * Math.sin(a); st.vx = st.vy = 0; st.cooling = true; });
+  function frame(dt) {
+    if (st.cooling && !REDUCE) { st.T = Math.max(0, st.T - dt * 22); TS.value = Math.round(st.T); if (st.T <= 0) st.cooling = false; }
+    const T = st.T; TO.value = T > 50 ? 'hot · above the transition' : T > 0 ? 'cooling' : 'today';
+    const steps = REDUCE ? 400 : 8, h = (REDUCE ? 0.05 : dt / 8 * 3);
+    for (let i = 0; i < steps; i++) { const r2 = st.x * st.x + st.y * st.y, g = -2 * m2(T) + 4 * r2; st.vx += (-g * st.x - 1.6 * st.vx) * h; st.vy += (-g * st.y - 1.6 * st.vy) * h; st.x += st.vx * h; st.y += st.vy * h; if (r2 < 1e-6 && m2(T) > 0) { st.x += (Math.random() - 0.5) * 1e-3; st.y += (Math.random() - 0.5) * 1e-3; } }
+    const r = Math.hypot(st.x, st.y);
+    setText(rS, m2(T) > 0 ? 'Mexican hat: lowest energy on the rim' : 'a simple bowl: lowest energy at zero');
+    setText(rV, `${Math.round(246 * r / R0)} GeV${T === 0 && Math.abs(r / R0 - 1) < 0.03 ? ' (today’s value)' : ''}`);
+    setText(rY, r < 0.05 ? 'unbroken: every direction alike' : `broken: the field points at ${Math.round((Math.atan2(st.y, st.x) * 180 / Math.PI + 360) % 360)}°`);
+    const { ctx, w, h: H } = fit(cv); ctx.clearRect(0, 0, w, H); ctx.font = `10.5px ${MONO}`;
+    const cx = w / 2, cy = H * 0.62, S = Math.min(w * 0.38, H * 0.6), K = H * 0.9, sq = 0.38;
+    const P = (x, y, T2) => { const rr = Math.hypot(x, y); return [cx + x * S, cy + y * S * sq - V(rr, T2) * K]; };
+    // surface rings
+    for (let k = 20; k >= 1; k--) { const rr = k / 20 * 1.05; ctx.strokeStyle = rgba(COL.eigen, 0.12 + 0.25 * (1 - k / 20)); ctx.beginPath(); for (let a = 0; a <= 64; a++) { const t = a / 64 * Math.PI * 2, [px, py] = P(rr * Math.cos(t), rr * Math.sin(t), T); a ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke(); }
+    for (let a = 0; a < 16; a++) { const t = a / 16 * Math.PI * 2; ctx.strokeStyle = rgba(COL.eigen, 0.15); ctx.beginPath(); for (let k = 0; k <= 40; k++) { const rr = k / 40 * 1.05, [px, py] = P(rr * Math.cos(t), rr * Math.sin(t), T); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke(); }
+    // front profile
+    ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); for (let k = -50; k <= 50; k++) { const xx = k / 50 * 1.05, [px, py] = P(xx, 0, T); k > -50 ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke(); ctx.lineWidth = 1;
+    const [bx, by] = P(st.x, st.y, T); const g = ctx.createRadialGradient(bx, by - 6, 0, bx, by - 6, 12); g.addColorStop(0, '#d2d1d5'); g.addColorStop(0.5, COL.ice); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by - 6, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('ENERGY OF THE HIGGS FIELD · BALL = THE FIELD’S VALUE IN EMPTY SPACE', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: masses from couplings ---------- */
+(function () {
+  const cv = $('#c2'), vS = $('#v2'), vO = $('#v2o');
+  const rE = $('#r2e'), rA = $('#r2a'), rP = $('#r2p');
+  const F = [['t', 172.7e3], ['b', 4180], ['c', 1270], ['τ', 1777], ['s', 93], ['μ', 105.7], ['d', 4.7], ['u', 2.2], ['e', 0.511]];
+  const yOf = m => m * Math.SQRT2 / 246e3;
+  function frame() {
+    const f = +vS.value / 100; vO.value = `${f.toFixed(2)} × today`;
+    setText(rE, f === 0 ? 'zero: it moves at light speed' : `${(0.511 * f).toFixed(3)} MeV`);
+    setText(rA, f === 0 ? 'no atoms can form' : `${(0.106 / f).toFixed(2)} nm across (today 0.11)`);
+    setText(rP, `${(938.3 - 9 + 9 * f).toFixed(1)} MeV (today 938.3)`);
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, gx = 56, gy = 22, gw = (narrow ? w : w * 0.64) - gx - 12, gh = (narrow ? h * 0.58 : h) - gy - 40;
+    const X = y => gx + (Math.log10(y) + 6) / 6.2 * gw, Y = m => gy + gh - (Math.log10(m) + 1) / 7 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [[0.1, '0.1 MeV'], [10, '10 MeV'], [1000, '1 GeV'], [1e5, '100 GeV']].forEach(([m, l]) => ctx.fillText(l, gx - 6, Y(m) + 4)); ctx.textAlign = 'center';
+    [1e-6, 1e-4, 1e-2, 1].forEach(y => ctx.fillText(y === 1 ? '1' : `10${sup(Math.log10(y))}`, X(y), gy + gh + 14)); ctx.fillText('COUPLING TO THE HIGGS FIELD', gx + gw / 2, gy + gh + 28); ctx.textAlign = 'left';
+    ctx.fillText('MASS', gx + 6, gy + 14);
+    ctx.strokeStyle = rgba(COL.eigen, 0.35); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(X(1e-6), Y(1e-6 * 246e3 / Math.SQRT2)); ctx.lineTo(X(1.5), Y(1.5 * 246e3 / Math.SQRT2)); ctx.stroke(); ctx.setLineDash([]);
+    if (f > 0) { ctx.strokeStyle = COL.eigen; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(1e-6), Y(f * 1e-6 * 246e3 / Math.SQRT2)); ctx.lineTo(X(1.5), Y(f * 1.5 * 246e3 / Math.SQRT2)); ctx.stroke(); ctx.lineWidth = 1; }
+    F.forEach(([n, m]) => { const y = yOf(m), mm = m * f; if (f === 0) { ctx.fillStyle = rgba(COL.ice, 0.6); ctx.fillText(`${n}→0`, X(y) - 8, gy + gh - 6); return; } const py = Y(mm); if (py > gy + gh) return; ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(y), py, 4, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = COL.ink; ctx.fillText(n, X(y) + 7, py + 4); });
+    // the atom
+    const ax = narrow ? w / 2 : w * 0.82, ay = narrow ? h * 0.8 : h * 0.5, base = Math.min(w, h) * 0.06, rad = f === 0 ? 9999 : base / f;
+    ctx.fillStyle = '#e393b4'; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
+    if (f > 0) { const g = ctx.createRadialGradient(ax, ay, 0, ax, ay, Math.min(rad * 1.6, 400)); g.addColorStop(0, rgba(COL.ice, 0.35)); g.addColorStop(1, rgba(COL.ice, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ax, ay, Math.min(rad * 1.6, 400), 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(ax, ay, Math.min(rad, 380), 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.fillStyle = COL['ink-2']; ctx.textAlign = 'center'; ctx.fillText(f === 0 ? 'electron flies away' : 'hydrogen atom', ax, ay + Math.min(rad, (narrow ? h * 0.18 : h * 0.4)) + 16 > h - 6 ? h - 8 : ay + Math.min(rad, 380) + 16); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the diphoton bump ---------- */
+(function () {
+  const cv = $('#c3'), LS = $('#L3'), LO = $('#L3o'), reB = $('#re3');
+  const rN = $('#r3n'), rS = $('#r3s'), rV = $('#r3v');
+  const M0 = 100, M1 = 160, NB = 60, SIG = 1.7, MH = 125;
+  const bkg = m => 250 * Math.exp(-(m - 125) / 22), sig = m => 50 * Math.exp(-0.5 * ((m - MH) / SIG) ** 2) / (Math.sqrt(2 * Math.PI) * SIG);
+  const st = { seed: 2005, data: null, L: -1 };
+  function gen() {
+    const L = Math.pow(10, -1 + 3 * +LS.value / 1000); st.L = L; const r = rng(st.seed);
+    st.data = Array.from({ length: NB }, (_, i) => { const m = M0 + (i + 0.5) * (M1 - M0) / NB, mu = L * (bkg(m) + sig(m)); return [m, Math.max(0, Math.round(mu + Math.sqrt(mu) * gauss(r)))]; });
+  }
+  LS.addEventListener('input', gen); reB.addEventListener('click', () => { st.seed++; gen(); });
+  gen();
+  function frame() {
+    const L = st.L; LO.value = `${L < 1 ? L.toFixed(2) : L.toFixed(L < 10 ? 1 : 0)} fb⁻¹`;
+    let n = 0, S = 0, B = 0; st.data.forEach(([m, c]) => { n += c; if (Math.abs(m - MH) <= 2) { S += c - L * bkg(m); B += L * bkg(m); } });
+    const Z = S / Math.sqrt(B);
+    setText(rN, n.toLocaleString('en-US')); setText(rS, `${Z.toFixed(1)}σ`); setText(rV, Z >= 5 ? 'discovery (5σ)' : Z >= 3 ? 'evidence (3σ): keep going' : 'could just be a fluke');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 56, gy = 22, gw = w - gx - 16, gh = (h - gy - 44) * 0.58, ymax = Math.max(...st.data.map(d => d[1])) * 1.15;
+    const X = m => gx + (m - M0) / (M1 - M0) * gw, Y = c => gy + gh - c / ymax * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'center'; ctx.fillText('MASS OF THE PHOTON PAIR (GeV)', gx + gw / 2, gy + gh + 16); ctx.textAlign = 'right'; ctx.fillText('0', gx - 6, gy + gh); ctx.fillText(Math.round(ymax / 1.15).toLocaleString('en-US'), gx - 6, Y(ymax / 1.15) + 4); ctx.textAlign = 'left';
+    ctx.fillText('EVENTS PER GeV', gx + 6, gy + 14);
+    ctx.strokeStyle = rgba(COL.ink, 0.5); ctx.setLineDash([4, 3]); ctx.beginPath(); for (let i = 0; i <= 120; i++) { const m = M0 + (M1 - M0) * i / 120, y = Y(L * bkg(m)); i ? ctx.lineTo(X(m), y) : ctx.moveTo(X(m), y); } ctx.stroke(); ctx.setLineDash([]);
+    if (Z >= 3) { ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 240; i++) { const m = M0 + (M1 - M0) * i / 240, y = Y(L * (bkg(m) + sig(m))); i ? ctx.lineTo(X(m), y) : ctx.moveTo(X(m), y); } ctx.stroke(); ctx.lineWidth = 1; ctx.fillStyle = COL.violet; ctx.fillText('background + Higgs', X(128), Y(L * (bkg(128) + sig(128))) - 14); }
+    st.data.forEach(([m, c]) => { const e = Math.sqrt(Math.max(1, c)); ctx.strokeStyle = rgba(COL.ice, 0.6); ctx.beginPath(); ctx.moveTo(X(m), Y(c - e)); ctx.lineTo(X(m), Y(c + e)); ctx.stroke(); ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(m), Y(c), 2.6, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('dashed = background alone', gx + gw - 170, gy + 14);
+    // residuals: data minus background, where the bump shows
+    const ry = gy + gh + 30, rh = h - ry - 30, res = st.data.map(([m, c]) => [m, c - L * bkg(m), Math.sqrt(Math.max(1, c))]), rmax = Math.max(L * sig(MH) * 1.6, ...res.map(r => Math.abs(r[1]) + r[2])), RY = v => ry + rh / 2 - v / rmax * (rh / 2);
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, ry + 0.5, gw, rh); ctx.strokeStyle = rgba(COL.ink, 0.35); ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(gx, RY(0)); ctx.lineTo(gx + gw, RY(0)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = rgba(COL.violet, 0.9); ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 240; i++) { const m = M0 + (M1 - M0) * i / 240, y = RY(L * sig(m)); i ? ctx.lineTo(X(m), y) : ctx.moveTo(X(m), y); } ctx.stroke(); ctx.lineWidth = 1;
+    res.forEach(([m, d, e]) => { ctx.strokeStyle = rgba(COL.ice, 0.55); ctx.beginPath(); ctx.moveTo(X(m), RY(d - e)); ctx.lineTo(X(m), RY(d + e)); ctx.stroke(); ctx.fillStyle = COL.ice; ctx.beginPath(); ctx.arc(X(m), RY(d), 2.4, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('DATA MINUS BACKGROUND · PURPLE = EXPECTED HIGGS', gx + 6, ry + 13);
+    ctx.textAlign = 'center'; [100, 110, 120, 130, 140, 150, 160].forEach(m => ctx.fillText(String(m), X(m), ry + rh + 14)); ctx.textAlign = 'left';
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

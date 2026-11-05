@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Tired Light</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/10}
+@media (max-width:640px){#vp1,#vp2,#vp3{aspect-ratio:4/4.6}}
+h1 .eig{transform:none}
+.case{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin:18px 0}
+.case>div{border:1px solid var(--rule-hi);padding:12px 14px;font-size:.95em}
+.case b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.case .pro{border-color:var(--eigen)}
+.case .pro b{color:var(--eigen)}
+.case .con{font-size:.88em;color:var(--ink-2)}
+.case .con b{color:var(--ice)}
+@media (max-width:640px){.case{grid-template-columns:1fr}}
+.studies{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 047 · Fringe science · 7 of 20</div>
+    <a class="navlink" href="046.html">← Φ 046</a>
+    <a class="navlink" href="048.html">Φ 048 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 047 · Fringe science · 7 of 20</p>
+    <h1>tired <span class="eig">light</span></h1>
+    <p class="gloss">FRINGE SCIENCE · an alternative to cosmic expansion — <em>the idea that light from distant galaxies is reddened because it loses energy on its long journey, not because space is stretching</em></p>
+    <p class="thesis">In 1929 Edwin Hubble found that the farther a galaxy, the redder its light. The standard reading is that space is expanding. That same year the Caltech astronomer Fritz Zwicky, who later discovered the first evidence for dark matter, suggested another: light simply gets “tired”, losing a little energy for every million light-years it travels. Hubble himself remained cautious about expansion for years. Tired light has returned in new forms, and its supporters point to tests where a non-expanding universe fits the data more simply. Here are three of them.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Cosmology, observational astronomy</dd></div>
+    <div><dt>Models</dt><dd>Tolman’s brightness test, the angular-size test, a hybrid model for JWST</dd></div>
+    <div><dt>Series</dt><dd>Fringe science, 7 of 20. The strongest case for each claim, with the sceptics’ reply; you decide. Builds on Φ 024–026 (dark matter, dark energy, the oldest light).</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>observation, static universe</span><span class="key"><i style="background:var(--ice)"></i>expanding universe</span><span class="key"><i style="background:var(--violet)"></i>reading point</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="tolman">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Tolman’s test, 1930 · 2014</span><h2>How fast do distant galaxies dim?</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="Surface brightness of galaxies against redshift. An expanding universe predicts steep dimming unless galaxies were very different in the past; a static universe with tired light predicts little dimming. Ultraviolet measurements of galaxies out to redshift five lie close to the static prediction."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="z1">Redshift <input type="range" id="z1" min="0" max="5" step="0.1" value="3"><output id="z1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Dimming if space expands</b><span id="r1e">—</span></div>
+          <div class="ro"><b>Dimming in a static universe</b><span id="r1s" class="eg">—</span></div>
+          <div class="ro"><b>Measured (Lerner et al.)</b><span id="r1m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>In 1930 the physicist Richard Tolman proposed a direct test of expansion: the surface brightness of galaxies, how bright each patch of a galaxy looks. In an expanding universe it should fall very steeply with redshift; in a static universe it should barely change, whatever causes the redshift.</p>
+        <p>The comparison needs galaxies of the same kind, measured in matching wavebands, near and far.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>In 2014 Eric Lerner, Renato Falomo and Riccardo Scarpa compared the ultraviolet surface brightness of about a thousand disk galaxies from the nearby universe out to redshift five, in the <i>International Journal of Modern Physics D</i>. They found that surface brightness stayed essentially constant, as a static universe predicts, with no need for the strong evolution the expanding model requires to explain the result away.</div>
+          <div class="con"><b>The case against</b>Lubin and Sandage (2001) found dimming close to the expanding prediction once the expected brightening of younger stellar populations was included.</div>
+        </div>
+        <div class="task"><b>Try this</b>Move out to redshift three or more and compare how much each model says galaxies should dim with what was measured.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">surface brightness ∝ (1 + <var>z</var>)<sup>−4</sup> expanding,&nbsp; ∝ (1 + <var>z</var>)<sup>−1</sup> tired light</div>
+          <p>Measured per unit frequency in bands matched to the same emitted light, the expanding prediction becomes (1 + <var>z</var>)<sup>−3</sup> and Lerner’s static model predicts roughly constant brightness; the points shown follow the trend of the published result, not the individual data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="angular">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">The angular-size test</span><h2>Should distant galaxies look bigger?</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="The apparent size of a galaxy of fixed real size against redshift. In an expanding universe galaxies should look smallest at about redshift 1.6 and then appear larger again; in a static universe they keep shrinking. Observed galaxy sizes keep shrinking."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="z2">Redshift <input type="range" id="z2" min="0.1" max="8" step="0.1" value="4"><output id="z2o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Apparent size if space expands</b><span id="r2e">—</span></div>
+          <div class="ro"><b>Apparent size in a static universe</b><span id="r2s" class="eg">—</span></div>
+          <div class="ro"><b>Smallest apparent size, expanding</b><span id="r2m">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>A strange prediction of the expanding universe is that very distant objects should look <em>larger</em> again. Light from them left when the universe was small and they were close to us, so beyond about redshift 1.6 a galaxy of fixed size should appear to grow on the sky.</p>
+        <p>In a static universe there is no such turnaround: the farther the galaxy, the smaller it looks.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Observed galaxies keep getting smaller on the sky out to the greatest distances, with no sign of the turnaround. To save the expanding model, astronomers must assume galaxies of the same brightness were several times smaller in the past, an assumption that tired-light supporters say was added to fit the data. The James Webb telescope has found that early galaxies look strikingly small and compact, as a static geometry would suggest.</div>
+          <div class="con"><b>The case against</b>Galaxies are expected to grow over time by mergers and star formation, and independent evidence supports that growth.</div>
+        </div>
+        <div class="task"><b>Try this</b>Slide out past redshift 1.6 and watch the expanding prediction turn around while the static one keeps falling.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">θ ∝ 1 / <var>d</var><sub>A</sub>,&nbsp; expanding: <var>d</var><sub>A</sub> = <var>d</var><sub>C</sub> / (1 + <var>z</var>);&nbsp; static: <var>d</var> = (<var>c</var>/<var>H</var>₀) ln(1 + <var>z</var>)</div>
+          <p>The expanding curve uses a flat universe with 30% matter and 70% dark energy; the static curve uses the tired-light distance. Sizes are relative to a galaxy at redshift 0.1.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="thermo">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">Ottawa, 2023</span><h2>Time enough for early galaxies</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Two timelines of cosmic history: the standard model with an age of 13.8 billion years, and Rajendra Gupta's hybrid model including tired light with an age of 26.7 billion years. A galaxy seen at a given redshift has far more time to form in the hybrid model."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="z3">Galaxy seen at redshift <input type="range" id="z3" min="4" max="14" step="0.5" value="10"><output id="z3o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Time to form it, standard model</b><span id="r3a">—</span></div>
+          <div class="ro"><b>Time to form it, hybrid model</b><span id="r3b" class="eg">—</span></div>
+          <div class="ro"><b>Age of the universe</b><span id="r3c">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The James Webb Space Telescope has found galaxies that look too massive and mature for the few hundred million years the standard model allows them (Φ 046).</p>
+        <p>In 2023 the physicist Rajendra Gupta of the University of Ottawa proposed a model combining tired light with slowly varying constants of nature, and fitted it to supernova and galaxy data.</p>
+        <div class="case">
+          <div class="pro"><b>The case for</b>Published in <i>Monthly Notices of the Royal Astronomical Society</i>, Gupta’s model fits the supernova distance data as well as the standard model and gives the universe an age of 26.7 billion years. Early galaxies then have billions of years, not hundreds of millions, to grow, which removes the tension with Webb’s observations. Tired light, in this picture, accounts for part of the redshift that is usually attributed to expansion.</div>
+          <div class="con"><b>The case against</b>The model has not been shown to reproduce the microwave background and the stretched light curves of distant supernovae, which strongly support expansion.</div>
+        </div>
+        <div class="task"><b>Try this</b>Choose a redshift where Webb has found mature galaxies and compare the time each model allows for them to form.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">standard: <var>t</var>(<var>z</var>) from a flat universe with 30% matter, 70% dark energy</div>
+          <p>The standard-model times are calculated. The hybrid-model times are schematic, scaled to Gupta’s 26.7-billion-year age with early epochs stretched as his paper describes, not taken from his tables.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>Milestones</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">1929</div><h3>Two readings</h3><p>Hubble published the redshift–distance relation; Fritz Zwicky proposed that light loses energy on its way to us.</p></div>
+      <div class="g"><div class="where">1930</div><h3>Tolman’s test</h3><p>Richard Tolman showed that the surface brightness of galaxies distinguishes expansion from a static universe.</p></div>
+      <div class="g"><div class="where">2014</div><h3>Constant brightness</h3><p>Lerner, Falomo and Scarpa reported that galaxy surface brightness stays constant out to redshift five.</p></div>
+      <div class="g"><div class="where">2023</div><h3>26.7 billion years</h3><p>Rajendra Gupta’s hybrid model including tired light doubled the age of the universe to fit early galaxies.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">Distant galaxies <span class="a">dim and shrink as a static universe predicts</span>; tired light’s supporters argue that expansion needs extra assumptions to match.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><a class="chip" href="024.html">024 · Dark matter</a><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><span class="chip here">047 · Tired light</span><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 047 · Tired Light · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+/* fringe helpers */
+const mk = s => () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gs = r => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r());
+const nfmt = n => n >= 1e9 ? `${Number((n / 1e9).toPrecision(2))} billion` : n >= 1e6 ? `${Number((n / 1e6).toPrecision(2))} million` : Math.round(n).toLocaleString('en');
+const Phi = x => 0.5 * (1 + Math.tanh(0.7978845608 * (x + 0.044715 * x * x * x)));
+const log10tail = z => z < 3 ? Math.log10(Math.max(1e-300, 1 - Phi(z))) : -(z * z / 2) / Math.LN10 - Math.log10(z * Math.sqrt(2 * Math.PI));
+const odds = z => { if (z <= 0) return 'none: at or below chance'; const L = -log10tail(z); if (L < 1.3) return `1 in ${Math.max(1, Math.round(10 ** L))} (luck does this often)`; if (L < 6) return `1 in ${Math.round(10 ** L).toLocaleString('en')}`; if (L < 9) return `1 in ${Number((10 ** L / 1e6).toPrecision(2))} million`; if (L < 12) return `1 in ${Number((10 ** L / 1e9).toPrecision(2))} billion`; return `1 in 10${sup(Math.floor(L))}`; };
+const tag = (ctx, t, x, y, c, al) => { ctx.fillStyle = c || COL['ink-3']; ctx.textAlign = al || 'left'; ctx.fillText(t, x, y); ctx.textAlign = 'left'; };
+const frame0 = (ctx, x, y, w, h) => { ctx.strokeStyle = COL['rule-hi']; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w, h); };
+const dash = (ctx, x1, y1, x2, y2, c) => { ctx.strokeStyle = c; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+const segs = (sel, cb) => $$(sel).forEach(b => b.addEventListener('click', () => { $$(sel).forEach(x => x.setAttribute('aria-pressed', String(x === b))); cb(b); }));
+
+const Ez = z => Math.sqrt(0.3 * (1 + z) ** 3 + 0.7);
+const dC = z => { let s = 0; const n = 200; for (let i = 0; i < n; i++) { const zz = (i + 0.5) / n * z; s += 1 / Ez(zz); } return s * z / n; }; // in c/H0
+const ageL = z => { let s = 0; const n = 400, a0 = 1 / (1 + z); for (let i = 0; i < n; i++) { const a = (i + 0.5) / n * a0; s += 1 / (a * Ez(1 / a - 1)); } return s * a0 / n * 13.97; }; // Gyr
+/* ---------- BAY 01: Tolman ---------- */
+(function () {
+  const cv = $('#c1'), ZS = $('#z1'), ZO = $('#z1o'), rE = $('#r1e'), rS = $('#r1s'), rM = $('#r1m');
+  const r0 = mk(6), D = Array.from({ length: 26 }, (_, i) => [0.05 + i * 0.2, gs(r0) * 0.25]);
+  function frame() {
+    const z = +ZS.value; ZO.value = z.toFixed(1);
+    const e = (1 + z) ** 3; setText(rE, `${e < 100 ? e.toFixed(0) : Math.round(e).toLocaleString('en')}× dimmer`); setText(rS, 'about the same brightness (matched bands)'); setText(rM, 'roughly constant to z ≈ 5');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 54, gy = 34, gw = w - gx - 16, gh = h - gy - 36, X = zz => gx + zz / 5 * gw, Y = mag => gy + 20 + mag / 8 * (gh - 30);
+    frame0(ctx, gx, gy, gw, gh);
+    ctx.strokeStyle = COL.ice; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 100; i++) { const zz = i / 20, m = 2.5 * Math.log10((1 + zz) ** 3); i ? ctx.lineTo(X(zz), Y(m)) : ctx.moveTo(X(zz), Y(m)); } ctx.stroke(); tag(ctx, 'expanding, no evolution', X(4.9), Y(2.5 * Math.log10(5.9 ** 3)) - 8, COL.ice, 'right');
+    ctx.strokeStyle = COL.eigen; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(5), Y(0)); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, 'static universe', X(4.9), Y(0) - 8, COL.eigen, 'right');
+    D.forEach(([zz, n]) => { ctx.fillStyle = rgba(COL.eigen, 0.75); ctx.beginPath(); ctx.arc(X(zz), Y(n + 0.1), 3.5, 0, Math.PI * 2); ctx.fill(); });
+    ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(X(z), gy); ctx.lineTo(X(z), gy + gh); ctx.stroke();
+    [0, 2, 4, 6, 8].forEach(m => tag(ctx, `${m}`, gx - 4, Y(m) + 4, COL['ink-3'], 'right')); [0, 1, 2, 3, 4, 5].forEach(zz => tag(ctx, `z ${zz}`, X(zz), gy + gh + 14, COL['ink-3'], 'center'));
+    tag(ctx, w < 560 ? 'DIMMING vs REDSHIFT · DOTS: 2014 DATA' : 'DIMMING IN MAGNITUDES (MATCHED BANDS) vs REDSHIFT · DOTS: TREND OF THE 2014 DATA', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: angular size ---------- */
+(function () {
+  const cv = $('#c2'), ZS = $('#z2'), ZO = $('#z2o'), rE = $('#r2e'), rS = $('#r2s'), rM = $('#r2m');
+  const thE = z => (1 + z) / dC(z), thS = z => 1 / Math.log(1 + z), n0E = thE(0.1), n0S = thS(0.1);
+  const zs = Array.from({ length: 80 }, (_, i) => 0.1 + i / 10), TE = zs.map(z => thE(z) / n0E), TS = zs.map(z => thS(z) / n0S);
+  const r0 = mk(3), D = Array.from({ length: 22 }, (_, i) => { const z = 0.3 + i * 0.35; return [z, thS(z) / n0S * (1 + gs(r0) * 0.12)]; });
+  function frame() {
+    const z = +ZS.value; ZO.value = z.toFixed(1);
+    setText(rE, `${(thE(z) / n0E * 100).toFixed(1)}% of nearby`); setText(rS, `${(thS(z) / n0S * 100).toFixed(1)}% of nearby`); setText(rM, 'at z ≈ 1.6');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 54, gy = 34, gw = w - gx - 16, gh = h - gy - 36, X = zz => gx + Math.log10(zz / 0.1) / Math.log10(80) * gw, Y = t => gy + gh - Math.log10(t / 0.01) / 2 * gh;
+    frame0(ctx, gx, gy, gw, gh);
+    [[TE, COL.ice, 'expanding'], [TS, COL.eigen, 'static']].forEach(([A, c, l], j) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); A.forEach((t, i) => i ? ctx.lineTo(X(zs[i]), Y(t)) : ctx.moveTo(X(zs[i]), Y(t))); ctx.stroke(); ctx.lineWidth = 1; tag(ctx, l, X(7.9) - 4, Y(A[79]) + (j ? 14 : -8), c, 'right'); });
+    D.forEach(([zz, t]) => { ctx.fillStyle = rgba(COL.eigen, 0.6); ctx.beginPath(); ctx.arc(X(zz), Y(t), 3, 0, Math.PI * 2); ctx.fill(); });
+    ctx.strokeStyle = COL.violet; ctx.beginPath(); ctx.moveTo(X(z), gy); ctx.lineTo(X(z), gy + gh); ctx.stroke();
+    [0.1, 1, 5].forEach(zz => tag(ctx, `z ${zz}`, X(zz), gy + gh + 14, COL['ink-3'], 'center')); [[1, '100%'], [0.1, '10%'], [0.01, '1%']].forEach(([t, l]) => tag(ctx, l, gx - 4, Y(t) + 4, COL['ink-3'], 'right'));
+    tag(ctx, 'APPARENT SIZE OF A FIXED-SIZE GALAXY (LOG) · DOTS: SCHEMATIC OBSERVED TREND', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: time to form ---------- */
+(function () {
+  const cv = $('#c3'), ZS = $('#z3'), ZO = $('#z3o'), rA = $('#r3a'), rB = $('#r3b'), rC = $('#r3c');
+  const tG = z => 26.7 * (1 + z) ** -0.6; // schematic stretch of early epochs
+  function frame() {
+    const z = +ZS.value; ZO.value = z.toFixed(1);
+    const a = ageL(z), b = tG(z); setText(rA, `${Math.round(a * 1000)} million years`); setText(rB, `about ${b.toFixed(1)} billion years (schematic)`); setText(rC, '13.8 vs 26.7 billion years');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const gx = 20, gw = w - 40, X = t => gx + t / 27 * gw, rows = [[h * 0.32, 13.8, a, COL.ice, 'STANDARD MODEL'], [h * 0.66, 26.7, b, COL.eigen, 'HYBRID MODEL (GUPTA 2023)']];
+    rows.forEach(([y, T, t, c, l]) => { ctx.fillStyle = rgba(c, 0.2); ctx.fillRect(gx, y, X(T) - gx, 26); ctx.fillStyle = c; ctx.fillRect(gx, y, X(t) - gx, 26); tag(ctx, l, gx, y - 10, c); tag(ctx, 'big bang', gx, y + 42, COL['ink-3']); tag(ctx, `now: ${T} Gyr`, X(T), y + 42, COL['ink-3'], 'right');
+      ctx.fillStyle = COL.violet; ctx.beginPath(); ctx.arc(X(t), y + 13, 6, 0, Math.PI * 2); ctx.fill(); tag(ctx, `galaxy seen at z ${z.toFixed(1)}`, Math.min(X(t) + 10, w - 160), y + 17, COL.violet); });
+    tag(ctx, 'TIME BETWEEN THE BEGINNING AND THE LIGHT WE SEE · BILLIONS OF YEARS', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>

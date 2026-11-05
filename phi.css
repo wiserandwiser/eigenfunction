@@ -1,0 +1,119 @@
+/* Eigenfunction · Φ mode · V1.0.0
+   A holographic workshop display: cyan light on deep charcoal-blue, with magenta and electric violet as the
+   only accents. Switched on by the Φ button (phi.js adds html.phi before anything draws).
+   Simulations drop the light-plate filter and show their own dark plates, recoloured through the --pl-* tokens. */
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600&family=Exo+2:ital,wght@0,300;0,400;1,300&display=swap");
+
+/* ---------- the toggle (visible in both modes) ---------- */
+.phi-toggle{display:inline-flex;align-items:center;gap:8px;margin-left:10px;padding:4px 10px 4px 5px;min-height:34px;border:1px solid var(--rule-hi);background:transparent;color:var(--ink-2);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:999px;flex:0 0 auto}
+.phi-toggle:hover{color:var(--ink);border-color:var(--ice)}
+.phi-toggle svg{width:24px;height:24px;flex:0 0 auto;overflow:visible}
+.phi-toggle .ring{fill:none;stroke:var(--ice);stroke-width:1.4}
+.phi-toggle .ring2{fill:none;stroke:var(--ice);stroke-width:.8;stroke-dasharray:2.2 2.6;opacity:.7;transform-origin:12px 12px}
+.phi-toggle .core{fill:var(--ice);opacity:.18}
+.phi-toggle text{fill:var(--ink);font:600 11px var(--mono)}
+@media (max-width:640px){.phi-toggle .lbl{display:none}.phi-toggle{padding:4px;margin-left:6px}}
+
+/* ---------- palette ---------- */
+html.phi{
+  --void:#0a1118; --bay:#0e1822; --bay-2:#13212d; --rule:#1d3442; --rule-hi:#2a5266;
+  --ink:#d9f6ff; --ink-2:#a9d9e8; --ink-3:#6fa5b8;
+  --ice:#35e3ff;      /* hologram cyan: structure, links, controls */
+  --eigen:#ff3fa4;    /* magenta: the one highlight */
+  --violet:#8f7dff;   /* electric violet */
+  --plate:#08121b;
+  --lattice:#35e3ff; --lattice-hi:#ff3fa4;
+  /* plates are shown without a filter in Φ mode, so these are the colours the simulations draw with */
+  --pl-void:#08121b; --pl-bay:#08121b; --pl-bay-2:#0f1d29; --pl-rule:#17303e; --pl-rule-hi:#285064;
+  --pl-ink:#d9f6ff; --pl-ink-2:#9fd3e3; --pl-ink-3:#6c9fb2;
+  --pl-ice:#35e3ff; --pl-eigen:#ff4fae; --pl-violet:#9d8bff;
+  --display:"Rajdhani","IBM Plex Mono",ui-monospace,sans-serif;
+  --body:"Exo 2","Rajdhani",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html.phi{background:radial-gradient(1200px 700px at 70% -10%,#12324a 0%,transparent 60%),radial-gradient(900px 600px at -10% 110%,#1a1438 0%,transparent 55%),var(--void)}
+html.phi body{color:var(--ink);font-family:var(--body)}
+html.phi .prose,html.phi .thesis,html.phi .task,html.phi .g p,html.phi .lesson p,html.phi .card p,html.phi .lede,html.phi p{font-family:var(--body)}
+html.phi::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(53,227,255,.035) 0 1px,transparent 1px 3px);mix-blend-mode:screen}
+html.phi #mtbg{filter:drop-shadow(0 0 2px rgba(53,227,255,.55))}
+html.phi ::selection{background:rgba(53,227,255,.3)}
+
+/* type: light, wide, glowing */
+html.phi h1,html.phi h2,html.phi h3,html.phi .brand,html.phi .big{font-family:var(--display)!important;text-transform:uppercase;letter-spacing:.06em!important;font-style:normal!important}
+html.phi,html.phi body{overflow-x:clip}
+html.phi h1,html.phi h2{overflow-wrap:anywhere;hyphens:auto}
+@media (max-width:640px){html.phi h1{letter-spacing:.02em!important;font-size:9vw!important;line-height:1.02}}
+html.phi h1{font-weight:500;color:var(--ink);text-shadow:0 0 18px rgba(53,227,255,.45),0 0 2px rgba(53,227,255,.9)}
+html.phi h1 .eig{color:var(--ice)!important;font-style:normal!important;text-shadow:0 0 22px rgba(53,227,255,.8)}
+html.phi h2{font-weight:500;color:var(--ink);text-shadow:0 0 12px rgba(53,227,255,.35)}
+html.phi .brand{font-size:17px!important;color:var(--ice)!important;text-shadow:0 0 10px rgba(53,227,255,.6)}
+html.phi .brand svg{filter:drop-shadow(0 0 4px var(--ice))}
+html.phi .bay-id,html.phi .eyebrow,html.phi .bay-tag{text-shadow:0 0 8px rgba(53,227,255,.4)}
+html.phi .prose p,html.phi .prose p:first-child,html.phi .thesis{color:var(--ink-2)}
+html.phi .carry p.big{color:var(--ink);text-shadow:0 0 14px rgba(53,227,255,.35)}
+html.phi .carry p.big .a,html.phi .v{color:var(--ice)}
+html.phi a{color:var(--ice)}
+
+/* chrome */
+html.phi .topbar{background:rgba(10,17,24,.82)!important;border-bottom:1px solid var(--rule-hi)!important;box-shadow:0 1px 0 rgba(53,227,255,.25),0 6px 24px rgba(0,0,0,.35)}
+html.phi body::before{background:var(--void)}
+html.phi .bay,html.phi .guide,html.phi .spec,html.phi .carry{border-color:var(--rule-hi)!important}
+html.phi .btn{color:var(--ink-2)}
+html.phi .btn:hover{background:rgba(53,227,255,.08);color:var(--ink)}
+html.phi .btn[aria-pressed="true"]{color:#06121a;background:var(--ice);box-shadow:0 0 12px rgba(53,227,255,.6)}
+html.phi .btn.eg[aria-pressed="true"]{color:#1a0611;background:var(--eigen);box-shadow:0 0 12px rgba(255,63,164,.6)}
+html.phi .toggle[aria-pressed="true"]{box-shadow:0 0 10px rgba(53,227,255,.4)}
+html.phi .readouts,html.phi .card,html.phi .lesson{background:rgba(14,24,34,.78)!important;border-color:var(--rule-hi)!important;backdrop-filter:blur(3px)}
+html.phi .ro b{color:var(--ink-3)}
+html.phi .ro span{color:var(--ink);text-shadow:0 0 8px rgba(53,227,255,.35)}
+html.phi .ro span.eg{color:var(--ice)}
+html.phi .task,html.phi .math{border-color:var(--rule-hi)!important;background:rgba(53,227,255,.03)}
+html.phi .case>div{border-color:var(--rule-hi);background:rgba(14,24,34,.6)}
+html.phi .queue a.chip{border-color:rgba(53,227,255,.35);color:var(--ice)}
+html.phi .chip[aria-pressed="true"]{background:var(--ice)!important;color:#06121a!important;border-color:var(--ice)!important}
+html.phi footer{color:var(--ink-3);border-color:var(--rule-hi)}
+
+/* simulation plates: dark, unfiltered, framed like a heads-up display */
+html.phi .viewport,html.phi .chart{background:var(--plate)!important;border:1px solid rgba(53,227,255,.35)!important;outline:1px solid rgba(53,227,255,.12)!important;outline-offset:4px;box-shadow:0 0 0 1px rgba(53,227,255,.06),0 0 28px rgba(53,227,255,.12),inset 0 0 40px rgba(53,227,255,.06);position:relative}
+html.phi .viewport canvas,html.phi .chart canvas{filter:none!important}
+@media (min-width:900px){html.phi .viewport canvas,html.phi .chart canvas{filter:drop-shadow(0 0 1.5px rgba(53,227,255,.45))!important}}
+html.phi .viewport::before,html.phi .chart::before,html.phi .readouts::before,html.phi .card::before{content:"";position:absolute;inset:-5px;pointer-events:none;z-index:2;
+  background:
+    linear-gradient(var(--ice),var(--ice)) top left/16px 2px, linear-gradient(var(--ice),var(--ice)) top left/2px 16px,
+    linear-gradient(var(--ice),var(--ice)) top right/16px 2px, linear-gradient(var(--ice),var(--ice)) top right/2px 16px,
+    linear-gradient(var(--ice),var(--ice)) bottom left/16px 2px, linear-gradient(var(--ice),var(--ice)) bottom left/2px 16px,
+    linear-gradient(var(--ice),var(--ice)) bottom right/16px 2px, linear-gradient(var(--ice),var(--ice)) bottom right/2px 16px;
+  background-repeat:no-repeat;filter:drop-shadow(0 0 4px rgba(53,227,255,.8))}
+html.phi .readouts{position:relative}
+html.phi .viewport::after{display:block!important;content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(180deg,transparent 0%,rgba(53,227,255,.07) 48%,rgba(53,227,255,.16) 50%,transparent 52%) 0 -100%/100% 200% no-repeat;animation:phi-scan 6s linear infinite}
+html.phi .viewport .hint{color:var(--ice);text-shadow:0 0 6px rgba(53,227,255,.6)}
+@keyframes phi-scan{to{background-position:0 100%}}
+@media (prefers-reduced-motion:reduce){html.phi .viewport::after{animation:none;display:none!important}}
+html.phi .lesson canvas{outline-color:rgba(53,227,255,.3)}
+html.phi .stats{border-color:var(--rule-hi)!important}
+html.phi .stats b{color:var(--ice);text-shadow:0 0 14px rgba(53,227,255,.6)}
+
+/* toggle in Φ mode: the ring is lit */
+html.phi .phi-toggle{color:var(--ice);border-color:var(--ice);box-shadow:0 0 12px rgba(53,227,255,.45),inset 0 0 8px rgba(53,227,255,.2)}
+html.phi .phi-toggle .core{opacity:.9;filter:drop-shadow(0 0 4px var(--ice))}
+html.phi .phi-toggle text{fill:#06121a}
+html.phi .phi-toggle .ring2{animation:phi-spin 8s linear infinite}
+@keyframes phi-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){html.phi .phi-toggle .ring2{animation:none}}
+
+/* curved visor (desktop): phi.js moves the page into #phi-screen and bends it through an SVG filter */
+html.phi-curved,html.phi-curved body{height:100%;overflow:hidden}
+#phi-screen{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;filter:url(#phi-bend);background:transparent;scrollbar-width:thin;scrollbar-color:rgba(53,227,255,.45) transparent}
+.phi-visor{position:fixed;inset:0;pointer-events:none;z-index:60;border-radius:42px/64px;
+  box-shadow:0 0 0 40px #05090d,inset 0 0 0 1px rgba(53,227,255,.55),inset 0 0 18px rgba(53,227,255,.25),inset 0 0 140px rgba(2,6,10,.75);
+  background:radial-gradient(120% 90% at 50% 50%,transparent 62%,rgba(2,6,10,.55) 100%),linear-gradient(180deg,rgba(255,255,255,.035) 0%,transparent 18%,transparent 82%,rgba(53,227,255,.04) 100%)}
+.phi-visor::before{content:"";position:absolute;inset:10px 22px;border-radius:36px/58px;border:1px solid rgba(53,227,255,.12)}
+
+/* power-up transition */
+.phi-sweep{position:fixed;inset:0;z-index:9999;pointer-events:none;background:radial-gradient(circle at var(--x,50%) var(--y,40px),rgba(53,227,255,.95) 0,rgba(53,227,255,.35) 18%,rgba(10,17,24,.0) 42%);animation:phi-burst .55s ease-in forwards}
+.phi-sweep.off{background:radial-gradient(circle at var(--x,50%) var(--y,40px),rgba(246,247,243,.95) 0,rgba(246,247,243,.6) 22%,rgba(246,247,243,0) 46%)}
+@keyframes phi-burst{from{opacity:0;transform:scale(.2)}60%{opacity:1}to{opacity:1;transform:scale(3.2)}}
+html.phi.phi-boot body{animation:phi-on .9s ease-out both}
+@keyframes phi-on{0%{filter:brightness(2.2) saturate(.2);opacity:.2}30%{filter:brightness(1.6);opacity:1}45%{filter:brightness(.7)}60%{filter:brightness(1.3)}100%{filter:none}}
+html.phi.phi-boot .topbar{animation:phi-line .9s ease-out both}
+@keyframes phi-line{from{box-shadow:0 1px 0 rgba(53,227,255,1),0 0 60px rgba(53,227,255,.9)}}

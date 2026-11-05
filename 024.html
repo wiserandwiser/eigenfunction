@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Dark Matter</title>
+<meta name="eigenfunction:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same observatory console as Φ 001–002. Title placard, three instrument bays (live model left, prose right), field guide.
+   Colour code for this lesson: pink = what you follow (travellers, probe, light), ice = the geometry, violet = mass and horizon. */
+:root{
+  --void:#04060c;
+  --bay:#070b14;
+  --bay-2:#0b1120;
+  --rule:#161e33;
+  --rule-hi:#26314d;
+  --ink:#e2e8f4;
+  --ink-2:#a1acc2;
+  --ink-3:#62708a;
+  --ice:#86cfff;
+  --eigen:#e393b4;
+  --violet:#9d8fff;
+  --display:"Newsreader","Segoe UI",system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, color-mix(in srgb,var(--ice) 6%,transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg,color-mix(in srgb,var(--rule) 55%,transparent) 1px,transparent 1px) 0 0/56px 56px,
+    var(--void);
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a{color:var(--ice);text-decoration-color:color-mix(in srgb,var(--ice) 45%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ice)}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--void) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.bar{display:flex;align-items:center;gap:20px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;letter-spacing:.22em;font-size:13px;color:var(--ink)}
+.brand svg{flex:none}
+.crumbs{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.navlink{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.navlink:hover{color:var(--ice)}
+.bar .spacer{flex:1}
+.toggle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-hi);padding:8px 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.toggle::before{content:"";width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.toggle[aria-pressed="true"]{color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 60%,transparent)}
+.toggle[aria-pressed="true"]::before{background:var(--eigen);border-color:var(--eigen)}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:64px 40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(2.5rem,11.2vw,7.2rem);line-height:.92;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 .eig{color:var(--eigen);display:inline-block;transform-origin:left bottom;transform:skewY(6deg) translateY(.06em)}
+.gloss{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin:18px 0 0;letter-spacing:.04em}
+.gloss em{font-family:var(--body);font-size:15px;letter-spacing:0;color:var(--ink)}
+.thesis{font-size:clamp(1.1rem,1.6vw,1.32rem);line-height:1.55;max-width:38ch;color:var(--ink);margin:28px 0 0;font-weight:300}
+.spec{border-top:1px solid var(--rule-hi);font-family:var(--mono);font-size:12px;margin:0}
+.spec div{display:grid;grid-template-columns:11ch minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;padding-top:1px}
+.spec dd{margin:0;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px;margin-right:14px}
+.key i{width:14px;height:3px;display:inline-block}
+
+.bay{padding-block:44px 56px;border-top:1px solid var(--rule)}
+.bay-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bay-id{font-family:var(--display);font-size:13px;color:var(--eigen);letter-spacing:.2em}
+.bay-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.2vw,2.35rem);line-height:1.12;margin:0;flex-basis:100%;text-wrap:balance;letter-spacing:-.005em}
+.bay-grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);gap:44px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:12px}
+.viewport{position:relative;background:var(--bay);border:1px solid var(--rule-hi);overflow:hidden;max-width:100%}
+.viewport::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  background:
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 0/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 0 100%/1px 10px no-repeat,
+    linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/10px 1px no-repeat, linear-gradient(var(--ink-3),var(--ink-3)) 100% 100%/1px 10px no-repeat;
+  opacity:.8}
+.viewport canvas{display:block;width:100%;height:100%}
+#v1{aspect-ratio:4/3}
+#vp2{aspect-ratio:16/12}
+#v3{aspect-ratio:4/3}
+#v1 canvas,#v3 canvas{touch-action:pan-y;cursor:grab}
+.hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;pointer-events:none;text-align:right}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2);font-size:15px}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--rule);background:var(--bay)}
+.ro{padding:10px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:-1px;min-width:0}
+.ro b{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.ro span{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro span.eg{color:var(--eigen)}
+.ro span.vi{color:var(--violet)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule-hi);flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:0;padding:8px 11px;cursor:pointer;min-height:34px}
+.seg .btn+.btn{border-left:1px solid var(--rule-hi)}
+.btn:hover{color:var(--ink);background:var(--bay-2)}
+.btn[aria-pressed="true"]{color:var(--void);background:var(--ice)}
+.btn.eg[aria-pressed="true"]{background:var(--eigen)}
+.solo{border:1px solid var(--rule-hi)}
+.scrub{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;flex:1;min-width:220px}
+.scrub input{flex:1;accent-color:var(--ice);min-width:0}
+.scrub output{color:var(--ink);min-width:8ch;text-transform:none;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+.prose{min-width:0;max-width:36rem}
+.prose p{margin:0 0 1em;color:var(--ink-2)}
+.prose p:first-child{color:var(--ink);font-size:1.08em}
+.prose strong{color:var(--ink);font-weight:500}
+.prose .a{color:var(--eigen)}
+.prose .v{color:var(--violet)}
+.prose .i{color:var(--ice)}
+.task{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--rule-hi);border-bottom:1px solid var(--rule-hi);padding:12px 0;margin:1.4em 0}
+.task b{color:var(--eigen);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+.math{display:none;margin-top:1.4em;border-top:1px solid color-mix(in srgb,var(--eigen) 45%,transparent);padding-top:14px}
+.show-math .math{display:block}
+.math .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--eigen);margin-bottom:10px}
+.eq{font-family:var(--body);font-size:1.3rem;color:var(--ink);margin:8px 0 12px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.eq var,.math var{font-style:italic}
+.math p{font-size:15px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid var(--ink-2);padding:0 3px}
+
+.guide{padding-block:48px 24px;border-top:1px solid var(--rule)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px;margin-top:20px}
+.g{padding:20px 0;border-top:1px solid var(--rule-hi);min-width:0}
+.g h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 6px;letter-spacing:.01em}
+.g .where{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--eigen);margin-bottom:8px}
+.g p{margin:0;color:var(--ink-2);font-size:15.5px}
+.carry{padding-block:56px 32px;border-top:1px solid var(--rule)}
+.carry p.big{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.4vw,2.5rem);line-height:1.22;max-width:30ch;margin:0;text-wrap:balance}
+.carry p.big .a{color:var(--eigen)}
+.carry .cite{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
+.queue{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;align-items:center}
+.queue .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:6px}
+.queue .chip{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--rule-hi);padding:6px 10px}
+.queue a.chip{border-style:solid;border-color:color-mix(in srgb,var(--ice) 45%,transparent);color:var(--ice);text-decoration:none}
+.queue a.chip:hover{background:var(--bay-2)}
+.queue .chip.here{border-style:solid;color:var(--eigen);border-color:color-mix(in srgb,var(--eigen) 50%,transparent)}
+footer{padding-block:28px 40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 28px}
+  .bay-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+  .guide-grid{grid-template-columns:minmax(0,1fr)}
+  .crumbs{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="ef.css">
+<link rel="stylesheet" href="phi.css">
+<script src="phi.js"></script>
+<style>
+/* Φ 024 colour code: pink = stars and visible matter, ice = dark matter (inferred mass), violet/pink = hot gas. */
+#vp1{aspect-ratio:16/10}
+#vp2{aspect-ratio:16/10}
+#vp3{aspect-ratio:16/9}
+@media (max-width:640px){#vp1{aspect-ratio:4/5}#vp2{aspect-ratio:4/3.6}#vp3{aspect-ratio:4/3.6}}
+h1 .eig{transform:none}
+</style>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="Eigenfunction home">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none" aria-hidden="true"><defs><clipPath id="eflogo"><path clip-rule="evenodd" d="M38 100a62 62 0 1 0 124 0a62 62 0 1 0 -124 0Z M55 100a45 45 0 1 0 90 0a45 45 0 1 0 -90 0Z"/></clipPath></defs><g clip-path="url(#eflogo)" fill="currentColor"><rect x="34" y="20" width="7" height="160"/><rect x="51" y="20" width="9" height="160"/><rect x="69" y="20" width="10" height="160"/><rect x="121" y="20" width="10" height="160"/><rect x="140" y="20" width="9" height="160"/><rect x="159" y="20" width="7" height="160"/><rect x="85" y="20" width="9" height="160"/><rect x="106" y="20" width="9" height="160"/></g><rect x="94" y="12" width="12" height="176" fill="currentColor"/></svg>Eigenfunction
+    </a>
+    <div class="crumbs">Φ 024 · Astrophysics series · 8 of 10</div>
+    <a class="navlink" href="023.html">← Φ 023</a>
+    <a class="navlink" href="025.html">Φ 025 →</a>
+    <div class="spacer"></div>
+    <button class="toggle" id="mathToggle" type="button" aria-pressed="false">Show the math</button>
+  </div>
+</header>
+<main>
+<section class="wrap hero">
+  <div>
+    <p class="eyebrow">Φ 024 · Astrophysics series · 8 of 10</p>
+    <h1>dark <span class="eig">matter</span></h1>
+    <p class="gloss">ASTROPHYSICS · cosmology — <em>most of the matter in the universe gives off no light, and we know it is there only by its pull</em></p>
+    <p class="thesis">Weigh a galaxy by its stars and gas, then weigh it by how fast it spins, and the answers disagree by a factor of five or more. The same gap shows up in galaxy clusters, in bent light and in the afterglow of the Big Bang. Something unseen outweighs all the atoms in the cosmos, and nobody yet knows what it is.</p>
+  </div>
+  <dl class="spec">
+    <div><dt>Field</dt><dd>Galactic dynamics, gravitational lensing, cosmology</dd></div>
+    <div><dt>Models</dt><dd>A spinning galaxy, a cluster bending light, the Bullet Cluster collision</dd></div>
+    <div><dt>Series</dt><dd>Astrophysics, 8 of 10. Uses lensing from Φ 003 and 021.</dd></div>
+    <div><dt>Colour</dt><dd><span class="key"><i style="background:var(--eigen)"></i>stars · visible</span><span class="key"><i style="background:var(--ice)"></i>dark matter</span><span class="key"><i style="background:#f0287a"></i>hot gas</span></dd></div>
+  </dl>
+</section>
+
+<section class="bay" id="rotation">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">01</span><span class="bay-tag">Spin speed</span><h2>The outer stars move too fast</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp1"><canvas id="c1" aria-label="A spiral galaxy seen from above, with stars orbiting at speeds set by the mass inside their orbit. Below, a graph of orbital speed against distance from the centre compares visible matter alone with measurements."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="h1">Dark halo <input type="range" id="h1" min="0" max="150" step="1" value="0"><output id="h1o">—</output></label>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Speed at the Sun’s distance</b><span id="r1v" class="eg">—</span></div>
+          <div class="ro"><b>Sun’s “galactic year”</b><span id="r1y">—</span></div>
+          <div class="ro"><b>Dark : visible mass within 25 kpc</b><span id="r1r">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>The planets far from the Sun orbit slowly: Neptune at 5 km/s, Earth at 30. That is what you expect when nearly all the mass sits in the middle. A galaxy’s light is also concentrated towards its centre, so its outer stars should orbit slowly too.</p>
+        <p>In the 1970s <span class="i">Vera Rubin</span> and Kent Ford measured how fast stars and gas orbit in spiral galaxies. Far out, where the light fades away, the speeds <strong>don’t drop</strong>. The curves stay flat to the edge and beyond, traced by radio waves from hydrogen gas.</p>
+        <p>Flat curves mean the mass inside each orbit keeps growing with distance, long after the stars run out. Each galaxy must sit inside a huge, invisible <strong>halo</strong>, several times heavier than everything we can see.</p>
+        <div class="task"><b>Try this</b>Start with no halo: the outer stars lag and the curve falls well below the measurements. Add halo until the model meets the points.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq"><var>v</var>(<var>r</var>) = √(<var>G M</var>(&lt;<var>r</var>) / <var>r</var>),&nbsp; flat <var>v</var> ⟹ <var>M</var>(&lt;<var>r</var>) ∝ <var>r</var></div>
+          <p>A simplified Milky-Way-like galaxy: a bulge of 10¹⁰ Suns, a stellar disk of 5 × 10¹⁰ and gas of 10¹⁰, plus a cored halo with outer speed up to 240 km/s at 100%. The “measured” points are illustrative, scattered around a flat curve near 220–230 km/s like the Milky Way’s. The galaxy picture spins much faster than real time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="lens">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">02</span><span class="bay-tag">Weighing with light</span><h2>A cluster of galaxies bends the light behind it</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp2"><canvas id="c2" aria-label="A field of distant background galaxies seen through a foreground galaxy cluster. As the cluster's mass rises, the background galaxies are stretched into arcs and rings around it."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="m2">Cluster mass <input type="range" id="m2" min="0" max="140" step="1" value="15"><output id="m2o">—</output></label>
+          <button class="btn solo" type="button" id="re2">New background</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Mass included</b><span id="r2m" class="eg">—</span></div>
+          <div class="ro"><b>Einstein ring radius</b><span id="r2e">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Mass curves space, so light passing a heavy object bends (Φ 003). A galaxy cluster, hundreds of galaxies bound together, acts as a giant, imperfect lens: galaxies far behind it are stretched into <strong>arcs</strong>, and sometimes into near-complete rings.</p>
+        <p>How strongly the light bends measures all the mass, visible or not. Add up the stars and the hot gas in a cluster and they bend light far too weakly to make the arcs we see. The lensing demands roughly <strong>six times more mass</strong>.</p>
+        <p>Fritz Zwicky first suspected missing mass in 1933, when galaxies in the Coma cluster turned out to be moving far too fast to be held together by what could be seen. He called it <em>dunkle Materie</em>.</p>
+        <div class="task"><b>Try this</b>At “visible matter only”, the background barely changes. Raise the mass to the full measured value and watch the arcs form.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">θ<sub>E</sub> = 4π (σ/<var>c</var>)² <var>D</var><sub>LS</sub>/<var>D</var><sub>S</sub>,&nbsp; <var>β</var> = θ − α(θ)</div>
+          <p>The cluster is modelled as a singular isothermal sphere with a small core: every light ray is deflected by the same angle θ<sub>E</sub> towards the centre, and the picture is made by tracing each pixel back to the source plane. Real clusters are lumpier, giving more complex arcs. Mass is shown as a percentage of the total implied by lensing; stars and gas together make up about 15%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bay" id="bullet">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-id">03</span><span class="bay-tag">The smoking gun</span><h2>When two clusters collide, the mass and the gas separate</h2></div>
+    <div class="bay-grid">
+      <div class="stage">
+        <div class="viewport" id="vp3"><canvas id="c3" aria-label="Two galaxy clusters pass through each other. Their hot gas, seen in X-rays, collides and is left behind in the middle, while the galaxies and the mass measured by lensing carry on through."></canvas></div>
+        <div class="controls">
+          <label class="scrub" for="t3">Time <input type="range" id="t3" min="0" max="100" step="1" value="0"><output id="t3o">—</output></label>
+          <button class="btn solo" type="button" id="go3">Play</button>
+        </div>
+        <div class="readouts">
+          <div class="ro"><b>Most of the normal matter is</b><span id="r3g">—</span></div>
+          <div class="ro"><b>Most of the mass is</b><span id="r3m" class="eg">—</span></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Most of the normal matter in a cluster is not in its galaxies but in hot gas between them, at tens of millions of degrees, glowing in X-rays. The galaxies themselves are tiny targets, and when two clusters collide they sail past each other. The gas clouds can’t: they slam together and are slowed, like two water-balloons hitting.</p>
+        <p>In the <span class="i">Bullet Cluster</span>, two clusters collided about 150 million years before the light we now see left them. The X-ray gas, <span style="color:#f0287a">pink</span>, is stuck in the middle. Lensing reveals where the mass is, <span class="i">blue</span>, and it has carried on through with the galaxies, away from most of the normal matter.</p>
+        <p>If the extra gravity came from some change to the law of gravity acting on normal matter, it should follow the gas. It doesn’t. Whatever dark matter is, it barely interacts, even with itself.</p>
+        <div class="task"><b>Try this</b>Play the collision, then compare the blue mass with the pink gas at the end.</div>
+        <div class="math">
+          <div class="lbl">The math</div>
+          <div class="eq">σ<sub>DM</sub>/<var>m</var> ≲ 1 cm²/g</div>
+          <p>The separation limits how strongly dark matter can collide with itself. This is a schematic animation, not a simulation: the gas lag and bow shock are drawn to match the 2006 maps by Clowe and colleagues. Not every alternative to dark matter is ruled out by one cluster, but together with the cosmic microwave background (Φ 026), the case is strong.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="guide">
+  <div class="wrap">
+    <div class="bay-head"><span class="bay-tag">Observations</span><h2>What could it be?</h2></div>
+    <div class="guide-grid">
+      <div class="g"><div class="where">Candidate</div><h3>WIMPs</h3><p>Heavy particles that interact only weakly. Huge tanks of liquid xenon deep underground, like LZ in South Dakota, wait for one to nudge an atom. None has been seen yet, ruling out much of the simplest range.</p></div>
+      <div class="g"><div class="where">Candidate</div><h3>Axions</h3><p>Extremely light particles proposed to fix a puzzle in nuclear physics. In a strong magnetic field they might turn into faint radio waves; experiments like ADMX tune through frequencies listening for them.</p></div>
+      <div class="g"><div class="where">Candidate</div><h3>Primordial black holes</h3><p>Black holes formed in the first second of the Big Bang. Lensing surveys and gravitational waves have ruled them out across most mass ranges, but a few windows remain.</p></div>
+      <div class="g"><div class="where">Alternative</div><h3>Modified gravity</h3><p>MOND changes the law of gravity at very low accelerations and fits many galaxy rotation curves well. It struggles with clusters, the Bullet Cluster and the cosmic microwave background.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="carry">
+  <div class="wrap">
+    <p class="eyebrow">Note to self</p>
+    <p class="big">About <span class="a">85% of all matter</span> is dark: it pulls on stars and bends light but gives off nothing, and what it is remains one of the biggest open questions in physics.</p>
+    <div class="queue"><span class="lbl">Catalogue</span><a class="chip" href="001.html">001 · Eigenfunction</a><a class="chip" href="002.html">002 · Tunnelling</a><a class="chip" href="003.html">003 · Curved spacetime</a><a class="chip" href="004.html">004 · Warp drives</a><a class="chip" href="005.html">005 · Entropy</a><a class="chip" href="006.html">006 · Neural nets</a><a class="chip" href="007.html">007 · Double slit</a><a class="chip" href="008.html">008 · Uncertainty</a><a class="chip" href="009.html">009 · Spin</a><a class="chip" href="010.html">010 · Entanglement</a><a class="chip" href="011.html">011 · Teleportation</a><a class="chip" href="012.html">012 · Decoherence</a><a class="chip" href="013.html">013 · Quantum Zeno</a><a class="chip" href="014.html">014 · Why matter is solid</a><a class="chip" href="015.html">015 · Quantum computing</a><a class="chip" href="016.html">016 · Quantum cryptography</a><a class="chip" href="017.html">017 · How stars die</a><a class="chip" href="018.html">018 · Where gold comes from</a><a class="chip" href="019.html">019 · Gravitational waves</a><a class="chip" href="020.html">020 · Pulsar timing</a><a class="chip" href="021.html">021 · Seeing a black hole</a><a class="chip" href="022.html">022 · Three-body problem</a><a class="chip" href="023.html">023 · Exoplanets</a><span class="chip here">024 · Dark matter</span><a class="chip" href="025.html">025 · Dark energy</a><a class="chip" href="026.html">026 · Oldest light</a><a class="chip" href="027.html">027 · Fusion power</a><a class="chip" href="028.html">028 · Superconductors</a><a class="chip" href="029.html">029 · Next-gen solar</a><a class="chip" href="030.html">030 · Batteries</a><a class="chip" href="031.html">031 · Chips at the edge</a><a class="chip" href="032.html">032 · How LLMs think</a><a class="chip" href="033.html">033 · Metamaterials</a><a class="chip" href="034.html">034 · Light sails</a><a class="chip" href="035.html">035 · Standard Model</a><a class="chip" href="036.html">036 · The Higgs field</a><a class="chip" href="037.html">037 · Neutrino oscillations</a><a class="chip" href="038.html">038 · Antimatter</a><a class="chip" href="039.html">039 · Quark confinement</a><a class="chip" href="040.html">040 · Symmetry & Noether</a><a class="chip" href="041.html">041 · Cold fusion</a><a class="chip" href="042.html">042 · Perpetual motion</a><a class="chip" href="043.html">043 · Zero-point energy</a><a class="chip" href="044.html">044 · EmDrive</a><a class="chip" href="045.html">045 · Electric Universe</a><a class="chip" href="046.html">046 · Plasma cosmology</a><a class="chip" href="047.html">047 · Tired light</a><a class="chip" href="048.html">048 · Anti-gravity</a><a class="chip" href="049.html">049 · Orgone energy</a><a class="chip" href="050.html">050 · Scalar waves</a><a class="chip" href="051.html">051 · Telepathy</a><a class="chip" href="052.html">052 · Precognition</a><a class="chip" href="053.html">053 · Remote viewing</a><a class="chip" href="054.html">054 · Psychokinesis</a><a class="chip" href="055.html">055 · Quantum consciousness</a><a class="chip" href="056.html">056 · Morphic resonance</a><a class="chip" href="057.html">057 · Near-death experiences</a><a class="chip" href="058.html">058 · Reincarnation research</a><a class="chip" href="059.html">059 · Global Consciousness</a><a class="chip" href="060.html">060 · Ganzfeld experiments</a><span class="chip" style="opacity:.45" title="Coming soon">061 · The fourth dimension</span><span class="chip" style="opacity:.45" title="Coming soon">062 · Time loops</span><span class="chip" style="opacity:.45" title="Coming soon">063 · Synchronicities</span><span class="chip" style="opacity:.45" title="Coming soon">064 · Time crystals</span><span class="chip" style="opacity:.45" title="Coming soon">065 · Tachyons and retrocausality</span><span class="chip" style="opacity:.45" title="Coming soon">066 · Four causes</span><span class="chip" style="opacity:.45" title="Coming soon">067 · Hume's billiard balls</span><span class="chip" style="opacity:.45" title="Coming soon">068 · Laplace's demon</span><span class="chip" style="opacity:.45" title="Coming soon">069 · Pilot-wave</span><span class="chip" style="opacity:.45" title="Coming soon">070 · Quantum eraser</span><span class="chip" style="opacity:.45" title="Coming soon">071 · Game of Life</span><span class="chip" style="opacity:.45" title="Coming soon">072 · Correlation vs. intervention</span><span class="chip" style="opacity:.45" title="Coming soon">073 · Light cones</span><span class="chip" style="opacity:.45" title="Coming soon">074 · Impossible triangle</span><span class="chip" style="opacity:.45" title="Coming soon">075 · Penrose diagrams</span><span class="chip" style="opacity:.45" title="Coming soon">076 · Singularity theorem</span><span class="chip" style="opacity:.45" title="Coming soon">077 · Penrose process</span><span class="chip" style="opacity:.45" title="Coming soon">078 · Penrose tiling</span><span class="chip" style="opacity:.45" title="Coming soon">079 · Weyl curvature</span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Eigenfunction · Φ 024 · The unseen majority · V1.9.2 · <a href="LICENSE.txt" style="color:inherit">Free &amp; open source · MIT</a> · Nothing for sale</div></footer>
+
+<script>
+
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const rs = getComputedStyle(document.documentElement);
+const COL = {};
+['void','bay','bay-2','rule','rule-hi','ink','ink-2','ink-3','ice','eigen','violet'].forEach(k => COL[k] = rs.getPropertyValue('--pl-' + k).trim());
+const rgb = hex => { let h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgba = (hex, a) => { const [r,g,b] = rgb(hex); return `rgba(${r},${g},${b},${a})`; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+const sup = s => String(s).split('').map(c => SUP[c] ?? c).join('');
+
+function fit(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function watch(el, obj) {
+  obj.visible = true;
+  if (!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => obj.visible = e.isIntersecting), { rootMargin: '150px' }).observe(el);
+}
+function setText(el, s) { if (el.textContent !== s) el.textContent = s; }
+function playLabel(btn, on) { btn.textContent = on ? 'Pause' : 'Play'; }
+function orbitCam(dom, st) {
+  dom.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, y: e.clientY }; dom.setPointerCapture(e.pointerId); dom.style.cursor = 'grabbing'; });
+  dom.addEventListener('pointermove', e => { if (!st.drag) return; st.az -= (e.clientX - st.drag.x) * 0.008; st.el = clamp(st.el + (e.clientY - st.drag.y) * 0.006, 0.12, 1.45); st.drag = { x: e.clientX, y: e.clientY }; });
+  const end = () => { st.drag = null; dom.style.cursor = 'grab'; };
+  dom.addEventListener('pointerup', end); dom.addEventListener('pointercancel', end);
+}
+function makeRenderer(host) {
+  try {
+    if (!window.THREE) throw 0;
+    const r = new THREE.WebGLRenderer({ antialias: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    r.setClearColor(new THREE.Color(COL.bay), 1);
+    host.prepend(r.domElement);
+    return r;
+  } catch (e) { host.querySelector('.fallback').hidden = false; host.querySelector('.hint').hidden = true; return null; }
+}
+function sizer(host, renderer, cam) {
+  const f = () => { const r = host.getBoundingClientRect(); if (r.width < 2) return; renderer.setSize(r.width, r.height, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); };
+  new ResizeObserver(f).observe(host); f();
+}
+
+/* ---------- math toggle ---------- */
+const mt = $('#mathToggle');
+function setMath(on) {
+  document.body.classList.toggle('show-math', on);
+  mt.setAttribute('aria-pressed', String(on));
+  mt.textContent = on ? 'Hide the math' : 'Show the math';
+  try { localStorage.setItem('ef-math', on ? '1' : '0'); } catch (e) {}
+}
+let mathOn = false; try { mathOn = localStorage.getItem('ef-math') === '1'; } catch (e) {}
+setMath(mathOn);
+mt.addEventListener('click', () => setMath(!document.body.classList.contains('show-math')));
+
+const stages = [];
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const gauss = r => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+const PINK = '#e393b4';
+
+/* ---------- BAY 01: rotation curves ---------- */
+(function () {
+  const cv = $('#c1'), hS = $('#h1'), hO = $('#h1o');
+  const rV = $('#r1v'), rY = $('#r1y'), rR = $('#r1r');
+  const G = 4.30091e-6; // kpc (km/s)² per solar mass
+  const vb2 = r => G * 1e10 * r / Math.pow(r + 0.6, 2);
+  const expM = (M, rd, r) => M * (1 - (1 + r / rd) * Math.exp(-r / rd));
+  const vd2 = r => G * expM(5e10, 2.6, r) / r, vg2 = r => G * expM(1e10, 7, r) / r;
+  const vh2 = (r, f) => Math.pow(240 * f, 2) * (1 - 5 / r * Math.atan(r / 5));
+  const vVis = r => Math.sqrt(vb2(r) + vd2(r) + vg2(r)), vTot = (r, f) => Math.sqrt(vb2(r) + vd2(r) + vg2(r) + vh2(r, f));
+  const r0 = rng(1970), DATA = []; for (let r = 2; r <= 30; r += 1.6) DATA.push([r, vTot(r, 1) + gauss(r0) * 7, 6 + r * 0.4]);
+  const r1 = rng(7), STARS = []; for (let i = 0; i < 900; i++) { const arm = i % 2, rr = 0.6 + Math.pow(r1(), 0.8) * 26, th = arm * Math.PI + Math.log(rr) * 1.9 + gauss(r1) * 0.35; STARS.push({ r: rr, th, b: 0.3 + r1() * 0.7 }); }
+  function frame(dt) {
+    const f = +hS.value / 100; hO.value = `${Math.round(f * 100)}%`;
+    const v8 = vTot(8, f); setText(rV, `${Math.round(v8)} km/s`);
+    setText(rY, `${Math.round(2 * Math.PI * 8 * 3.0857e16 / v8 / 3.156e13)} million years`);
+    const Mvis = (vb2(25) + vd2(25) + vg2(25)) * 25 / G, Mh = vh2(25, f) * 25 / G;
+    setText(rR, f === 0 ? 'none: visible matter only' : `${(Mh / Mvis).toFixed(1)} : 1`);
+    if (!REDUCE) STARS.forEach(s => { s.th += dt * vTot(s.r, f) / s.r * 0.012; });
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const narrow = w < 560, gH = narrow ? h * 0.5 : h, gW = narrow ? w : w * 0.42;
+    const cx = gW / 2, cy = gH / 2, S = Math.min(gW, gH) / 2 / 28;
+    // halo glow
+    if (f > 0) { const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30 * S); g.addColorStop(0, rgba(COL.ice, 0.22 * f)); g.addColorStop(1, rgba(COL.ice, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 30 * S, 0, Math.PI * 2); ctx.fill(); }
+    const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, 4 * S); core.addColorStop(0, 'rgba(255,240,210,0.9)'); core.addColorStop(1, 'rgba(255,200,120,0)'); ctx.fillStyle = core; ctx.beginPath(); ctx.arc(cx, cy, 4 * S, 0, Math.PI * 2); ctx.fill();
+    STARS.forEach(s => { ctx.fillStyle = `rgba(255,${200 + Math.round(50 * s.b)},${150 + Math.round(90 * s.b)},${(0.25 + 0.6 * s.b * Math.exp(-s.r / 14)).toFixed(2)})`; ctx.fillRect(cx + Math.cos(s.th) * s.r * S, cy + Math.sin(s.th) * s.r * S, 1.6, 1.6); });
+    ctx.strokeStyle = rgba(COL.ink, 0.25); ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(cx, cy, 8 * S, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('Sun’s orbit', cx + 8 * S * 0.72 + 4, cy - 8 * S * 0.72);
+    // rotation curve
+    const gx = narrow ? 50 : gW + 50, gy = narrow ? gH + 16 : 30, gw = narrow ? w - 66 : w - gW - 66, gh = narrow ? h - gH - 46 : h - 70;
+    const X = r => gx + r / 30 * gw, Y = v => gy + gh - v / 300 * gh;
+    ctx.strokeStyle = COL['rule-hi']; ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.fillStyle = COL['ink-3']; ctx.textAlign = 'right'; [0, 100, 200, 300].forEach(v => ctx.fillText(String(v), gx - 6, Y(v) + 4)); ctx.textAlign = 'center';
+    [0, 10, 20, 30].forEach(r => ctx.fillText(`${r}`, X(r), gy + gh + 14)); ctx.fillText('DISTANCE FROM CENTRE (KILOPARSECS)', gx + gw / 2, gy + gh + 28); ctx.textAlign = 'left';
+    ctx.fillText('ORBITAL SPEED (KM/S)', gx + 6, gy + 14);
+    DATA.forEach(([r, v, e]) => { ctx.strokeStyle = rgba(COL.ink, 0.6); ctx.beginPath(); ctx.moveTo(X(r), Y(v - e)); ctx.lineTo(X(r), Y(v + e)); ctx.stroke(); ctx.fillStyle = COL.ink; ctx.beginPath(); ctx.arc(X(r), Y(v), 2.5, 0, Math.PI * 2); ctx.fill(); });
+    const line = (fn, col, wd, dash) => { ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.setLineDash(dash || []); ctx.beginPath(); for (let i = 1; i <= 150; i++) { const r = i / 5, y = Y(fn(r)); i > 1 ? ctx.lineTo(X(r), y) : ctx.moveTo(X(r), y); } ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1; };
+    line(vVis, COL.eigen, 1.8, [5, 4]);
+    if (f > 0) line(r => Math.sqrt(vh2(r, f)), rgba(COL.ice, 0.6), 1.2, [2, 3]);
+    line(r => vTot(r, f), COL.ice, 2.2);
+    ctx.fillStyle = COL.eigen; ctx.fillText('visible matter only', X(17), Y(vVis(17)) + 16);
+    ctx.fillStyle = COL.ink; ctx.fillText('measured', X(21), Y(vTot(21, 1)) - 14);
+    if (f > 0) { ctx.fillStyle = COL.ice; ctx.fillText('model with halo', X(3.5), Y(vTot(26, f)) - 30 > gy + 20 ? Y(vTot(26, f)) - 30 : gy + 30); }
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 02: lensing by a cluster ---------- */
+(function () {
+  const cv = $('#c2'), mS = $('#m2'), mO = $('#m2o'), reB = $('#re2');
+  const rM = $('#r2m'), rE = $('#r2e');
+  const NX = 260, NY = 160, TE_FULL = 0.34, CORE = 0.02;
+  const st = { seed: 3, img: null, src: [], members: [] };
+  function makeSources() {
+    const r = rng(st.seed * 977 + 1); st.src = [];
+    for (let i = 0; i < 26; i++) { const ang = r() * Math.PI; st.src.push({ x: (r() * 2 - 1) * 0.9, y: (r() * 2 - 1) * 0.55, a: 0.018 + r() * 0.03, q: 0.35 + r() * 0.6, ang, c: r() < 0.7 ? [150, 190, 255] : [255, 200, 170], b: 0.6 + r() * 0.6 }); }
+    st.src.push({ x: 0.03, y: 0.02, a: 0.035, q: 0.6, ang: 0.6, c: [170, 210, 255], b: 1.3 });
+    st.members = []; for (let i = 0; i < 22; i++) { const rr = Math.abs(gauss(r)) * 0.12, th = r() * Math.PI * 2; st.members.push([Math.cos(th) * rr, Math.sin(th) * rr * 0.8, 2 + r() * 3.5]); }
+  }
+  function render() {
+    const f = +mS.value / 100, te = TE_FULL * f;
+    mO.value = `${Math.round(f * 100)}%`;
+    setText(rM, f <= 0.17 ? 'stars and gas only' : f < 0.9 ? 'some of the dark matter' : f <= 1.1 ? 'everything lensing implies' : 'more than measured');
+    setText(rE, te < 0.01 ? 'too small to notice' : `about ${Math.round(te / TE_FULL * 30)} arcseconds`);
+    const c = document.createElement('canvas'); c.width = NX; c.height = NY; const cx = c.getContext('2d'), im = cx.createImageData(NX, NY);
+    const sc = 2 / NX;
+    for (let py = 0; py < NY; py++) for (let px = 0; px < NX; px++) {
+      const tx = (px - NX / 2) * sc, ty = (py - NY / 2) * sc, tr = Math.hypot(tx, ty), k = te / Math.sqrt(tr * tr + CORE * CORE);
+      const bx = tx - k * tx, by = ty - k * ty;
+      let R = 0, Gc = 0, B = 0;
+      for (const s of st.src) { const dx = bx - s.x, dy = by - s.y, ca = Math.cos(s.ang), sa = Math.sin(s.ang), u = (dx * ca + dy * sa) / s.a, v = (-dx * sa + dy * ca) / (s.a * s.q), e = u * u + v * v; if (e < 9) { const I = s.b * Math.exp(-e); R += I * s.c[0]; Gc += I * s.c[1]; B += I * s.c[2]; } }
+      const o = (py * NX + px) * 4; im.data[o] = Math.min(255, R); im.data[o + 1] = Math.min(255, Gc); im.data[o + 2] = Math.min(255, B); im.data[o + 3] = 255;
+    }
+    cx.putImageData(im, 0, 0); st.img = c; st.te = te;
+  }
+  mS.addEventListener('input', render); reB.addEventListener('click', () => { st.seed++; makeSources(); render(); });
+  makeSources(); render();
+  function frame() {
+    const { ctx, w, h } = fit(cv); ctx.fillStyle = '#080907'; ctx.fillRect(0, 0, w, h);
+    const s = Math.max(w / NX, h / NY), dw = NX * s, dh = NY * s, ox = (w - dw) / 2, oy = (h - dh) / 2;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(st.img, ox, oy, dw, dh);
+    const X = x => w / 2 + x * dw / 2, Y = y => h / 2 + y * dw / 2;
+    // the cluster's own galaxies (in front, not lensed)
+    st.members.forEach(([x, y, r]) => { const g = ctx.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), r * 2.4); g.addColorStop(0, 'rgba(255,236,190,0.95)'); g.addColorStop(1, 'rgba(255,190,110,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X(x), Y(y), r * 2.4, 0, Math.PI * 2); ctx.fill(); });
+    if (st.te > 0.01) { ctx.setLineDash([3, 5]); ctx.strokeStyle = rgba(COL.ice, 0.35); ctx.beginPath(); ctx.arc(w / 2, h / 2, st.te * dw / 2, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.font = `10.5px ${MONO}`; ctx.fillStyle = COL['ink-3']; ctx.fillText('BACKGROUND GALAXIES SEEN THROUGH A CLUSTER · DASHED = EINSTEIN RING', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- BAY 03: the Bullet Cluster ---------- */
+(function () {
+  const cv = $('#c3'), tS = $('#t3'), tO = $('#t3o'), goB = $('#go3');
+  const rG = $('#r3g'), rM = $('#r3m');
+  const st = { play: false };
+  const r = rng(2006), GAL = [];
+  for (let i = 0; i < 70; i++) GAL.push({ c: i < 46 ? 0 : 1, dx: gauss(r) * (i < 46 ? 0.11 : 0.06), dy: gauss(r) * (i < 46 ? 0.11 : 0.06), s: 1 + r() * 2 });
+  goB.addEventListener('click', () => { if (+tS.value >= 100) tS.value = 0; st.play = !st.play; playLabel(goB, st.play); });
+  playLabel(goB, false);
+  function pos(t) {
+    // mass (dark matter + galaxies) passes straight through; gas is slowed after contact at t ≈ 0.45
+    const mA = -0.75 + 1.2 * t, mB = 0.85 - 1.5 * t;
+    const slow = x => x < 0.45 ? x : 0.45 + (x - 0.45) * 0.28;
+    const gA = -0.75 + 1.2 * slow(t), gB = 0.85 - 1.5 * slow(t);
+    return { mA, mB, gA, gB };
+  }
+  function frame(dt) {
+    if (st.play && !REDUCE) { tS.value = Math.min(100, +tS.value + dt * 14); if (+tS.value >= 100) { st.play = false; playLabel(goB, false); } }
+    const t = +tS.value / 100; tO.value = t < 0.45 ? 'approaching' : t < 0.55 ? 'impact' : 'after';
+    const P = pos(t), after = t > 0.6;
+    setText(rG, after ? 'hot gas, left behind in the middle' : 'hot gas inside each cluster');
+    setText(rM, after ? 'out with the galaxies, not with the gas' : 'centred on each cluster');
+    const { ctx, w, h } = fit(cv); ctx.clearRect(0, 0, w, h); ctx.font = `10.5px ${MONO}`;
+    const X = x => w / 2 + x * w * 0.5, Y = y => h / 2 + y * w * 0.5;
+    const blob = (x, y, rad, col, a) => { const g = ctx.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), rad * w * 0.5); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X(x), Y(y), rad * w * 0.5, 0, Math.PI * 2); ctx.fill(); };
+    // gas (X-rays)
+    blob(P.gA, 0, 0.3, PINK, 0.42); blob(P.gB, 0, 0.18, PINK, 0.5);
+    if (t > 0.5) { const k = Math.min(1, (t - 0.5) * 3); ctx.strokeStyle = rgba(PINK, 0.6 * k); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(X(P.gB) - 0.02 * w, h / 2, 0.15 * w * 0.5 + 6, Math.PI * 0.62, Math.PI * 1.38); ctx.stroke(); ctx.lineWidth = 1; }
+    // lensing mass contours
+    [[P.mA, 0.28], [P.mB, 0.17]].forEach(([x, rad]) => { for (let k = 1; k <= 4; k++) { ctx.strokeStyle = rgba(COL.ice, 0.18 + k * 0.12); ctx.lineWidth = 1.3; ctx.beginPath(); ctx.ellipse(X(x), h / 2, rad * w * 0.5 * (1 - k * 0.2), rad * w * 0.5 * (1 - k * 0.2) * 0.85, 0, 0, Math.PI * 2); ctx.stroke(); } });
+    ctx.lineWidth = 1;
+    // galaxies
+    GAL.forEach(g => { const x = (g.c ? P.mB : P.mA) + g.dx, y = g.dy; ctx.fillStyle = 'rgba(255,225,170,0.9)'; ctx.beginPath(); ctx.arc(X(x), Y(y), g.s, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = PINK; ctx.fillText('hot gas (X-ray)', 14, h - 30); ctx.fillStyle = COL.ice; ctx.fillText('mass from lensing', 14, h - 14);
+    ctx.fillStyle = COL['ink-3']; ctx.fillText('SCHEMATIC · BULLET CLUSTER, 1E 0657-56', 14, 18);
+  }
+  const S = { frame }; watch(cv, S); stages.push(S);
+})();
+
+/* ---------- shared loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  for (const s of stages) if (s.visible) { try { s.frame(dt); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+stages.forEach(s => { try { s.frame(0); } catch (e) { console.error(e); } });
+requestAnimationFrame(loop);
+})();
+
+</script>
+
+<canvas id="mtbg" aria-hidden="true"></canvas>
+<script src="mt.js"></script>
+</body>
+</html>
